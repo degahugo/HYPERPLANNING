@@ -24,14 +24,15 @@ Objectif : concevoir et développer une application type "Hyperplanning" permett
 
 ## Stack Technique
 
-- Java 17
+- Java 21
 - JavaFX
 - Maven
 - PostgreSQL
 - Docker
 - Architecture MVC
 - Méthodologie Scrum
-
+- JPA
+ 
 ---
 
 ## Fonctionnalités principales (MVP)
@@ -77,3 +78,81 @@ Le projet suit une architecture :
 Méthodologie Scrum  
 Sprints de 1 semaine  
 Livraison finale prévue fin mars 2026.
+
+# HyperPlanning
+
+
+## Arborescence
+
+```
+hyperplanning/
+|
++-- src/main/java/fr/univ/hyperplanning/
+|   |
+|   +-- app/
+|   |   +-- controllers/        Les controleurs JavaFX (logique des ecrans)
+|   |   +-- MainApp.java        Point d'entree de l'application
+|   |
+|   +-- dao/                    Acces a la base de donnees (lecture, ecriture)
+|   |
+|   +-- infra/
+|   |   +-- config/             Configuration : connexion BDD, donnees de test
+|   |   +-- util/               Outils techniques partagés
+|   |
+|   +-- model/
+|       +-- enums/              Valeurs fixes (roles, types, statuts...)
+|       +-- gestion/            Absence, Conflit, DemandeModification...
+|       +-- pedagogie/          Cours, Groupe, Salle, Module...
+|       +-- utilisateurs/       Utilisateur, Etudiant, Enseignant...
+|
++-- src/main/resources/
+|   +-- fxml/                   interface graphique
+|   +-- META-INF/               Configuration de la base de donnees
+|
++-- Dockerfile                  Construction de l'application
++-- docker-compose.yml          Lance l'application + la base de donnees
++-- run.sh                      Script de demarrage
++-- logs.sh                     Script pour voir les logs 
+```
+
+
+## Demarrage
+
+Prerequis : Docker (Desktop) installé et ouvert.
+
+```bash
+./run.sh
+```
+
+La base de donnees demarre automatiquement, les donnees de test
+sont inserees au premier lancement, et l'application s'ouvre.
+
+
+## Commandes utiles
+
+Arreter le projet (les donnees sont conservees) :
+```bash
+docker compose down
+```
+
+Arreter le projet et effacer toutes les donnees :
+```bash
+docker compose down -v
+```
+
+Voir les logs en direct (dans un 2eme terminal pendant que run.sh tourne) :
+```bash
+./logs.sh
+```
+
+Voir le contenu de la base de donnees :
+```bash
+docker exec $(docker compose ps -q postgres) psql -U sa -d hyperplanning
+```
+
+Commandes : 
+```
+\dt                          lister toutes les tables
+SELECT * FROM utilisateurs;  voir le contenu d'une table
+\q                           quitter
+```

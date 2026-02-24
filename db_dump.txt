@@ -1,0 +1,100 @@
+               List of relations
+ Schema |         Name          | Type  | Owner 
+--------+-----------------------+-------+-------
+ public | absences              | table | sa
+ public | administrations       | table | sa
+ public | conflit_cours         | table | sa
+ public | conflits              | table | sa
+ public | cours                 | table | sa
+ public | cours_groupe          | table | sa
+ public | demandes_modification | table | sa
+ public | donnees_personnelles  | table | sa
+ public | enseignant_cours      | table | sa
+ public | enseignant_groupe     | table | sa
+ public | enseignants           | table | sa
+ public | etudiant_cours        | table | sa
+ public | etudiant_groupe       | table | sa
+ public | etudiants             | table | sa
+ public | groupes               | table | sa
+ public | historiques           | table | sa
+ public | intervenant_cours     | table | sa
+ public | intervenants          | table | sa
+ public | modules               | table | sa
+ public | notifications         | table | sa
+ public | salles                | table | sa
+ public | service_informatique  | table | sa
+ public | syllabus_semestres    | table | sa
+ public | utilisateurs          | table | sa
+(24 rows)
+
+ id | actif | datecreation | derniereconnexion |     email     | motdepassehash |  nom   | prenom |      role      
+----+-------+--------------+-------------------+---------------+----------------+--------+--------+----------------
+  1 | t     | 2026-02-24   | 2026-02-24        | admin@univ.fr | hash_admin     | Admin  | System | ADMINISTRATION
+  2 | t     | 2026-02-24   | 2026-02-24        | ens1@univ.fr  | hash_ens1      | Dupont | Jean   | ENSEIGNANT
+  3 | t     | 2026-02-24   | 2026-02-24        | int1@univ.fr  | hash_int1      | Martin | Sara   | INTERVENANT
+  4 | t     | 2026-02-24   | 2026-02-24        | etu1@univ.fr  | hash_etu1      | Durand | Alice  | ETUDIANT
+(4 rows)
+
+ niveauacces |  service  | id | traitee_par_id 
+-------------+-----------+----+----------------
+           3 | Direction |  1 |               
+(1 row)
+
+ estresponsable | numeroemploye |  specialite  | id 
+----------------+---------------+--------------+----
+ f              | EMP001        | Informatique |  2
+(1 row)
+
+ anneeentree | numeroetudiant | id 
+-------------+----------------+----
+        2025 | ETU20250001    |  4
+(1 row)
+
+  contrat  | entreprise | id 
+-----------+------------+----
+ Vacataire | TechCorp   |  3
+(1 row)
+
+ id | anneeuniversitaire | code  | effectifactuel | effectifmax | libelle | niveau | typegroupe | syllabus_id 
+----+--------------------+-------+----------------+-------------+---------+--------+------------+-------------
+  1 |               2025 | L2TD1 |              1 |          30 | L2 TD1  | L2     | TD         |           1
+(1 row)
+
+ id |  annotation  | datedebut  |  datefin   | duree | estannule | estcc |      intitule      | typecours | rattrapage_de_id | module_id | salle_id 
+----+--------------+------------+------------+-------+-----------+-------+--------------------+-----------+------------------+-----------+----------
+  1 | Séance de TD | 2026-02-25 | 2026-02-25 |   120 | f         | f     | Algorithmique - TD | TD        |                  |         1 |        1
+(1 row)
+
+ id | dateabsence |      datedeclaration       | datevalidation | justificatif |  motif  | motifrefus |  statut  | cours_id | declaree_par_id | etudiant_absent_id | validee_par_admin_id 
+----+-------------+----------------------------+----------------+--------------+---------+------------+----------+----------+-----------------+--------------------+----------------------
+  1 | 2026-02-25  | 2026-02-24 17:44:17.691147 |                |              | Maladie |            | DECLAREE |        1 |               4 |                  4 |                     
+(1 row)
+
+ id | dateenvoi  | datelecture | estlue |                message                |        titre        |  type   | absence_id | cours_id | demande_modification_id | destinataire_id 
+----+------------+-------------+--------+---------------------------------------+---------------------+---------+------------+----------+-------------------------+-----------------
+  1 | 2026-02-24 | 2026-02-24  | f      | Votre absence a bien été enregistrée. | Absence enregistrée | ABSENCE |          1 |        1 |                         |               4
+(1 row)
+
+ id | adresseip | datemodification | entitemodifiee | typeaction |    valeurapres     | valeuravant | cours_id | effectue_par_id | groupe_id | salle_id 
+----+-----------+------------------+----------------+------------+--------------------+-------------+----------+-----------------+-----------+----------
+  1 | 127.0.0.1 | 2026-02-24       | Cours          | CREATION   | Algorithmique - TD |             |        1 |               1 |           |         
+(1 row)
+
+ id | datedetection | dateresolution |        description         | estresolu | typeconflit | source_cours_id | source_enseignant_id | source_groupe_id | source_salle_id 
+----+---------------+----------------+----------------------------+-----------+-------------+-----------------+----------------------+------------------+-----------------
+  1 | 2026-02-24    | 2026-02-24     | Conflit de salle potentiel | f         | SALLE       |                 |                      |                  |               1
+(1 row)
+
+ id | datedemande | datetraitement |                   description                    |          motif           | motifrefus |   statut   | cours_id | demandeur_id | traitee_par_id 
+----+-------------+----------------+--------------------------------------------------+--------------------------+------------+------------+----------+--------------+----------------
+  1 | 2026-02-24  |                | Demande de déplacement du cours TD Algorithmique | Déplacement exceptionnel | N/A        | EN_ATTENTE |        1 |            2 |               
+(1 row)
+
+ id |              adresse               | datenaissance | lieunaissance |             photourl              | telephone  | utilisateur_id 
+----+------------------------------------+---------------+---------------+-----------------------------------+------------+----------------
+  1 | 1 rue de l'Université, 75000 Paris | 1990-01-01    | Paris         | https://placeholder.com/photo.jpg | 0000000000 |              1
+  2 | 1 rue de l'Université, 75000 Paris | 1990-01-01    | Paris         | https://placeholder.com/photo.jpg | 0000000000 |              2
+  3 | 1 rue de l'Université, 75000 Paris | 1990-01-01    | Paris         | https://placeholder.com/photo.jpg | 0000000000 |              3
+  4 | 1 rue de l'Université, 75000 Paris | 1990-01-01    | Paris         | https://placeholder.com/photo.jpg | 0000000000 |              4
+(4 rows)
+

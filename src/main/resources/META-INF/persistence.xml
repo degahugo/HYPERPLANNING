@@ -1,0 +1,37 @@
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             version="3.0">
+
+    <persistence-unit name="hyperplanningPU" transaction-type="RESOURCE_LOCAL">
+
+        <class>fr.univ.hyperplanning.model.utilisateurs.Utilisateur</class>
+        <class>fr.univ.hyperplanning.model.utilisateurs.Administration</class>
+        <class>fr.univ.hyperplanning.model.utilisateurs.Enseignant</class>
+        <class>fr.univ.hyperplanning.model.utilisateurs.Etudiant</class>
+        <class>fr.univ.hyperplanning.model.utilisateurs.Intervenant</class>
+        <class>fr.univ.hyperplanning.model.utilisateurs.ServiceInformatique</class>
+        <class>fr.univ.hyperplanning.model.utilisateurs.DonneePersonnelle</class>
+
+        <class>fr.univ.hyperplanning.model.pedagogie.Salle</class>
+        <class>fr.univ.hyperplanning.model.pedagogie.ModuleCours</class>
+        <class>fr.univ.hyperplanning.model.pedagogie.Groupe</class>
+        <class>fr.univ.hyperplanning.model.pedagogie.Cours</class>
+        <class>fr.univ.hyperplanning.model.pedagogie.SyllabusSemestre</class>
+
+        <class>fr.univ.hyperplanning.model.gestion.Absence</class>
+        <class>fr.univ.hyperplanning.model.gestion.Conflit</class>
+        <class>fr.univ.hyperplanning.model.gestion.DemandeModification</class>
+        <class>fr.univ.hyperplanning.model.gestion.Historique</class>
+        <class>fr.univ.hyperplanning.model.gestion.Notification</class>
+
+        <properties>
+            <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://postgres:5432/hyperplanning"/>
+            <property name="jakarta.persistence.jdbc.user" value="sa"/>
+            <property name="jakarta.persistence.jdbc.password" value="secret"/>
+
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.show_sql" value="true"/>
+        </properties>
+
+    </persistence-unit>
+</persistence>

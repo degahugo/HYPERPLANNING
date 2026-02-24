@@ -1,16 +1,16 @@
-# Compiled class files
+# === Java / JVM ===
 *.class
-
-# Log files
 *.log
+hs_err_pid*
+replay_pid*
 
-# BlueJ files
+# BlueJ
 *.ctxt
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
-# Package Files
+# === Archives / packages ===
 *.jar
 *.war
 *.nar
@@ -19,34 +19,52 @@
 *.tar.gz
 *.rar
 
-# Maven build directory
+# === Build outputs ===
+# Maven
 target/
+!**/src/main/**/target/
+!**/src/test/**/target/
+!.mvn/wrapper/maven-wrapper.jar
 
-# Gradle build directory
+# Gradle
 build/
 .gradle/
+!**/src/main/**/build/
+!**/src/test/**/build/
 
-# IntelliJ IDEA files
+# Kotlin
+.kotlin/
+
+# === IDEs ===
+# IntelliJ IDEA
 .idea/
+*.iws
 *.iml
+*.ipr
 out/
 
-# Eclipse project files
-.project
+# Eclipse / STS
+.apt_generated
 .classpath
+.factorypath
+.project
 .settings/
+.springBeans
+.sts4-cache
 
-# VS Code files
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# VS Code
 .vscode/
 
-# Operating System files
+# === OS / temp ===
 .DS_Store
 Thumbs.db
-
-# Temporary files
 *.tmp
 *.swp
-
-# Virtual machine crash logs
-hs_err_pid*
-replay_pid*
+*~
