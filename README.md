@@ -147,7 +147,7 @@ Voir les logs en direct (dans un 2eme terminal pendant que run.sh tourne) :
 
 Voir le contenu de la base de donnees :
 ```bash
-docker exec $(docker compose ps -q postgres) psql -U sa -d hyperplanning
+docker exec -it $(docker compose ps -q postgres) psql -U sa -d hyperplanning
 ```
 
 Commandes : 

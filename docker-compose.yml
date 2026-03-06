@@ -16,13 +16,23 @@ services:
       retries: 20
     restart: unless-stopped
 
+  #hyperplanning:
+  #  build: .
+  #  container_name: hyperplanning-java21
+  #  depends_on:
+  #    postgres:
+  #      condition: service_healthy
+  #  restart: unless-stopped
+
   hyperplanning:
     build: .
     container_name: hyperplanning-java21
     depends_on:
-      postgres:
-        condition: service_healthy
-    restart: unless-stopped
+      - postgres
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/hyperplanning
+      DB_USER: sa
+      DB_PASSWORD: secret
 
 volumes:
   pgdata:

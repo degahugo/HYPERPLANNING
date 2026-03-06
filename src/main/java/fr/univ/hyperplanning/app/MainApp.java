@@ -13,7 +13,7 @@ public class MainApp extends Application {
     public void start(Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("/fxml/main.fxml"));
         DataInit.seed();
-        Parent root = loader.load(); // ✅ plus d'erreur Object -> Parent
+        Parent root = loader.load(); //  plus d'erreur Object -> Parent
         stage.setTitle("Hyperplanning");
         stage.setScene(new Scene(root, 900, 600));
         stage.show();
