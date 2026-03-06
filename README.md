@@ -156,3 +156,17 @@ Commandes :
 SELECT * FROM utilisateurs;  voir le contenu d'une table
 \q                           quitter
 ```
+
+## Workflow Git : 
+### Gitflow (Vincent Driessen)   
+Objectif : maintenir une branche stable (main) et des branches de développement (feature/...) ou bien (UC/...) pour chaque fonctionnalité / cas d'usages.
+
+````
+main
+ └── work
+      ├── feature/auth
+      ├── feature/absence
+      ├── feature/salles
+      └── ...
+
+````
