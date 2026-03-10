@@ -1,40 +1,57 @@
 package fr.univ.hyperplanning.service;
 
-import fr.univ.hyperplanning.model.ConflictInfo; // Importation du modèle
-import java.sql.*;
+import fr.univ.hyperplanning.model.ConflictInfo;
+import fr.univ.hyperplanning.model.pedagogie.Cours;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ConflictService {
-    private final String url = "jdbc:postgresql://localhost:5432/hyperplanning";
-    private final String user = "sa";
-    private final String password = "secret";
+
+    private EntityManager em;
+
+    public ConflictService() {
+        // Connexion via l'unité de persistance du groupe
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("hyperplanningPU");
+        this.em = emf.createEntityManager();
+    }
 
     public List<ConflictInfo> getRoomConflicts() {
-        List<ConflictInfo> list = new ArrayList<>();
+        List<ConflictInfo> conflicts = new ArrayList<>();
 
-        // On cherche les cours qui se chevauchent dans la même salle
-        String sql = "SELECT c1.id as id1, c2.id as id2, c1.intitule, c1.salle_id " +
-                "FROM cours c1, cours c2 " +
-                "WHERE c1.id < c2.id " +
-                "AND c1.salle_id = c2.salle_id " +
-                "AND c1.datedebut < c2.datefin " +
-                "AND c1.datefin > c2.datedebut";
+        try {
+            // Récupération des objets Cours via Hibernate
+            List<Cours> tousLesCours = em.createQuery("SELECT c FROM Cours c", Cours.class)
+                    .getResultList();
 
-        try (Connection conn = DriverManager.getConnection(url, user, password);
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
 
-            while (rs.next()) {
-                String desc = "Conflit salle n°" + rs.getLong("salle_id") +
-                        " entre les cours " + rs.getLong("id1") + " et " + rs.getLong("id2");
+            for (int i = 0; i < tousLesCours.size(); i++) {
+                for (int j = i + 1; j < tousLesCours.size(); j++) {
+                    Cours c1 = tousLesCours.get(i);
+                    Cours c2 = tousLesCours.get(j);
 
-                // On ajoute chaque conflit trouvé à notre liste
-                list.add(new ConflictInfo(rs.getLong("id1"), desc));
+                    // 1. Vérification de la salle (nom de la méthode générée par Lombok)
+                    if (c1.getSalle() != null && c1.getSalle().equals(c2.getSalle())) {
+
+                        // 2. Chevauchement horaire (Adapté au type java.sql.Date)
+                        // Remplace la ligne du "if" temporel par celle-ci :
+                        if (!c1.getDateDebut().after(c2.getDateFin()) && !c1.getDateFin().before(c2.getDateDebut())) {
+
+                            conflicts.add(new ConflictInfo(
+                                    c1.getId(),
+                                    "Conflit salle " + c1.getSalle().getNumero() + " : " +
+                                            c1.getIntitule() + " et " + c2.getIntitule()
+                            ));
+                        }
+                    }
+                }
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la récupération des conflits : " + e.getMessage());
             e.printStackTrace();
         }
-        return list;
+        return conflicts;
     }
 }
