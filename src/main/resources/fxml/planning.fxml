@@ -8,6 +8,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.ComboBox?>
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
@@ -21,9 +22,15 @@
 
             <Button text="← Semaine -" onAction="#onPrevWeek"/>
             <Button text="Semaine +" onAction="#onNextWeek"/>
+            <Button text="Voir la semaine" onAction="#onWeekView"/>
             <Label text="Date :" />
             <DatePicker fx:id="datePicker" onAction="#onDateChanged"/>
             <Label fx:id="weekLabel" text="Semaine ?" />
+            <Label text="Filtrer par :" />
+
+            <ComboBox fx:id="filterType"/>
+
+            <ComboBox fx:id="filterValue"/>
 
         </HBox>
     </top>

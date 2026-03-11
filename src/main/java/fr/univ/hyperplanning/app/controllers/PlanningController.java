@@ -4,10 +4,14 @@ import fr.univ.hyperplanning.dao.CoursDAO;
 import fr.univ.hyperplanning.model.pedagogie.Cours;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
 
+import java.time.format.TextStyle;
+import java.util.List;
+import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.Locale;
 
 public class PlanningController {
 
@@ -41,9 +45,20 @@ public class PlanningController {
     private DatePicker datePicker;
 
     @FXML
+    private void onWeekView(){
+        chargerSemaine(currentDate);
+    }
+
+    @FXML
     private Label weekLabel;
 
     private LocalDate currentDate;
+
+    @FXML
+    private ComboBox<String> filterType;
+
+    @FXML
+    private ComboBox<String> filterValue;
 
     @FXML
     public void initialize() {
@@ -56,6 +71,16 @@ public class PlanningController {
         initialiserColonnes();
 
         chargerSemaine(currentDate);
+
+        filterType.getItems().addAll(
+                "Aucun Filtre",
+                "Salle",
+                "Module",
+                "Enseignant"
+        );
+
+        filterType.setOnAction(e -> chargerValeursFiltre());
+        filterValue.setOnAction(e -> chargerCours());
 
         coursTable.setRowFactory(tv -> {
             TableRow<Cours> row = new TableRow<>();
@@ -178,6 +203,15 @@ public class PlanningController {
         );
     }
 
+    private void chargerJour(LocalDate date) {
+
+        coursTable.getItems().setAll(
+                coursDAO.findByDateRange(date, date)
+        );
+
+        weekLabel.setText("Planning du " + date.getDayOfWeek().getDisplayName(java.time.format.TextStyle.FULL, Locale.FRENCH) + " " + date);
+    }
+
     @FXML
     private void onPrevWeek() {
 
@@ -201,7 +235,93 @@ public class PlanningController {
 
         currentDate = datePicker.getValue();
 
-        chargerSemaine(currentDate);
+
+        chargerJour(currentDate);
+    }
+
+
+    private void chargerValeursFiltre() {
+
+        filterValue.getItems().clear();
+
+        String type = filterType.getValue();
+
+        if (type == null) return;
+
+        if (type.equals("Aucun filtre")) {
+
+            chargerSemaine(currentDate);
+            return;
+
+        }
+
+        List<Cours> cours = coursDAO.findAll();
+
+        if (type.equals("Salle")) {
+
+            cours.stream()
+                    .map(c -> c.getSalle() != null ? c.getSalle().getNumero() : null)
+                    .filter(s -> s != null)
+                    .distinct()
+                    .forEach(filterValue.getItems()::add);
+
+        }
+
+        else if (type.equals("Module")) {
+
+            cours.stream()
+                    .map(c -> c.getModule() != null ? c.getModule().getNom() : null)
+                    .filter(s -> s != null)
+                    .distinct()
+                    .forEach(filterValue.getItems()::add);
+
+        }
+
+        else if (type.equals("Enseignant")) {
+
+            filterValue.getItems().add("Non renseigné");
+
+        }
+    }
+
+
+    private void chargerCours() {
+
+        if ("Aucun filtre".equals(filterType.getValue())) {
+
+            chargerSemaine(currentDate);
+            return;
+
+        }
+
+        List<Cours> cours = coursDAO.findAll();
+
+        String type = filterType.getValue();
+        String value = filterValue.getValue();
+
+        if (type != null && value != null) {
+
+            if (type.equals("Salle")) {
+
+                cours = cours.stream()
+                        .filter(c -> c.getSalle() != null
+                                && value.equals(c.getSalle().getNumero()))
+                        .toList();
+
+            }
+
+            else if (type.equals("Module")) {
+
+                cours = cours.stream()
+                        .filter(c -> c.getModule() != null
+                                && value.equals(c.getModule().getNom()))
+                        .toList();
+
+            }
+
+        }
+
+        coursTable.getItems().setAll(cours);
     }
 
 
