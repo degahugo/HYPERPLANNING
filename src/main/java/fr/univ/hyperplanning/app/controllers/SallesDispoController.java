@@ -39,21 +39,39 @@ public class SallesDispoController {
     @FXML
     private void handleRecherche() {
         try {
-            if (datePicker.getValue() == null || heureDebut.getText().isEmpty() || heureFin.getText().isEmpty()) {
+            // 1. On nettoie les saisies (enlève les espaces au début et à la fin)
+            String hDebutRaw = heureDebut.getText().trim();
+            String hFinRaw = heureFin.getText().trim();
+
+            if (datePicker.getValue() == null || hDebutRaw.isEmpty() || hFinRaw.isEmpty()) {
                 showAlert("Champs vides", "Veuillez remplir la date et les heures.");
                 return;
             }
 
-            // Conversion des saisies
-            LocalDateTime debut = LocalDateTime.of(datePicker.getValue(), LocalTime.parse(heureDebut.getText()));
-            LocalDateTime fin = LocalDateTime.of(datePicker.getValue(), LocalTime.parse(heureFin.getText()));
+            // 2. On utilise un formateur qui accepte 8:00 ou 08:00
+            java.time.format.DateTimeFormatter souple = java.time.format.DateTimeFormatter.ofPattern("H:mm");
 
+            // 3. Conversion sécurisée
+            LocalTime timeDebut = LocalTime.parse(hDebutRaw, souple);
+            LocalTime timeFin = LocalTime.parse(hFinRaw, souple);
+
+            LocalDateTime debut = LocalDateTime.of(datePicker.getValue(), timeDebut);
+            LocalDateTime fin = LocalDateTime.of(datePicker.getValue(), timeFin);
+
+            // 4. Lancement de la recherche
             if (salleDAO != null) {
                 List<Salle> disponibles = salleDAO.findSallesDisponibles(debut, fin);
                 tableSalles.setItems(FXCollections.observableArrayList(disponibles));
+
+                if (disponibles.isEmpty()) {
+                    showAlert("Information", "Aucune salle n'est disponible sur ce créneau.");
+                }
             }
+        } catch (java.time.format.DateTimeParseException e) {
+            showAlert("Erreur de format", "L'heure doit être au format HH:mm (ex: 08:30 ou 8:30)");
         } catch (Exception e) {
-            showAlert("Erreur de format", "L'heure doit être au format HH:mm (ex: 08:30)");
+            e.printStackTrace();
+            showAlert("Erreur", "Une erreur inattendue est survenue.");
         }
     }
 
