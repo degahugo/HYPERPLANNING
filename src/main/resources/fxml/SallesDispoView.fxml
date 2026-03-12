@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="15" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="fr.univ.hyperplanning.app.controllers.SallesDispoController"
+      prefHeight="600.0" prefWidth="800.0">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Vérification des Salles Disponibles"
+           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+    <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-background-color: #f4f4f4; -fx-padding: 10; -fx-background-radius: 5;">
+        <VBox spacing="5">
+            <Label text="Date :"/>
+            <DatePicker fx:id="datePicker" prefWidth="150"/>
+        </VBox>
+
+        <VBox spacing="5">
+            <Label text="Heure Début :"/>
+            <TextField fx:id="heureDebut" promptText="08:00" prefWidth="80"/>
+        </VBox>
+
+        <VBox spacing="5">
+            <Label text="Heure Fin :"/>
+            <TextField fx:id="heureFin" promptText="10:00" prefWidth="80"/>
+        </VBox>
+
+        <Button text="Rechercher"
+                onAction="#handleRecherche"
+                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"
+                translateY="10"/>
+    </HBox>
+
+    <TableView fx:id="tableSalles" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colBatiment" text="Bâtiment" prefWidth="150"/>
+            <TableColumn fx:id="colNumero" text="Numéro de Salle" prefWidth="150"/>
+            <TableColumn fx:id="colCapacite" text="Capacité (Places)" prefWidth="120"/>
+        </columns>
+        <placeholder>
+            <Label text="Aucune salle trouvée ou recherche non lancée."/>
+        </placeholder>
+    </TableView>
+
+</VBox>
