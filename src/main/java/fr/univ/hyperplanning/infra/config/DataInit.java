@@ -260,7 +260,8 @@ public class DataInit {
             a.setNom("Admin");
             a.setPrenom("System");
             a.setEmail(email);
-            a.setMotDePasseHash("hash_admin");
+            a.setMotDePasseHash(AuthService.hasher("admin1234"));
+
             a.setRole(RoleUtilisateur.ADMINISTRATION);
             a.setActif(true);
             a.setDateCreation(today);
@@ -282,7 +283,7 @@ public class DataInit {
             ens.setNom("Dupont");
             ens.setPrenom("Jean");
             ens.setEmail(email);
-            ens.setMotDePasseHash("hash_ens1");
+            ens.setMotDePasseHash(AuthService.hasher("ens1234"));
             ens.setRole(RoleUtilisateur.ENSEIGNANT);
             ens.setActif(true);
             ens.setDateCreation(today);
@@ -305,7 +306,7 @@ public class DataInit {
             i.setNom("Martin");
             i.setPrenom("Sara");
             i.setEmail(email);
-            i.setMotDePasseHash("hash_int1");
+            i.setMotDePasseHash(AuthService.hasher("int1234"));
             i.setRole(RoleUtilisateur.INTERVENANT);
             i.setActif(true);
             i.setDateCreation(today);
@@ -327,7 +328,7 @@ public class DataInit {
             etu.setNom("Durand");
             etu.setPrenom("Alice");
             etu.setEmail(email);
-            etu.setMotDePasseHash("hash_etu1");
+            etu.setMotDePasseHash(AuthService.hasher("etu1234"));
             etu.setRole(RoleUtilisateur.ETUDIANT);
             etu.setActif(true);
             etu.setDateCreation(today);
