@@ -13,9 +13,15 @@
 
     <Label text="Gestion des Conflits de Planning" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
 
-    <Button text="Détecter les conflits de salle"
-            onAction="#handleDetectConflicts"
-            style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Détecter les conflits de salle"
+                onAction="#handleDetectConflicts"
+                style="-fx-background-color: #e74c3c; -fx-text-fill: white;" />
+
+        <Button text="Résoudre le conflit"
+                onAction="#handleResolveConflict"
+                style="-fx-background-color: #2ecc71; -fx-text-fill: white;" />
+    </HBox>
 
     <TableView fx:id="conflictTable" VBox.vgrow="ALWAYS">
         <columns>

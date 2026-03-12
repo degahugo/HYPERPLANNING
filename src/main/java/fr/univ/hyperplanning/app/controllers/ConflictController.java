@@ -1,6 +1,5 @@
 package fr.univ.hyperplanning.app.controllers;
 
-
 import fr.univ.hyperplanning.model.ConflictInfo;
 import fr.univ.hyperplanning.service.ConflictService;
 import javafx.collections.FXCollections;
@@ -17,7 +16,8 @@ public class ConflictController {
     private TableColumn<ConflictInfo, Long> colId;
     @FXML
     private TableColumn<ConflictInfo, String> colDescription;
-    @FXML
+
+    // Correction : Retrait du @FXML ici (ce n'est pas un composant graphique)
     private final ConflictService conflictService = new ConflictService();
 
     @FXML
@@ -27,12 +27,35 @@ public class ConflictController {
         colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
     }
 
-
     @FXML
     public void handleDetectConflicts() {
         System.out.println("Détection en cours...");
         // On récupère la liste des conflits depuis le service
         ObservableList<ConflictInfo> conflicts = FXCollections.observableArrayList(conflictService.getRoomConflicts());
         conflictTable.setItems(conflicts);
+    }
+
+    // --- NOUVELLE MÉTHODE POUR L'UC6.3 ---
+    @FXML
+    public void handleResolveConflict() {
+        // 1. On récupère la ligne sélectionnée dans le tableau
+        ConflictInfo selected = conflictTable.getSelectionModel().getSelectedItem();
+
+        if (selected != null) {
+            System.out.println("Résolution du conflit pour le cours ID : " + selected.getId());
+
+            // 2. On change la salle (ID 2 pour le test, assure-toi qu'une salle ID 2 existe en base)
+            boolean success = conflictService.updateCoursSalle(selected.getId(), 2L);
+
+            if (success) {
+                System.out.println("Succès ! Re-vérification des conflits...");
+                // 3. REVALIDATION : On rafraîchit la liste pour montrer que le conflit a disparu
+                handleDetectConflicts();
+            } else {
+                System.err.println("Échec de la mise à jour en base de données.");
+            }
+        } else {
+            System.out.println("Veuillez sélectionner une ligne dans le tableau avant de cliquer.");
+        }
     }
 }
