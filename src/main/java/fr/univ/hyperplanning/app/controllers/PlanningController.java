@@ -4,6 +4,12 @@ import fr.univ.hyperplanning.dao.CoursDAO;
 import fr.univ.hyperplanning.model.pedagogie.Cours;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
+import fr.univ.hyperplanning.dao.SalleDAO;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import java.io.IOException;
 
 import java.time.format.TextStyle;
 import java.util.List;
@@ -12,6 +18,8 @@ import javafx.scene.control.ComboBox;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Locale;
+import fr.univ.hyperplanning.infra.config.JpaUtil;
+import fr.univ.hyperplanning.app.controllers.SallesDispoController;
 
 public class PlanningController {
 
@@ -54,6 +62,7 @@ public class PlanningController {
 
     private LocalDate currentDate;
 
+
     @FXML
     private ComboBox<String> filterType;
 
@@ -66,7 +75,14 @@ public class PlanningController {
         System.out.println("PlanningController chargé");
 
         currentDate = LocalDate.now();
-        datePicker.setValue(currentDate);
+
+        // Dans la méthode initialize() du PlanningController
+        if (datePicker != null) {
+            datePicker.setValue(LocalDate.now());
+        } else {
+            System.out.println("Note : datePicker est null, ignoré pour l'instant.");
+        }
+
 
         initialiserColonnes();
 
@@ -323,6 +339,28 @@ public class PlanningController {
 
         coursTable.getItems().setAll(cours);
     }
+
+    @FXML
+    private void ouvrirRechercheSalles() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/SallesDispoView.fxml"));
+            Parent root = loader.load();
+
+            SallesDispoController controller = loader.getController();
+
+            // Utilisation de JpaUtil au lieu de JpaConfig
+// On utilise JpaUtil.em() car c'est le nom défini dans ta classe JpaUtil
+            controller.setSalleDAO(new SalleDAO(JpaUtil.em()));
+
+            Stage stage = new Stage();
+            stage.setTitle("Recherche de Salles");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
 
