@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.layout.Region?>
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
@@ -31,6 +32,9 @@
             <ComboBox fx:id="filterType"/>
 
             <ComboBox fx:id="filterValue"/>
+
+            <Region HBox.hgrow="ALWAYS" />
+            <Button fx:id="btnGestionCours" text="Gestion des cours" onAction="#gestionCours"/>
 
         </HBox>
     </top>

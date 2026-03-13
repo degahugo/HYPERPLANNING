@@ -1,8 +1,10 @@
 package fr.univ.hyperplanning.app.controllers;
 
+import fr.univ.hyperplanning.app.controllers.Authentification.NavigationUtil;
 import fr.univ.hyperplanning.dao.CoursDAO;
 import fr.univ.hyperplanning.model.pedagogie.Cours;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import fr.univ.hyperplanning.dao.SalleDAO;
 import javafx.fxml.FXMLLoader;
@@ -59,6 +61,9 @@ public class PlanningController {
 
     @FXML
     private Label weekLabel;
+
+    @FXML
+    private Button btnGestionCours;
 
     private LocalDate currentDate;
 
@@ -361,8 +366,9 @@ public class PlanningController {
         }
     }
 
-
-
-
+    public void gestionCours() {
+        // Ajouter vérification de permission avant d'appuyer sur le bouton
+        NavigationUtil.naviguerVers("/fxml/gestionCours.fxml", btnGestionCours);
+    }
 }
 
