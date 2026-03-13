@@ -26,6 +26,14 @@ target/
 !**/src/test/**/target/
 !.mvn/wrapper/maven-wrapper.jar
 
+# Fichiers Hibernate générés (les [org.hibernate...] et autres)
+[*
+org.hibernate*
+org.apache*
+org.openjfx*
+[pre-*
+[validate*
+
 # Gradle
 build/
 .gradle/
@@ -71,3 +79,7 @@ Thumbs.db
 
 # === Others ===
 .idea
+
+
+# Fichiers système
+.DS_Store
