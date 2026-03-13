@@ -15,7 +15,7 @@ module fr.univ.hyperplanning {
     requires org.slf4j;
 
     // Ouvre les packages controllers au module javafx.fxml (pour @FXML)
-    opens fr.univ.hyperplanning.app to javafx.fxml;
+    opens fr.univ.hyperplanning.app.controllers to javafx.fxml;
     opens fr.univ.hyperplanning.app.controllers.Authentification to javafx.fxml;
 
     // Ouvre les packages model à Hibernate (pour JPA)
