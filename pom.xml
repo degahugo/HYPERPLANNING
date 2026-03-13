@@ -102,8 +102,8 @@
                     <options>
                         <option>-Dprism.order=sw</option>
                         <option>-Dprism.verbose=true</option>
-                        <option>-Djavafx.platform=gtk</option>
-                        <option>-Dglass.platform=gtk</option>
+                        <!--option>-Djavafx.platform=gtk</option>
+                        <option>-Dglass.platform=gtk</option-->
                         <option>-Djava.awt.headless=false</option>
                         <option>-Dprism.forceGPU=false</option>
                     </options>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.ComboBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="fr.univ.hyperplanning.app.controllers.PlanningController">
+
+    <top>
+        <HBox spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+
+            <Button text="← Semaine -" onAction="#onPrevWeek"/>
+            <Button text="Semaine +" onAction="#onNextWeek"/>
+            <Button text="Voir la semaine" onAction="#onWeekView"/>
+            <Label text="Date :" />
+            <DatePicker fx:id="datePicker" onAction="#onDateChanged"/>
+            <Label fx:id="weekLabel" text="Semaine ?" />
+            <Label text="Filtrer par :" />
+
+            <ComboBox fx:id="filterType"/>
+
+            <ComboBox fx:id="filterValue"/>
+
+        </HBox>
+    </top>
+
+    <center>
+        <TableView fx:id="coursTable" prefHeight="600.0">
+            <columns>
+                <TableColumn fx:id="colJour" text="Jour" prefWidth="120"/>
+                <TableColumn fx:id="colHeureDebut" text="Début" prefWidth="80"/>
+                <TableColumn fx:id="colHeureFin" text="Fin" prefWidth="80"/>
+                <TableColumn fx:id="colDuree" text="Durée" prefWidth="80"/>
+                <TableColumn fx:id="colModule" text="Module" prefWidth="200"/>
+                <TableColumn fx:id="colSalle" text="Salle" prefWidth="120"/>
+                <TableColumn fx:id="colEnseignant" text="Enseignant" prefWidth="200"/>
+            </columns>
+        </TableView>
+    </center>
+
+</BorderPane>

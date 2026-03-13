@@ -37,6 +37,8 @@ public class DataInit {
             tx.begin();
 
             Salle salle = findOrCreateSalle(em, "S101", "Bat A");
+            Salle salle2 = findOrCreateSalle(em, "S102", "Bat B");
+
 
 
             SyllabusSemestre syllabus = findOrCreateSyllabus(em, "2025-2026", 1, NiveauGroupe.L2);
@@ -44,6 +46,7 @@ public class DataInit {
 
             ModuleCours mAlgo   = findOrCreateModule(em, "INFO201", "Algorithmique",           30, 2.0f, 1, syllabus);
             ModuleCours mProjet = findOrCreateModule(em, "INFO202", "Méthodologie de projet",  20, 1.5f, 1, syllabus);
+            ModuleCours mBDD    = findOrCreateModule(em, "INFO203", "Base de données", 30, 2.0f, 1, syllabus);
 
 
             Groupe g = new Groupe();
@@ -62,6 +65,7 @@ public class DataInit {
 
             Administration admin = findOrCreateAdmin(em, "admin@univ.fr", today);
             Enseignant ens   = findOrCreateEnseignant(em, "ens1@univ.fr", today);
+            Enseignant ens2 = findOrCreateEnseignant(em, "ens2@univ.fr", today);
             Intervenant inter = findOrCreateIntervenant(em, "int1@univ.fr", today);
             Etudiant etu   = findOrCreateEtudiant(em, "etu1@univ.fr", today);
 
@@ -98,6 +102,48 @@ public class DataInit {
             inter.getCoursInterventions().add(cours);
 
             em.persist(cours);
+
+            LocalDate coursDate2 = LocalDate.now().plusDays(2);
+
+            Cours cours2 = new Cours();
+            cours2.setIntitule("Algorithmique - CM");
+            cours2.setTypeCours(TypeCours.CM);
+            cours2.setDateDebut(Date.valueOf(coursDate2));
+            cours2.setDateFin(Date.valueOf(coursDate2));
+            cours2.setDuree(90);
+            cours2.setEstCC(false);
+            cours2.setEstAnnule(false);
+            cours2.setAnnotation("Cours magistral");
+            cours2.setSalle(salle2);
+            cours2.setModule(mAlgo);
+
+            cours2.getGroupes().add(g);
+            g.getCours().add(cours2);
+
+            ens.getCoursEnseignes().add(cours2);
+
+            em.persist(cours2);
+
+            LocalDate coursDate3 = LocalDate.now().plusDays(3);
+
+            Cours cours3 = new Cours();
+            cours3.setIntitule("Projet - TD");
+            cours3.setTypeCours(TypeCours.TD);
+            cours3.setDateDebut(Date.valueOf(coursDate3));
+            cours3.setDateFin(Date.valueOf(coursDate3));
+            cours3.setDuree(120);
+            cours3.setEstCC(false);
+            cours3.setEstAnnule(false);
+            cours3.setAnnotation("Projet tutoré");
+            cours3.setSalle(salle2);
+            cours3.setModule(mProjet);
+
+            cours3.getGroupes().add(g);
+            g.getCours().add(cours3);
+
+            ens.getCoursEnseignes().add(cours3);
+
+            em.persist(cours3);
 
 
             Absence absence = new Absence();
