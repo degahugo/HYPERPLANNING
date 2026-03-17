@@ -15,6 +15,11 @@
                 <Button text="🔍 Salles Disponibles"
                         onAction="#ouvrirRechercheSalles"
                         style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-cursor: hand;"/>
+
+                <Button fx:id="btnDeconnexion"
+                        text="🚪 Se déconnecter"
+                        onAction="#seDeconnecter"
+                        style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand;"/>
             </children>
         </HBox>
     </top>
