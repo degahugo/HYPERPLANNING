@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="fr.univ.hyperplanning.app.controllers.Authentification.AccueilController"
+            style="-fx-background-color: #7EADA8;">
+
+    <!-- CENTRE -->
+    <center>
+        <VBox alignment="CENTER" spacing="24"
+              style="-fx-background-color: #EAF4F2; -fx-background-radius: 6; -fx-padding: 48;"
+              maxWidth="420" maxHeight="320">
+
+            <Label text="HYPERPLANNING"
+                   style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;"/>
+
+            <Button fx:id="btnConnexion" text="Connexion"
+                    onAction="#ouvrirConnexion"
+                    maxWidth="Infinity"
+                    style="-fx-background-color: white; -fx-border-color: #cccccc; -fx-border-width: 1;
+                           -fx-font-size: 16px; -fx-cursor: hand; -fx-padding: 14 20;"/>
+
+            <Button fx:id="btnInscription" text="Inscription"
+                    onAction="#ouvrirInscription"
+                    maxWidth="Infinity"
+                    style="-fx-background-color: white; -fx-border-color: #cccccc; -fx-border-width: 1;
+                           -fx-font-size: 16px; -fx-cursor: hand; -fx-padding: 14 20;"/>
+        </VBox>
+    </center>
+
+    <!-- PIED DE PAGE -->
+    <bottom>
+        <HBox style="-fx-background-color: white; -fx-border-color: #dddddd; -fx-border-width: 1 0 0 0;"
+              alignment="CENTER_LEFT" spacing="0">
+            <padding><Insets top="12" right="24" bottom="12" left="24"/></padding>
+
+            <Button text="Mentions légales" onAction="#ouvrirMentions"
+                    style="-fx-background-color: transparent; -fx-font-size: 12px; -fx-cursor: hand;"/>
+            <Label text="" HBox.hgrow="ALWAYS"/>
+            <Button text="Guide d'utilisation" onAction="#ouvrirGuide"
+                    style="-fx-background-color: transparent; -fx-font-size: 12px; -fx-cursor: hand;"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="fr.univ.hyperplanning.app.controllers.Authentification.InscriptionController"
+            style="-fx-background-color: #7EADA8;">
+
+    <!-- BOUTON SE CONNECTER (haut droite) -->
+    <top>
+        <HBox alignment="CENTER_RIGHT">
+            <padding><Insets top="12" right="12" bottom="0" left="0"/></padding>
+            <Button text="Se connecter" onAction="#ouvrirConnexion"
+                    style="-fx-background-color: white; -fx-border-color: #cccccc; -fx-border-width: 1;
+                           -fx-font-size: 13px; -fx-cursor: hand; -fx-padding: 8 16;"/>
+        </HBox>
+    </top>
+
+    <!-- FORMULAIRE INSCRIPTION -->
+    <center>
+        <VBox alignment="TOP_CENTER" spacing="16"
+              style="-fx-background-color: #EAF4F2; -fx-background-radius: 6; -fx-padding: 40;"
+              maxWidth="480">
+
+            <Label text="Inscription"
+                   style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;"/>
+
+            <!-- Nom / Prénom -->
+            <HBox spacing="16">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Nom" style="-fx-font-size: 12px; -fx-text-fill: #555;"/>
+                    <TextField fx:id="fieldNom" promptText="Nom"
+                               style="-fx-background-color: #F0D9C8; -fx-border-width: 0;
+                                      -fx-font-size: 13px; -fx-padding: 10;"/>
+                </VBox>
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Prénom" style="-fx-font-size: 12px; -fx-text-fill: #555;"/>
+                    <TextField fx:id="fieldPrenom" promptText="Prénom"
+                               style="-fx-background-color: #F0D9C8; -fx-border-width: 0;
+                                      -fx-font-size: 13px; -fx-padding: 10;"/>
+                </VBox>
+            </HBox>
+
+            <!-- Adresse mail -->
+            <VBox spacing="4">
+                <Label text="Adresse mail" style="-fx-font-size: 12px; -fx-text-fill: #555;"/>
+                <TextField fx:id="fieldEmail" promptText="Adresse mail"
+                           style="-fx-background-color: #F0D9C8; -fx-border-width: 0;
+                                  -fx-font-size: 13px; -fx-padding: 10;"/>
+            </VBox>
+
+            <!-- Mot de passe -->
+            <VBox spacing="4">
+                <Label text="Mot de passe" style="-fx-font-size: 12px; -fx-text-fill: #555;"/>
+                <PasswordField fx:id="fieldPassword" promptText="Mot de passe"
+                               style="-fx-background-color: #F0D9C8; -fx-border-width: 0;
+                                      -fx-font-size: 13px; -fx-padding: 10;"/>
+            </VBox>
+
+            <!-- Confirmer mot de passe -->
+            <VBox spacing="4">
+                <Label text="Confirmer le mot de passe" style="-fx-font-size: 12px; -fx-text-fill: #555;"/>
+                <PasswordField fx:id="fieldConfirmPassword" promptText="Confirmer mot de passe"
+                               style="-fx-background-color: #F0D9C8; -fx-border-width: 0;
+                                      -fx-font-size: 13px; -fx-padding: 10;"/>
+            </VBox>
+
+            <!-- Message d'erreur -->
+            <Label fx:id="labelErreur" text=""
+                   style="-fx-text-fill: #c0392b; -fx-font-size: 12px;"/>
+
+            <!-- Bouton valider -->
+            <HBox alignment="CENTER">
+                <Button fx:id="btnValider" text="Valider" onAction="#validerInscription"
+                        style="-fx-background-color: white; -fx-border-color: #cccccc; -fx-border-width: 1;
+                               -fx-font-size: 14px; -fx-cursor: hand; -fx-padding: 10 28;"/>
+            </HBox>
+
+        </VBox>
+    </center>
+
+    <!-- PIED DE PAGE -->
+    <bottom>
+        <HBox style="-fx-background-color: white; -fx-border-color: #dddddd; -fx-border-width: 1 0 0 0;"
+              alignment="CENTER_LEFT" spacing="0">
+            <padding><Insets top="12" right="24" bottom="12" left="24"/></padding>
+            <Button text="Mentions légales" onAction="#ouvrirMentions"
+                    style="-fx-background-color: transparent; -fx-font-size: 12px; -fx-cursor: hand;"/>
+            <Label text="" HBox.hgrow="ALWAYS"/>
+            <Button text="Guide d'utilisation" onAction="#ouvrirGuide"
+                    style="-fx-background-color: transparent; -fx-font-size: 12px; -fx-cursor: hand;"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>
