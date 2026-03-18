@@ -36,7 +36,9 @@ public class CoursDAO {
         EntityManager em = JpaUtil.em();
 
         List<Cours> cours = em.createQuery(
-                        "SELECT c FROM Cours c WHERE c.dateDebut BETWEEN :start AND :end",
+                        "SELECT DISTINCT c FROM Cours c " +
+                                "LEFT JOIN FETCH c.groupes " +
+                                "WHERE c.dateDebut BETWEEN :start AND :end",
                         Cours.class
                 )
                 .setParameter("start", java.sql.Date.valueOf(start))

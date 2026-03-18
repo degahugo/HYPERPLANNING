@@ -1,5 +1,5 @@
 package fr.univ.hyperplanning.app.controllers.Authentification;
-
+import fr.univ.hyperplanning.app.SessionUtilisateur;
 import fr.univ.hyperplanning.infra.config.AuthService;
 import fr.univ.hyperplanning.model.utilisateurs.Utilisateur;
 import javafx.fxml.FXML;
@@ -36,6 +36,8 @@ public class ConnexionController {
             labelErreur.setText("Identifiants incorrects. Vérifiez votre nom d'utilisateur et mot de passe.");
             return;
         }
+
+        SessionUtilisateur.set(utilisateur);
 
         // Connexion réussie → redirection vers le tableau de bord principal
         NavigationUtil.naviguerVers("/fxml/main.fxml", btnConnexion);

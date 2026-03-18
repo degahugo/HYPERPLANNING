@@ -20,7 +20,13 @@
     </top>
 
     <center>
-        <fx:include source="planning.fxml"/>
+        <AnchorPane fx:id="contentArea"/>
     </center>
+
+    <left>
+        <VBox fx:id="menuBox" spacing="10" style="-fx-background-color: #ecf0f1; -fx-padding: 15;">
+        </VBox>
+    </left>
+
 
 </BorderPane>
