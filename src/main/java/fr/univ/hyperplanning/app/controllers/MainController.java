@@ -9,7 +9,22 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
 
+//Ajout bouton pour se deconnecter
+import fr.univ.hyperplanning.app.controllers.Authentification.NavigationUtil;
+import fr.univ.hyperplanning.infra.config.SessionManager;
+import javafx.scene.control.Button;
+
+
 public class MainController {
+
+    @FXML
+    private Button btnDeconnexion;
+
+    @FXML
+    private void seDeconnecter() {
+        SessionManager.fermer();
+        NavigationUtil.naviguerVers("/fxml/accueil.fxml", btnDeconnexion);
+    }
 
     @FXML
     private void ouvrirRechercheSalles() {
