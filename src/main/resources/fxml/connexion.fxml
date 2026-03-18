@@ -8,6 +8,9 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 
 <BorderPane xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
@@ -44,9 +47,28 @@
             <!-- Mot de passe -->
             <VBox spacing="4">
                 <Label text="Mot de passe" style="-fx-font-size: 12px; -fx-text-fill: #555;"/>
+                <StackPane>
                 <PasswordField fx:id="fieldPassword" promptText="Mot de passe"
                                style="-fx-background-color: #F0D9C8; -fx-border-width: 0;
                                       -fx-font-size: 14px; -fx-padding: 12;"/>
+                    <TextField fx:id="champMotDePasseVisible" promptText="Mot de passe"
+                               visible="false" managed="false"
+                               style="-fx-background-color: #F0D9C8; -fx-border-width: 0;
+                                      -fx-font-size: 14px; -fx-padding: 12;"/>
+                    <Button fx:id="btnVisibiliteMotDePasse"
+                            onAction="#basculerVisibiliteMotDePasse"
+                            style="-fx-background-color: transparent; -fx-cursor: hand; -fx-padding:0;"
+                            StackPane.alignment="CENTER_RIGHT">
+                        <StackPane.margin><Insets right="10"/></StackPane.margin>
+                        <graphic>
+                            <ImageView fx:id="iconeVisibilite" fitWidth="20" fitHeight="20" preserveRatio="true">
+                                <image>
+                                    <Image url="@../images/eye_close.png"/>
+                                </image>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                </StackPane>
             </VBox>
 
             <!-- Mot de passe oublié -->

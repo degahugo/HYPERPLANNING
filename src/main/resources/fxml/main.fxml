@@ -7,11 +7,22 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="fr.univ.hyperplanning.app.controllers.MainController">
 
+<<<<<<< HEAD
     <top>
         <HBox style="-fx-background-color: #2c3e50; -fx-padding: 10;">
             <children>
                 <Label text="Hyperplanning"
                        style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"/>
+=======
+                <Button text="🔍 Salles Disponibles"
+                        onAction="#ouvrirRechercheSalles"
+                        style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-cursor: hand;"/>
+
+                <Button fx:id="btnDeconnexion"
+                        text="🚪 Se déconnecter"
+                        onAction="#seDeconnecter"
+                        style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand;"/>
+>>>>>>> cd5d4b5828b17cc62ddef2d4f737e7b3964f210d
             </children>
         </HBox>
     </top>
