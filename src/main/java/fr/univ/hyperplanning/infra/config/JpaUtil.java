@@ -7,18 +7,20 @@ import jakarta.persistence.Persistence;
 
 public final class JpaUtil {
 
-    private static final EntityManagerFactory emf =
-            Persistence.createEntityManagerFactory("hyperplanningPU");
+    private static EntityManagerFactory emf;
 
     private JpaUtil() {}
 
-    public static EntityManager em() {
-
+    public static synchronized EntityManager em() {
+        if (emf == null) {
+            emf = Persistence.createEntityManagerFactory("hyperplanningPU");
+        }
         return emf.createEntityManager();
     }
 
-    public static void close() {
-
-        emf.close();
+    public static synchronized void close() {
+        if (emf != null && emf.isOpen()) {
+            emf.close();
+        }
     }
 }
