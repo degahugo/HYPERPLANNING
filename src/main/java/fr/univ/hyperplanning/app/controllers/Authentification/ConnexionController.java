@@ -49,7 +49,7 @@ public class ConnexionController {
     private String recupererMotDePasse() {
         return estMotDePasseVisible ? champMotDePasseVisible.getText() : fieldPassword.getText();
     }
-
+    
 
     @FXML
     private void seConnecter() {
@@ -75,6 +75,10 @@ public class ConnexionController {
         SessionUtilisateur.set(utilisateur);
 
         // Connexion réussie → redirection vers le tableau de bord principal
+
+        //Vérifier que l'on affiche bien le role
+        System.out.println("Connecté : id=" + utilisateur.getId() + " | role=" + utilisateur.getRole());
+        // Connexion réussie -> redirection vers le tableau de bord principal
         NavigationUtil.naviguerVers("/fxml/main.fxml", btnConnexion);
     }
     
