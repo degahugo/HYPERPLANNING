@@ -43,25 +43,28 @@ public class ConflictController {
 
     // --- NOUVELLE MÉTHODE POUR L'UC6.3 ---
     @FXML
-    public void handleResolveConflict() {
-        // 1. On récupère la ligne sélectionnée dans le tableau
+    private void handleResolveConflict() {
+        // 1. On récupère le conflit sélectionné dans le tableau
         ConflictInfo selected = conflictTable.getSelectionModel().getSelectedItem();
 
         if (selected != null) {
-            System.out.println("Résolution du conflit pour le cours ID : " + selected.getId());
+            // --- APPEL DE LA TÂCHE 5 ---
+            // On imagine qu'on a récupéré l'ID de la nouvelle salle (ex: 10L)
+            boolean isModified = conflictService.resolveConflict(selected.getId(), 10L, null, null);
 
-            // 2. On change la salle (ID 2 pour le test, assure-toi qu'une salle ID 2 existe en base)
-            boolean success = conflictService.updateCoursSalle(selected.getId(), 2L);
+            if (isModified) {
+                // --- DÉBUT DE LA TÂCHE 6 ---
 
-            if (success) {
-                System.out.println("Succès ! Re-vérification des conflits...");
-                // 3. REVALIDATION : On rafraîchit la liste pour montrer que le conflit a disparu
+                // Détail technique : Relancer le service de détection
+                // On appelle la méthode qui va interroger à nouveau la base de données
                 handleDetectConflicts();
-            } else {
-                System.err.println("Échec de la mise à jour en base de données.");
+
+                // Résultat attendu :
+                // Si la nouvelle salle n'est plus en conflit, handleDetectConflicts()
+                // va mettre à jour la liste observable et le conflit DISPARAÎTRA du tableau.
+
+                System.out.println("Vérification terminée : Le conflit a été recalculé.");
             }
-        } else {
-            System.out.println("Veuillez sélectionner une ligne dans le tableau avant de cliquer.");
         }
     }
 }

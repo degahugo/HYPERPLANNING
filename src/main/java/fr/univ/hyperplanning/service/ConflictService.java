@@ -4,10 +4,11 @@ import fr.univ.hyperplanning.model.ConflictInfo;
 import fr.univ.hyperplanning.model.pedagogie.Cours;
 import fr.univ.hyperplanning.model.pedagogie.Groupe;
 import fr.univ.hyperplanning.model.pedagogie.Salle;
-import fr.univ.hyperplanning.model.utilisateurs.Enseignant;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+
+import java.sql.Date; // Utilisation du type SQL pour matcher l'entité Cours
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class ConflictService {
         List<ConflictInfo> conflicts = new ArrayList<>();
 
         try {
+            // TÂCHE 4 : Récupération depuis la base
             List<Cours> tousLesCours = em.createQuery("SELECT c FROM Cours c", Cours.class).getResultList();
 
             for (int i = 0; i < tousLesCours.size(); i++) {
@@ -49,7 +51,7 @@ public class ConflictService {
                                     c2.getIntitule(),
                                     nomSalle,
                                     libelleGroupe,
-                                    "Enseignant X" // À remplacer par c1.getEnseignant().getNom() si dispo
+                                    "Enseignant X"
                             ));
                         }
 
@@ -75,11 +77,65 @@ public class ConflictService {
     }
 
     /**
+     * RÉPOND À LA TÂCHE 4 : Récupérer uniquement les cours d'une période précise
+     */
+    public List<Cours> getCoursByPeriode(Date debut, Date fin) {
+        try {
+            return em.createQuery(
+                            "SELECT c FROM Cours c WHERE c.dateDebut <= :fin AND c.dateFin >= :debut",
+                            Cours.class)
+                    .setParameter("debut", debut)
+                    .setParameter("fin", fin)
+                    .getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * RÉPOND À LA TÂCHE 5 : Résolution du conflit (Regroupé)
+     */
+    public boolean resolveConflict(Long coursId, Long nouvelleSalleId, Date nvDebut, Date nvFin) {
+        try {
+            em.getTransaction().begin();
+
+            Cours cours = em.find(Cours.class, coursId);
+
+            if (cours != null) {
+                // Modification de la Salle
+                if (nouvelleSalleId != null) {
+                    Salle salle = em.find(Salle.class, nouvelleSalleId);
+                    if (salle != null) {
+                        cours.setSalle(salle);
+                    }
+                }
+
+                // Modification de l'Horaire
+                if (nvDebut != null && nvFin != null) {
+                    cours.setDateDebut(nvDebut);
+                    cours.setDateFin(nvFin);
+                }
+
+                em.merge(cours);
+                em.getTransaction().commit();
+                return true;
+            }
+
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            return false;
+
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
      * Détail technique : Logique de comparaison temporelle
      */
     private boolean isOverlapping(Cours c1, Cours c2) {
-        // Un conflit existe si le cours 1 ne finit pas avant le début du 2
-        // ET que le cours 1 ne commence pas après la fin du 2.
         return !c1.getDateDebut().after(c2.getDateFin()) && !c1.getDateFin().before(c2.getDateDebut());
     }
 
@@ -91,29 +147,6 @@ public class ConflictService {
             if (c2.getGroupes().contains(g1)) {
                 return true;
             }
-        }
-        return false;
-    }
-
-    /**
-     * MÉTHODE DE RÉSOLUTION (Tâche 5)
-     */
-    public boolean updateCoursSalle(Long coursId, Long nouvelleSalleId) {
-        try {
-            em.getTransaction().begin();
-            Cours cours = em.find(Cours.class, coursId);
-            Salle salle = em.find(Salle.class, nouvelleSalleId);
-
-            if (cours != null && salle != null) {
-                cours.setSalle(salle);
-                em.merge(cours);
-                em.getTransaction().commit();
-                return true;
-            }
-            em.getTransaction().rollback();
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()) em.getTransaction().rollback();
-            e.printStackTrace();
         }
         return false;
     }

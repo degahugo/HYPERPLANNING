@@ -71,16 +71,10 @@ public class ConnexionController {
             labelErreur.setText("Identifiants incorrects. Vérifiez votre nom d'utilisateur et mot de passe.");
             return;
         }
-<<<<<<< HEAD
+
 
         SessionUtilisateur.set(utilisateur);
-
-        // Connexion réussie → redirection vers le tableau de bord principal
-=======
-        //Vérifier que l'on affiche bien le role
         System.out.println("Connecté : id=" + utilisateur.getId() + " | role=" + utilisateur.getRole());
-        // Connexion réussie -> redirection vers le tableau de bord principal
->>>>>>> cd5d4b5828b17cc62ddef2d4f737e7b3964f210d
         NavigationUtil.naviguerVers("/fxml/main.fxml", btnConnexion);
     }
     
