@@ -7,11 +7,25 @@ import fr.univ.hyperplanning.model.utilisateurs.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
+import net.datafaker.Faker;
+
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Random;
 
 public class DataInit {
+
+    private static final Faker   FAKER = new Faker(Locale.FRENCH);
+    private static final Random  RNG   = new Random();
+
+    /*
+    seed() données de référence fixes, appelé depuis init() de MainApp
+    Rapide, peut être bloquant mais c'est acceptable avent l'affichage
+    */
 
     public static void seed() {
 
@@ -234,6 +248,218 @@ public class DataInit {
             em.close();
         }
     }
+
+    /*
+    bulk() : insertion dans les tables pour plus de réalisme via la librairie Faker
+    appelé depuis un thread daemon dans start() de MainApp start() ne doit appelé uniquement que le FXML
+    sous peine de faire planter l'affichage. bulk() n'est jamais appelé depuis seed();
+     */
+
+    public static void bulk(int scale) {
+        Date today = Date.valueOf(LocalDate.now());
+        EntityManager em = JpaUtil.em();
+        var tx = em.getTransaction();
+
+        final int BATCH_SIZE = 50;
+        int count = 0;
+
+        try {
+            tx.begin();
+
+            // 1. Salles
+            List<Salle> salles = new ArrayList<>();
+            for (int i = 1; i <= Math.max(10, scale / 20); i++) {
+                Salle s = ModelFactory.salle(FAKER, i);
+                em.persist(s);
+                salles.add(s);
+                if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
+            }
+
+            // 2. Syllabus
+            List<SyllabusSemestre> syllabusList = new ArrayList<>();
+            for (NiveauGroupe niv : NiveauGroupe.values()) {
+                for (int sem = 1; sem <= 2; sem++) {
+                    SyllabusSemestre sy = ModelFactory.syllabus(niv, sem);
+                    em.persist(sy);
+                    syllabusList.add(sy);
+                    if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
+                }
+            }
+
+            // 3. Modules
+            List<ModuleCours> modules = new ArrayList<>();
+            int modIdx = 1;
+            for (SyllabusSemestre sy : syllabusList) {
+                sy = em.merge(sy);
+                for (int i = 0; i < Math.max(5, scale / 10); i++) {
+                    ModuleCours m = ModelFactory.module(FAKER, sy, modIdx++);
+                    em.persist(m);
+                    modules.add(m);
+                    if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
+                }
+            }
+
+            // 4. Groupes
+            List<Groupe> groupes = new ArrayList<>();
+            int grpIdx = 1;
+            for (int i = 0; i < Math.max(10, scale / 30); i++) {
+                SyllabusSemestre sy = em.merge(pick(syllabusList));
+                Groupe grp = ModelFactory.groupe(sy, sy.getNiveau(), pick(TypeGroupe.values()), grpIdx++);
+                em.persist(grp);
+                groupes.add(grp);
+                if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
+            }
+
+            // 5. Enseignants
+            List<Enseignant> enseignants = new ArrayList<>();
+            for (int i = 1; i <= Math.max(5, scale / 10); i++) {
+                Enseignant e = ModelFactory.enseignant(FAKER, i, today);
+                em.persist(e);
+                em.persist(ModelFactory.donneePersonnelle(FAKER, e));
+                enseignants.add(e);
+                if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
+            }
+
+            // 6. Intervenants
+            for (int i = 1; i <= Math.max(3, scale / 20); i++) {
+                Intervenant inter = ModelFactory.intervenant(FAKER, i, today);
+                em.persist(inter);
+                em.persist(ModelFactory.donneePersonnelle(FAKER, inter));
+                if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
+            }
+
+            // 7. Administrations
+            for (int i = 1; i <= Math.max(2, scale / 50); i++) {
+                Administration a = ModelFactory.administration(FAKER, i, today);
+                em.persist(a);
+                em.persist(ModelFactory.donneePersonnelle(FAKER, a));
+                if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
+            }
+
+            // 8. Étudiants
+            List<Etudiant> etudiants = new ArrayList<>();
+            for (int i = 1; i <= scale; i++) {
+                Etudiant etu = ModelFactory.etudiant(FAKER, i, today);
+                em.persist(etu);
+                em.persist(ModelFactory.donneePersonnelle(FAKER, etu));
+                etudiants.add(etu);
+                Groupe grp = em.merge(pick(groupes));
+                etu.getGroupes().add(grp);
+                grp.getEtudiants().add(etu);
+                grp.setEffectifActuel(grp.getEffectifActuel() + 1);
+                if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
+            }
+
+            // 9. Cours
+            List<Cours> coursList = new ArrayList<>();
+            int nbCours = Math.max(20, scale / 2);
+            for (int i = 0; i < nbCours; i++) {
+                ModuleCours mod = em.merge(pick(modules));
+                Salle       sal = em.merge(pick(salles));
+                Cours c = ModelFactory.cours(FAKER, mod, sal, pick(TypeCours.values()));
+                Groupe grp = em.merge(pick(groupes));
+                c.getGroupes().add(grp);
+                grp.getCours().add(c);
+                em.merge(pick(enseignants)).getCoursEnseignes().add(c);
+                em.persist(c);
+                coursList.add(c);
+                if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
+            }
+
+            // 10. Absences
+            int nbAbsences = Math.max(10, scale / 3);
+            for (int i = 0; i < nbAbsences; i++) {
+                Etudiant etu = em.merge(pick(etudiants));
+                Cours    co  = em.merge(pick(coursList));
+                Absence  a   = ModelFactory.absence(FAKER, co, etu);
+                em.persist(a);
+                etu.getAbsences().add(a);
+                etu.getAbsencesDeclarees().add(a);
+                if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
+            }
+            /*
+            // 11. ServiceInformatique
+            List<ServiceInformatique> siList = new ArrayList<>();
+            for (int i = 1; i <= Math.max(2, scale / 100); i++) {
+                ServiceInformatique si = ModelFactory.serviceInformatique(FAKER, i, today);
+                em.persist(si);
+                em.persist(ModelFactory.donneePersonnelle(FAKER, si));
+                siList.add(si);
+                if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
+            }
+
+            // 12. Notifications
+            int nbNotifs = Math.max(10, scale / 4);
+            for (int i = 0; i < nbNotifs; i++) {
+                Utilisateur dest = em.merge(pick(etudiants));   // destinataire = étudiant aléatoire
+                Cours       co  = em.merge(pick(coursList));
+                Notification n  = ModelFactory.notification(FAKER, dest, co, today);
+                em.persist(n);
+                dest.getNotifications().add(n);
+                if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
+            }
+
+            // 13. Historiques
+            // On regroupe admins + enseignants comme auteurs possibles
+            List<Utilisateur> auteurs = new ArrayList<>();
+            auteurs.addAll(enseignants);
+            // On récupère quelques admins déjà persistés
+            List<Administration> adminsBulk = em.createQuery(
+                            "SELECT a FROM Administration a", Administration.class)
+                    .setMaxResults(10).getResultList();
+            auteurs.addAll(adminsBulk);
+
+            int nbHist = Math.max(10, scale / 5);
+            for (int i = 0; i < nbHist; i++) {
+                Utilisateur auteur = em.merge(pick(auteurs));
+                Cours       co     = em.merge(pick(coursList));
+                Salle       sal    = em.merge(pick(salles));
+                Historique   h     = ModelFactory.historique(FAKER, auteur, co, sal, today);
+                em.persist(h);
+                auteur.getHistoriques().add(h);
+                if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
+            }
+
+            // 14. Conflits
+            int nbConflits = Math.max(5, scale / 20);
+            for (int i = 0; i < nbConflits; i++) {
+                Cours co  = em.merge(pick(coursList));
+                Salle sal = em.merge(pick(salles));
+                Conflit cf = ModelFactory.conflit(FAKER, co, sal, today);
+                em.persist(cf);
+                co.getConflits().add(cf);
+                if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
+            }
+
+            // 15. Demandes de modification
+            int nbDemandes = Math.max(5, scale / 15);
+            for (int i = 0; i < nbDemandes; i++) {
+                Enseignant ens = em.merge(pick(enseignants));
+                Cours      co  = em.merge(pick(coursList));
+                DemandeModification dm = ModelFactory.demandeModification(FAKER, ens, co, today);
+                em.persist(dm);
+                ens.getDemandes().add(dm);
+                if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
+            }
+            */
+            // modifier le printf afin qu'il soit comme ceci : System.out.printf("[DataInit] ✔ Bulk : %d étudiants | %d cours | %d absences | "
+            //                            + "%d notifs | %d historiques | %d conflits | %d demandes insérés%n",
+            //                    scale, nbCours, nbAbsences, nbNotifs, nbHist, nbConflits, nbDemandes);
+            tx.commit();
+            System.out.printf("[DataInit] ✔ Bulk : %d étudiants | %d cours | %d absences insérés%n",
+                    scale, nbCours, nbAbsences);
+
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    private static <T> T pick(List<T> list)  { return list.get(RNG.nextInt(list.size())); }
+    private static <T> T pick(T[] array)     { return array[RNG.nextInt(array.length)]; }
+
 
     //find : evite les doublons à chaque execution
 
