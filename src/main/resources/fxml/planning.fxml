@@ -28,6 +28,8 @@
             <Label fx:id="weekLabel" text="Semaine ?" />
             <Label text="Filtrer par :" />
 
+            <Button text="Tester Affectation Salle" onAction="#testerAffectationSalle"/>
+
             <ComboBox fx:id="filterType"/>
 
             <ComboBox fx:id="filterValue"/>

@@ -6,9 +6,30 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="$CONTROLLER_NAME$"
-            prefHeight="400.0" prefWidth="600.0" >
+<?xml version="1.0" encoding="UTF-8"?>
 
-</AnchorPane>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="10" alignment="CENTER"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="fr.univ.hyperplanning.app.controllers.SelectionEnseignantController">
+
+    <Label text="Sélectionner un ou plusieurs enseignants" />
+
+    <TableView fx:id="tableEnseignants" prefHeight="300" prefWidth="500">
+        <columns>
+
+            <TableColumn fx:id="colNom" text="Nom" prefWidth="150"/>
+            <TableColumn fx:id="colPrenom" text="Prénom" prefWidth="150"/>
+            <TableColumn fx:id="colSpecialite" text="Spécialité" prefWidth="200"/>
+
+        </columns>
+    </TableView>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Affecter au cours" onAction="#affecterEnseignant"/>
+        <Button text="Annuler"/>
+    </HBox>
+
+</VBox>

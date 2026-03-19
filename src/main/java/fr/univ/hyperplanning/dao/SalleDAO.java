@@ -4,6 +4,8 @@ import fr.univ.hyperplanning.model.pedagogie.Salle;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
+import fr.univ.hyperplanning.infra.config.JpaUtil;
+
 
 public class SalleDAO {
     private final EntityManager em;
@@ -22,10 +24,5 @@ public class SalleDAO {
                 "SELECT c.salle.id FROM Cours c " +
                 "WHERE c.dateDebut < :fin AND c.dateFin > :debut)";
 
-        return em.createQuery(hql, Salle.class)
-                // On convertit LocalDateTime en Timestamp (qui est compatible avec Date)
-                .setParameter("debut", java.sql.Timestamp.valueOf(debut))
-                .setParameter("fin", java.sql.Timestamp.valueOf(fin))
-                .getResultList();
+        return em.createQuery(hql, Salle.class);
     }
-}
