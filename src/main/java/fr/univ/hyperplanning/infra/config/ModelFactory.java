@@ -170,8 +170,8 @@ public final class ModelFactory {
         Cours c = new Cours();
         c.setIntitule(module.getNom() + " – " + type.name());
         c.setTypeCours(type);
-        c.setDateDebut(Date.valueOf(date));
-        c.setDateFin(Date.valueOf(date));
+        c.setDateDebut(date.atTime(8, 0));
+        c.setDateFin(date.atTime(type == TypeCours.CM ? 9 : 10, 30));
         c.setDuree(type == TypeCours.CM ? 90 : 120);
         c.setEstCC(type == TypeCours.CC);
         c.setEstAnnule(false);
@@ -185,7 +185,7 @@ public final class ModelFactory {
 
     public static Absence absence(Faker f, Cours cours, Etudiant etudiant) {
         Absence a = new Absence();
-        a.setDateAbsence(cours.getDateDebut());
+        a.setDateAbsence(Date.valueOf(cours.getDateDebut().toLocalDate()));
         a.setMotif(f.options().option("Maladie", "Raison familiale", "Transport", "Problème personnel"));
         a.setJustificatif(null);
         a.setStatut(randomEnum(StatutAbsence.class, f));
