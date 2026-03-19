@@ -71,6 +71,13 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- Faker - génération de données réalistes -->
+        <dependency>
+            <groupId>net.datafaker</groupId>
+            <artifactId>datafaker</artifactId>
+            <version>2.4.0</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -100,6 +107,7 @@
                 <configuration>
                     <mainClass>fr.univ.hyperplanning.app.MainApp</mainClass>
                     <options>
+                        <option>-Xmx512m</option>
                         <option>-Dprism.order=sw</option>
                         <option>-Dprism.verbose=true</option>
                         <!--option>-Djavafx.platform=gtk</option>
