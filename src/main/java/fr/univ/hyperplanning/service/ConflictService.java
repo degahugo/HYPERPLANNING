@@ -36,7 +36,7 @@ public class ConflictService {
                     if (c1.getSalle() != null && c1.getSalle().equals(c2.getSalle())) {
 
                         // 2. Chevauchement horaire (Date identique ou qui se croise)
-                        if (!c1.getDateDebut().after(c2.getDateFin()) && !c1.getDateFin().before(c2.getDateDebut())) {
+                        if (!c1.getDateDebut().isAfter(c2.getDateFin()) && !c1.getDateFin().isBefore(c2.getDateDebut())) {
 
                             // On récupère le libellé du groupe s'il existe
                             String infoGroupe = "Sans groupe";

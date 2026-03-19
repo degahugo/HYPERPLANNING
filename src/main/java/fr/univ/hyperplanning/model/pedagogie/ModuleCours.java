@@ -1,5 +1,5 @@
 package fr.univ.hyperplanning.model.pedagogie;
-
+import fr.univ.hyperplanning.model.utilisateurs.Enseignant;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,4 +35,10 @@ public class ModuleCours {
 
     @OneToMany(mappedBy = "module")
     private Set<Cours> cours = new HashSet<>();
+
+    // Dans ModuleCours.java
+    @ManyToOne
+    @JoinColumn(name = "enseignant_id") // Clé étrangère vers la table des enseignants
+    private Enseignant responsable;
+
 }

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<ScrollPane fitToWidth="true" style="-fx-background-color: #F9FAFB; -fx-background: #F9FAFB;"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="fr.univ.hyperplanning.app.controllers.DashboardEtudiantController">
+    <content>
+        <VBox spacing="30" style="-fx-padding: 40;">
+            <VBox spacing="8">
+                <Label text="Tableau de bord" style="-fx-font-size: 28; -fx-font-weight: 800; -fx-text-fill: #111827;"/>
+                <Label text="Bienvenue! Voici votre vue d'ensemble académique." style="-fx-font-size: 14; -fx-text-fill: #6B7280;"/>
+            </VBox>
+
+            <HBox spacing="20">
+                <VBox prefWidth="250" spacing="10" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 16; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 8, 0, 0, 2);">
+                    <Label text="Cours ce semestre" style="-fx-text-fill: #6B7280; -fx-font-size: 13;"/>
+                    <Label fx:id="totalCoursLabel" text="0" style="-fx-font-size: 24; -fx-font-weight: 800;"/>
+                    <Label text="30 crédits ECTS" style="-fx-text-fill: #9CA3AF; -fx-font-size: 11;"/>
+                </VBox>
+                <VBox prefWidth="250" spacing="10" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 16; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 8, 0, 0, 2);">
+                    <Label text="Cours ce mois" style="-fx-text-fill: #6B7280; -fx-font-size: 13;"/>
+                    <Label fx:id="coursMoisLabel" text="0" style="-fx-font-size: 24; -fx-font-weight: 800;"/>
+                    <Label text="75% complétés" style="-fx-text-fill: #10B981; -fx-font-size: 11;"/>
+                </VBox>
+                <VBox prefWidth="250" spacing="10" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 16; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 8, 0, 0, 2);">
+                    <Label text="Aujourd'hui" style="-fx-text-fill: #6B7280; -fx-font-size: 13;"/>
+                    <Label fx:id="coursJourLabel" text="0" style="-fx-font-size: 24; -fx-font-weight: 800;"/>
+                    <Label text="2 restants" style="-fx-text-fill: #F59E0B; -fx-font-size: 11;"/>
+                </VBox>
+            </HBox>
+
+            <VBox spacing="20" style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 20;">
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="Mes Cours" style="-fx-font-size: 18; -fx-font-weight: 800;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Voir tout →" onAction="#handleVoirTout" style="-fx-background-color: transparent; -fx-text-fill: #2563EB; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                </HBox>
+                <VBox fx:id="todayLessonsContainer" spacing="15"/>
+            </VBox>
+        </VBox>
+    </content>
+</ScrollPane>

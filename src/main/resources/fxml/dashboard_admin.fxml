@@ -1,14 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="$CONTROLLER_NAME$"
-            prefHeight="400.0" prefWidth="600.0" >
+<ScrollPane fitToWidth="true" style="-fx-background-color: #F9FAFB; -fx-background: #F9FAFB; -fx-border-color: transparent;" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univ.hyperplanning.app.controllers.DashboardAdminController">
+    <content>
+        <VBox spacing="30" style="-fx-padding: 40;">
+            <VBox spacing="8">
+                <Label text="Administration" style="-fx-font-size: 28; -fx-font-weight: 800; -fx-text-fill: #111827;"/>
+                <Label text="Vue d'ensemble de la gestion des ressources." style="-fx-font-size: 14; -fx-text-fill: #6B7280;"/>
+            </VBox>
 
-</AnchorPane>
+            <HBox spacing="20">
+                <VBox prefWidth="250" spacing="10" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 16; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 8, 0, 0, 2);">
+                    <Label text="Total des cours" style="-fx-text-fill: #6B7280; -fx-font-size: 13;"/>
+                    <Label fx:id="totalCoursLabel" text="0" style="-fx-font-size: 24; -fx-font-weight: 800;"/>
+                </VBox>
+                <VBox prefWidth="250" spacing="10" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 16; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 8, 0, 0, 2);">
+                    <Label text="Cours ce mois" style="-fx-text-fill: #6B7280; -fx-font-size: 13;"/>
+                    <Label fx:id="coursSemaineLabel" text="0" style="-fx-font-size: 24; -fx-font-weight: 800;"/>
+                </VBox>
+            </HBox>
+
+            <HBox spacing="20">
+                <Button text="🔍 Vérifier Salles Dispo" onAction="#ouvrirRechercheSalles"
+                        style="-fx-background-color: #0F172A; -fx-text-fill: white; -fx-padding: 15 25; -fx-background-radius: 12; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                <Button text="⚠️ Gérer Conflits" onAction="#ouvrirGestionConflits"
+                        style="-fx-background-color: white; -fx-border-color: #EF4444; -fx-text-fill: #EF4444; -fx-padding: 15 25; -fx-background-radius: 12; -fx-font-weight: bold; -fx-cursor: hand;"/>
+            </HBox>
+        </VBox>
+    </content>
+</ScrollPane>

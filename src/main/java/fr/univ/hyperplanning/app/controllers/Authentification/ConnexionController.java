@@ -7,8 +7,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 public class ConnexionController {
 
@@ -16,47 +14,14 @@ public class ConnexionController {
     @FXML private PasswordField fieldPassword;
     @FXML private Label         labelErreur;
     @FXML private Button        btnConnexion;
-    @FXML private TextField     champMotDePasseVisible;
-    @FXML private Button        btnVisibiliteMotDePasse;
-    @FXML private ImageView     iconeVisibilite;
 
-    private boolean estMotDePasseVisible = false;
-    private final Image iconeOuvert  = new Image(getClass().getResourceAsStream("/images/eye_open.png"));
-    private final Image iconeFerme   = new Image(getClass().getResourceAsStream("/images/eye_close.png"));
-
-
-    @FXML
-    private void basculerVisibiliteMotDePasse() {
-        estMotDePasseVisible = !estMotDePasseVisible;
-
-        if (estMotDePasseVisible) {
-            champMotDePasseVisible.setText(fieldPassword.getText());
-            champMotDePasseVisible.setVisible(true);
-            champMotDePasseVisible.setManaged(true);
-            fieldPassword.setVisible(false);
-            fieldPassword.setManaged(false);
-            iconeVisibilite.setImage(iconeOuvert);
-        } else {
-            fieldPassword.setText(champMotDePasseVisible.getText());
-            fieldPassword.setVisible(true);
-            fieldPassword.setManaged(true);
-            champMotDePasseVisible.setVisible(false);
-            champMotDePasseVisible.setManaged(false);
-            iconeVisibilite.setImage(iconeFerme);
-        }
-    }
-
-    private String recupererMotDePasse() {
-        return estMotDePasseVisible ? champMotDePasseVisible.getText() : fieldPassword.getText();
-    }
-    
 
     @FXML
     private void seConnecter() {
         labelErreur.setText("");
 
         String username = fieldUsername.getText().trim();
-        String password = recupererMotDePasse();
+        String password = fieldPassword.getText();          // pas de trim sur le mdp
 
         // Validation côté UI
         if (username.isEmpty() || password.isEmpty()) {
@@ -71,16 +36,10 @@ public class ConnexionController {
             labelErreur.setText("Identifiants incorrects. Vérifiez votre nom d'utilisateur et mot de passe.");
             return;
         }
-<<<<<<< HEAD
 
         SessionUtilisateur.set(utilisateur);
 
         // Connexion réussie → redirection vers le tableau de bord principal
-=======
-        //Vérifier que l'on affiche bien le role
-        System.out.println("Connecté : id=" + utilisateur.getId() + " | role=" + utilisateur.getRole());
-        // Connexion réussie -> redirection vers le tableau de bord principal
->>>>>>> cd5d4b5828b17cc62ddef2d4f737e7b3964f210d
         NavigationUtil.naviguerVers("/fxml/main.fxml", btnConnexion);
     }
     

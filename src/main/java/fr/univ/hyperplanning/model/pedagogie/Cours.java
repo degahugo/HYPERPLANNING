@@ -28,10 +28,10 @@ public class Cours {
     private TypeCours typeCours;
 
     @Column(nullable=false)
-    private Date dateDebut;
+    private java.time.LocalDateTime dateDebut;
 
     @Column(nullable=false)
-    private Date dateFin;
+    private java.time.LocalDateTime dateFin;
 
     @Column(nullable=false)
     private int duree;

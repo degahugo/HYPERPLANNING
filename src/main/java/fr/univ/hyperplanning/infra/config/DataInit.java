@@ -87,8 +87,8 @@ public class DataInit {
             Cours cours = new Cours();
             cours.setIntitule("Algorithmique - TD");
             cours.setTypeCours(TypeCours.TD);
-            cours.setDateDebut(Date.valueOf(coursDate));
-            cours.setDateFin(Date.valueOf(coursDate));
+            cours.setDateDebut(coursDate.atTime(8, 0));
+            cours.setDateFin(coursDate.atTime(10, 0));
             cours.setDuree(120);
             cours.setEstCC(false);
             cours.setEstAnnule(false);
@@ -108,8 +108,8 @@ public class DataInit {
             Cours cours2 = new Cours();
             cours2.setIntitule("Algorithmique - CM");
             cours2.setTypeCours(TypeCours.CM);
-            cours2.setDateDebut(Date.valueOf(coursDate2));
-            cours2.setDateFin(Date.valueOf(coursDate2));
+            cours2.setDateDebut(coursDate2.atTime(9, 0));
+            cours2.setDateFin(coursDate2.atTime(10, 30));
             cours2.setDuree(90);
             cours2.setEstCC(false);
             cours2.setEstAnnule(false);
@@ -129,8 +129,8 @@ public class DataInit {
             Cours cours3 = new Cours();
             cours3.setIntitule("Projet - TD");
             cours3.setTypeCours(TypeCours.TD);
-            cours3.setDateDebut(Date.valueOf(coursDate3));
-            cours3.setDateFin(Date.valueOf(coursDate3));
+            cours3.setDateDebut(coursDate3.atTime(14, 0));
+            cours3.setDateFin(coursDate3.atTime(16, 0));
             cours3.setDuree(120);
             cours3.setEstCC(false);
             cours3.setEstAnnule(false);

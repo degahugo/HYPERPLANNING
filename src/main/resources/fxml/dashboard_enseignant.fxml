@@ -1,14 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="$CONTROLLER_NAME$"
-            prefHeight="400.0" prefWidth="600.0" >
+<ScrollPane fitToWidth="true" style="-fx-background-color: #F9FAFB; -fx-background: #F9FAFB; -fx-border-color: transparent;"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="fr.univ.hyperplanning.app.controllers.DashboardEnseignantController">
+    <content>
+        <VBox spacing="30.0" style="-fx-padding: 40;">
+            <children>
+                <VBox spacing="5">
+                    <Label text="Espace Enseignant" style="-fx-font-size: 32; -fx-font-weight: 900; -fx-text-fill: #111827;" />
+                    <Label text="Gérez vos cours et vos demandes de salles." style="-fx-text-fill: #6B7280; -fx-font-size: 16;" />
+                </VBox>
 
-</AnchorPane>
+                <HBox spacing="20">
+                    <children>
+                        <HBox prefWidth="250" spacing="15" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);">
+                            <VBox HBox.hgrow="ALWAYS">
+                                <Label text="Total des heures" style="-fx-text-fill: #6B7280;" />
+                                <Label fx:id="totalCoursLabel" text="0" style="-fx-font-size: 26; -fx-font-weight: 900;" />
+                            </VBox>
+                        </HBox>
+
+                        <HBox prefWidth="250" spacing="15" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);">
+                            <VBox HBox.hgrow="ALWAYS">
+                                <Label text="Demandes en attente" style="-fx-text-fill: #6B7280;" />
+                                <Label fx:id="demandesAttenteLabel" text="0" style="-fx-font-size: 26; -fx-font-weight: 900; -fx-text-fill: #F59E0B;" />
+                            </VBox>
+                        </HBox>
+                    </children>
+                </HBox>
+
+                <HBox spacing="20">
+                    <Button text="📅 Voir mon planning" onAction="#handleVoirToutPlanning"
+                            style="-fx-background-color: #0F172A; -fx-text-fill: white; -fx-padding: 15 25; -fx-background-radius: 10; -fx-font-weight: bold; -fx-cursor: hand;"/>
+
+                    <Button text="🔍 Salles disponibles" onAction="#ouvrirRechercheSalles"
+                            style="-fx-background-color: white; -fx-border-color: #E5E7EB; -fx-padding: 15 25; -fx-background-radius: 10; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                </HBox>
+            </children>
+        </VBox>
+    </content>
+</ScrollPane>
