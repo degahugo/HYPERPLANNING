@@ -8,6 +8,8 @@ import fr.univ.hyperplanning.model.pedagogie.SyllabusSemestre;
 import fr.univ.hyperplanning.model.utilisateurs.Enseignant;
 import fr.univ.hyperplanning.model.utilisateurs.Etudiant;
 import fr.univ.hyperplanning.model.utilisateurs.Utilisateur;
+import fr.univ.hyperplanning.app.controllers.Authentification.NavigationUtil;
+import fr.univ.hyperplanning.infra.config.SessionManager;
 import jakarta.persistence.EntityManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,7 +19,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
-
 import java.io.IOException;
 
 public class MainController {
@@ -28,6 +29,7 @@ public class MainController {
     @FXML private Label userInfoLabel;
     @FXML private AnchorPane contentArea;
     @FXML private VBox menuBox;
+    @FXML private Button btnDeconnexion;
 
     private final String STYLE_NORMAL = "-fx-background-color: transparent; -fx-text-fill: #4B5563; -fx-font-size: 15; -fx-alignment: CENTER_LEFT; -fx-padding: 0 0 0 20; -fx-cursor: hand;";
     private final String STYLE_ACTIVE = "-fx-background-color: #EFF6FF; -fx-text-fill: #2563EB; -fx-font-weight: bold; -fx-background-radius: 12; -fx-font-size: 15; -fx-alignment: CENTER_LEFT; -fx-padding: 0 0 0 20; -fx-cursor: hand;";
@@ -37,11 +39,17 @@ public class MainController {
         instance = this;
         Utilisateur user = SessionUtilisateur.get();
         if (user != null) {
-            userNameLabel.setText(user.getNom() + " " + user.getPrenom());
+            if (userNameLabel != null) userNameLabel.setText(user.getNom() + " " + user.getPrenom());
             configurerProfilBas(user);
             initMenu(user.getRole().name());
             chargerVueParRole();
         }
+    }
+
+    @FXML
+    private void seDeconnecter() {
+        SessionManager.fermer();
+        NavigationUtil.naviguerVers("/fxml/connexion.fxml", menuBox);
     }
 
     private void configurerProfilBas(Utilisateur user) {
@@ -53,13 +61,13 @@ public class MainController {
                 if (etu != null && !etu.getGroupes().isEmpty()) {
                     Groupe g = etu.getGroupes().iterator().next();
                     SyllabusSemestre s = g.getSyllabus();
-                    userInfoLabel.setText((s != null ? "S" + s.getSemestre() : "") + " - " + g.getLibelle());
+                    if (userInfoLabel != null) userInfoLabel.setText((s != null ? "S" + s.getSemestre() : "") + " - " + g.getLibelle());
                 }
             } else if (role.equals("ENSEIGNANT")) {
                 Enseignant ens = em.find(Enseignant.class, user.getId());
-                userInfoLabel.setText(ens != null ? ens.getSpecialite() : "Enseignant");
+                if (userInfoLabel != null) userInfoLabel.setText(ens != null ? ens.getSpecialite() : "Enseignant");
             } else {
-                userInfoLabel.setText("Administration");
+                if (userInfoLabel != null) userInfoLabel.setText("Administration");
             }
         } finally { em.close(); }
     }
@@ -76,6 +84,8 @@ public class MainController {
             ajouterBoutonMenu("⚠️  Conflits", "CONFLITS", false);
             ajouterBoutonMenu("🏫  Salles", "SALLES", false);
         }
+
+        ajouterBoutonMenu("🚪  Déconnexion", "LOGOUT", false);
     }
 
     private void ajouterBoutonMenu(String texte, String action, boolean isActive) {
@@ -97,6 +107,7 @@ public class MainController {
             case "PLANNING" -> loadView("/fxml/planning.fxml");
             case "CONFLITS" -> loadView("/fxml/ConflictView.fxml");
             case "SALLES" -> loadViewSalles();
+            case "LOGOUT" -> seDeconnecter();
         }
     }
 
