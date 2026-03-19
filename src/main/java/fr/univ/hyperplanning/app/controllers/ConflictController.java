@@ -15,23 +15,29 @@ public class ConflictController {
     @FXML
     private TableColumn<ConflictInfo, Long> colId;
     @FXML
+    private TableColumn<ConflictInfo, String> colType; // AJOUT : Pour voir si c'est une salle ou un groupe
+    @FXML
     private TableColumn<ConflictInfo, String> colDescription;
 
-    // Correction : Retrait du @FXML ici (ce n'est pas un composant graphique)
     private final ConflictService conflictService = new ConflictService();
 
     @FXML
     public void initialize() {
-        // On lie les colonnes aux attributs de ConflictInfo
+        // Liaison aux attributs de ConflictInfo
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colType.setCellValueFactory(new PropertyValueFactory<>("type")); // AJOUT
         colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
+
+        // OPTIONNEL : Lancer la détection dès l'ouverture pour que l'utilisateur
+        // n'ait pas à cliquer sur un bouton (Résultat attendu : consulter la liste)
+        handleDetectConflicts();
     }
 
     @FXML
     public void handleDetectConflicts() {
-        System.out.println("Détection en cours...");
-        // On récupère la liste des conflits depuis le service
-        ObservableList<ConflictInfo> conflicts = FXCollections.observableArrayList(conflictService.getRoomConflicts());
+        System.out.println("Détection automatique en cours...");
+        // On utilise getAllConflicts (la méthode qu'on a enrichie à la tâche 1)
+        ObservableList<ConflictInfo> conflicts = FXCollections.observableArrayList(conflictService.getAllConflicts());
         conflictTable.setItems(conflicts);
     }
 
