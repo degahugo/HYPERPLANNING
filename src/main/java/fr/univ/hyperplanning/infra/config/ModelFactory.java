@@ -7,6 +7,7 @@ import fr.univ.hyperplanning.model.gestion.*;
 import fr.univ.hyperplanning.model.pedagogie.*;
 import fr.univ.hyperplanning.model.utilisateurs.*;
 
+
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -197,7 +198,97 @@ public final class ModelFactory {
         a.setValideePar(null);
         return a;
     }
+/*
+    // ── ServiceInformatique ────────────────────────────────────────────────
 
+    public static ServiceInformatique serviceInformatique(Faker f, int index, Date today) {
+        ServiceInformatique si = new ServiceInformatique();
+        si.setNom(f.name().lastName());
+        si.setPrenom(f.name().firstName());
+        si.setEmail("si_" + index + "_" + uid() + "@univ.fr");
+        si.setMotDePasseHash(AuthService.hasher("si1234"));
+        si.setRole(RoleUtilisateur.SERVICE_INFORMATIQUE);
+        si.setActif(true);
+        si.setDateCreation(today);
+        si.setDerniereConnexion(today);
+        si.setDepartement(f.options().option("Infrastructure", "Développement", "Support", "Réseaux", "Sécurité"));
+        return si;
+    }
+
+    // ── Notification ───────────────────────────────────────────────────────
+
+    public static Notification notification(Faker f, Utilisateur destinataire,
+                                            Cours cours, Date today) {
+        Notification n = new Notification();
+        n.setTitre(f.options().option(
+                "Cours modifié", "Absence enregistrée",
+                "Nouvelle note", "Salle changée", "Rappel examen"));
+        n.setMessage(f.lorem().sentence());
+        n.setType(f.options().option("ABSENCE", "COURS", "NOTE", "GENERAL"));
+        n.setEstLue(f.bool().bool());
+        n.setDateEnvoi(today);
+        n.setDateLecture(today);
+        n.setDestinataire(destinataire);
+        n.setCours(cours);
+        n.setAbsence(null);
+        n.setDemandeModification(null);
+        return n;
+    }
+
+    // ── Historique ─────────────────────────────────────────────────────────
+
+    public static Historique historique(Faker f, Utilisateur auteur,
+                                        Cours cours, Salle salle, Date today) {
+        Historique h = new Historique();
+        h.setEntiteModifiee(f.options().option("Cours", "Salle", "Groupe", "Utilisateur"));
+        h.setTypeAction(f.options().option("CREATION", "MODIFICATION", "SUPPRESSION"));
+        h.setValeurAvant(f.lorem().word());
+        h.setValeurApres(f.lorem().word());
+        h.setDateModification(today);
+        h.setAdresseIP(f.internet().ipV4Address());
+        h.setEffectuePar(auteur);
+        h.setCours(cours);
+        h.setSalle(salle);
+        h.setGroupe(null);
+        return h;
+    }
+
+    // ── Conflit ────────────────────────────────────────────────────────────
+
+    public static Conflit conflit(Faker f, Cours cours, Salle salle, Date today) {
+        Conflit c = new Conflit();
+        c.setTypeConflit(f.options().option("SALLE", "ENSEIGNANT", "GROUPE", "HORAIRE"));
+        c.setDescription(f.lorem().sentence());
+        c.setDateDetection(today);
+        c.setEstResolu(f.bool().bool());
+        c.setDateResolution(today);
+        c.setSourceCours(cours);
+        c.setSourceSalle(salle);
+        c.setSourceEnseignant(null);
+        c.setSourceGroupe(null);
+        c.getCoursImpactes().add(cours);
+        return c;
+    }
+
+    // ── DemandeModification ────────────────────────────────────────────────
+
+    public static DemandeModification demandeModification(Faker f, Enseignant demandeur,
+                                                          Cours cours, Date today) {
+        DemandeModification dm = new DemandeModification();
+        dm.setDescription(f.options().option(
+                "Déplacement de cours", "Changement de salle",
+                "Modification d'horaire", "Annulation de séance"));
+        dm.setMotif(f.lorem().sentence());
+        dm.setDateDemande(today);
+        dm.setDateTraitement(null);
+        dm.setStatut(ModelFactory.randomEnum(StatutDemande.class, f));
+        dm.setMotifRefus("N/A");
+        dm.setCours(cours);
+        dm.setDemandeur(demandeur);
+        dm.setTraiteePar(null);
+        return dm;
+    }
+*/
     // ── Utilitaires ────────────────────────────────────────────────────────
 
     public static <T extends Enum<T>> T randomEnum(Class<T> clazz, Faker f) {

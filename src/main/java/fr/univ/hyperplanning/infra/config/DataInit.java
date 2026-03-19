@@ -377,7 +377,74 @@ public class DataInit {
                 etu.getAbsencesDeclarees().add(a);
                 if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
             }
+            /*
+            // 11. ServiceInformatique
+            List<ServiceInformatique> siList = new ArrayList<>();
+            for (int i = 1; i <= Math.max(2, scale / 100); i++) {
+                ServiceInformatique si = ModelFactory.serviceInformatique(FAKER, i, today);
+                em.persist(si);
+                em.persist(ModelFactory.donneePersonnelle(FAKER, si));
+                siList.add(si);
+                if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
+            }
 
+            // 12. Notifications
+            int nbNotifs = Math.max(10, scale / 4);
+            for (int i = 0; i < nbNotifs; i++) {
+                Utilisateur dest = em.merge(pick(etudiants));   // destinataire = étudiant aléatoire
+                Cours       co  = em.merge(pick(coursList));
+                Notification n  = ModelFactory.notification(FAKER, dest, co, today);
+                em.persist(n);
+                dest.getNotifications().add(n);
+                if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
+            }
+
+            // 13. Historiques
+            // On regroupe admins + enseignants comme auteurs possibles
+            List<Utilisateur> auteurs = new ArrayList<>();
+            auteurs.addAll(enseignants);
+            // On récupère quelques admins déjà persistés
+            List<Administration> adminsBulk = em.createQuery(
+                            "SELECT a FROM Administration a", Administration.class)
+                    .setMaxResults(10).getResultList();
+            auteurs.addAll(adminsBulk);
+
+            int nbHist = Math.max(10, scale / 5);
+            for (int i = 0; i < nbHist; i++) {
+                Utilisateur auteur = em.merge(pick(auteurs));
+                Cours       co     = em.merge(pick(coursList));
+                Salle       sal    = em.merge(pick(salles));
+                Historique   h     = ModelFactory.historique(FAKER, auteur, co, sal, today);
+                em.persist(h);
+                auteur.getHistoriques().add(h);
+                if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
+            }
+
+            // 14. Conflits
+            int nbConflits = Math.max(5, scale / 20);
+            for (int i = 0; i < nbConflits; i++) {
+                Cours co  = em.merge(pick(coursList));
+                Salle sal = em.merge(pick(salles));
+                Conflit cf = ModelFactory.conflit(FAKER, co, sal, today);
+                em.persist(cf);
+                co.getConflits().add(cf);
+                if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
+            }
+
+            // 15. Demandes de modification
+            int nbDemandes = Math.max(5, scale / 15);
+            for (int i = 0; i < nbDemandes; i++) {
+                Enseignant ens = em.merge(pick(enseignants));
+                Cours      co  = em.merge(pick(coursList));
+                DemandeModification dm = ModelFactory.demandeModification(FAKER, ens, co, today);
+                em.persist(dm);
+                ens.getDemandes().add(dm);
+                if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
+            }
+            */
+            // modifier le printf afin qu'il soit comme ceci : System.out.printf("[DataInit] ✔ Bulk : %d étudiants | %d cours | %d absences | "
+            //                            + "%d notifs | %d historiques | %d conflits | %d demandes insérés%n",
+            //                    scale, nbCours, nbAbsences, nbNotifs, nbHist, nbConflits, nbDemandes);
             tx.commit();
             System.out.printf("[DataInit] ✔ Bulk : %d étudiants | %d cours | %d absences insérés%n",
                     scale, nbCours, nbAbsences);
