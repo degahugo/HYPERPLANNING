@@ -10,6 +10,9 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+
 //Ajout bouton pour se deconnecter
 import fr.univ.hyperplanning.app.controllers.Authentification.NavigationUtil;
 import fr.univ.hyperplanning.infra.config.SessionManager;
@@ -59,6 +62,13 @@ public class MainController {
         }
     }
 
+
+    @FXML
+    private void ouvrirRechercheSalles(ActionEvent event) {
+        System.out.println("Bouton recherche cliqué !");
+        // Ajoute ici le code pour ouvrir la vue des salles
+    }
+
     //
     // MENU DYNAMIQUE
 
@@ -66,10 +76,12 @@ public class MainController {
 
         menuBox.getChildren().clear();
 
+
         Utilisateur user = SessionUtilisateur.get();
         if (user == null) return;
 
         String role = user.getRole().name();
+
 
         // COMMUN
         Button btnPlanning = new Button("📅 Emploi du temps");
