@@ -26,6 +26,7 @@
     <TableView fx:id="conflictTable" VBox.vgrow="ALWAYS">
         <columns>
             <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+            <TableColumn fx:id="colType" text="Type" prefWidth="100"/>
             <TableColumn fx:id="colDescription" text="Description" prefWidth="300"/>
         </columns>
     </TableView>
