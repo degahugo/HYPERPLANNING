@@ -1,5 +1,7 @@
 package fr.univ.hyperplanning.app.controllers;
 
+import fr.univ.hyperplanning.model.utilisateurs.Utilisateur;
+import fr.univ.hyperplanning.app.SessionUtilisateur;
 import fr.univ.hyperplanning.dao.CoursDAO;
 import fr.univ.hyperplanning.model.pedagogie.Cours;
 import javafx.fxml.FXML;
@@ -30,9 +32,19 @@ public class DashboardEtudiantController {
         }
 
         LocalDate now = LocalDate.now();
-        List<Cours> tous = coursDAO.findAll();
+        Utilisateur user = SessionUtilisateur.get();
+
+        /*List<Cours> tous = coursDAO.findAll();
         List<Cours> mois = coursDAO.findByMonth(now);
         List<Cours> jour = coursDAO.findByDay(now);
+        */
+
+        // Filtrer par l'étudiant connecté (via ses groupes)
+        List<Cours> tous = coursDAO.findAllByEtudiant(user.getId());
+        List<Cours> mois = coursDAO.findByEtudiant(user.getId(),
+                now.withDayOfMonth(1),
+                now.withDayOfMonth(now.lengthOfMonth()));
+        List<Cours> jour = coursDAO.findByEtudiant(user.getId(), now, now);
 
         totalCoursLabel.setText(String.valueOf(tous.size()));
         coursMoisLabel.setText(String.valueOf(mois.size()));

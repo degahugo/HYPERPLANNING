@@ -1,5 +1,8 @@
 package fr.univ.hyperplanning.app.controllers;
 
+import fr.univ.hyperplanning.app.SessionUtilisateur;
+import fr.univ.hyperplanning.model.utilisateurs.Utilisateur;
+import fr.univ.hyperplanning.model.enums.NiveauGroupe;
 import fr.univ.hyperplanning.dao.CoursDAO;
 import fr.univ.hyperplanning.model.pedagogie.Cours;
 import javafx.fxml.FXML;
@@ -11,6 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.control.ComboBox;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -28,12 +32,23 @@ public class PlanningController {
     @FXML private Button btnWeek;
     @FXML private Button btnDay;
 
+    @FXML
+    private ComboBox<String> promotionFilter;
+
+    @FXML
+    private ComboBox<String> groupeFilter;
+
+    private NiveauGroupe selectedPromotion = null;
+    private String selectedGroupe = null;
+    private List<Cours> coursAffiches = List.of();
+
     private LocalDate currentDate;
     private boolean isWeekView = true;
 
     @FXML
     public void initialize() {
         currentDate = LocalDate.now();
+        initialiserFiltres();
         updateToggleButtonStyles();
         chargerDonnees();
     }
@@ -61,7 +76,14 @@ public class PlanningController {
         weekLabel.setText(debut.getDayOfMonth() + " " + debut.getMonth().getDisplayName(TextStyle.FULL, Locale.FRENCH) +
                 " - " + fin.getDayOfMonth() + " " + fin.getMonth().getDisplayName(TextStyle.FULL, Locale.FRENCH) + " 2026");
 
-        List<Cours> cours = coursDAO.findByDateRange(debut, fin.plusDays(1));
+        //List<Cours> cours = coursDAO.findByDateRange(debut, fin.plusDays(1));
+        //planningContainer.getChildren().clear();
+
+        //coursAffiches = coursDAO.findByDateRange(debut, fin.plusDays(1));
+        coursAffiches = chargerCoursParRole(debut, fin.plusDays(1));
+
+
+        List<Cours> cours = filtrerCoursAffiches();
         planningContainer.getChildren().clear();
 
         VBox mainGrid = new VBox(0);
@@ -162,7 +184,11 @@ public class PlanningController {
         planningContainer.getChildren().clear();
         LocalDate debut = date.with(DayOfWeek.MONDAY);
 
-        List<Cours> tousLesCours = coursDAO.findByDateRange(debut, debut.plusDays(7));
+        //List<Cours> tousLesCours = coursDAO.findByDateRange(debut, debut.plusDays(7));
+        //coursAffiches = coursDAO.findByDateRange(debut, debut.plusDays(7));
+        coursAffiches = chargerCoursParRole(debut, debut.plusDays(7));
+
+        List<Cours> tousLesCours = filtrerCoursAffiches();
 
         FlowPane gridDays = new FlowPane();
         gridDays.setHgap(20);
@@ -309,4 +335,134 @@ public class PlanningController {
 
     private String capitalize(String s) { return s.substring(0,1).toUpperCase() + s.substring(1); }
     private String getTypeLabel(Cours c) { return c.getTypeCours().name().equals("CM") ? "Cours Magistral" : "Travaux Dirigés / Pratiques"; }
+
+    private void initialiserFiltres() {
+        if (promotionFilter != null) {
+            promotionFilter.getItems().clear();
+            promotionFilter.getItems().add("Toutes les promotions");
+            for (NiveauGroupe niveau : NiveauGroupe.values()) {
+                promotionFilter.getItems().add(niveau.name());
+            }
+            promotionFilter.setValue("Toutes les promotions");
+        }
+
+        if (groupeFilter != null) {
+            groupeFilter.getItems().clear();
+            groupeFilter.getItems().add("Tous les groupes");
+            groupeFilter.getItems().addAll(coursDAO.findAllGroupCodes());
+            groupeFilter.setValue("Tous les groupes");
+        }
+    }
+
+    @FXML
+    private void onPromotionChanged() {
+        String valeur = promotionFilter.getValue();
+
+        if (valeur == null || valeur.equals("Toutes les promotions")) {
+            selectedPromotion = null;
+            selectedGroupe = null;
+
+            groupeFilter.getItems().clear();
+            groupeFilter.getItems().add("Tous les groupes");
+            groupeFilter.getItems().addAll(coursDAO.findAllGroupCodes());
+            groupeFilter.setValue("Tous les groupes");
+        } else {
+            selectedPromotion = NiveauGroupe.valueOf(valeur);
+            selectedGroupe = null;
+
+            groupeFilter.getItems().clear();
+            groupeFilter.getItems().add("Tous les groupes");
+            groupeFilter.getItems().addAll(coursDAO.findGroupCodesByPromotion(selectedPromotion));
+            groupeFilter.setValue("Tous les groupes");
+        }
+
+        chargerDonnees();
+    }
+
+    @FXML
+    private void onGroupeChanged() {
+        String valeur = groupeFilter.getValue();
+
+        if (valeur == null || valeur.equals("Tous les groupes")) {
+            selectedGroupe = null;
+        } else {
+            selectedGroupe = valeur;
+        }
+
+        chargerDonnees();
+    }
+
+    @FXML
+    private void onResetFilters() {
+        selectedPromotion = null;
+        selectedGroupe = null;
+
+        if (promotionFilter != null) {
+            promotionFilter.setValue("Toutes les promotions");
+        }
+
+        if (groupeFilter != null) {
+            groupeFilter.getItems().clear();
+            groupeFilter.getItems().add("Tous les groupes");
+            groupeFilter.getItems().addAll(coursDAO.findAllGroupCodes());
+            groupeFilter.setValue("Tous les groupes");
+        }
+
+        chargerDonnees();
+    }
+
+    /*private List<Cours> chargerCoursParRole(LocalDate debut, LocalDate fin) {
+        Utilisateur user = SessionUtilisateur.get();
+        if (user == null) return coursDAO.findByDateRange(debut, fin);
+
+        return switch (user.getRole()) {
+            case ETUDIANT              -> coursDAO.findByEtudiant(user.getId(), debut, fin);
+            case ENSEIGNANT            -> coursDAO.findByEnseignant(user.getId(), debut, fin);
+            case ENSEIGNANT_RESPONSABLE -> coursDAO.findByEnseignant(user.getId(), debut, fin);
+            case INTERVENANT           -> coursDAO.findByEnseignant(user.getId(), debut, fin);
+            default                    -> coursDAO.findByDateRange(debut, fin); // ADMINISTRATION voit tout
+        };
+    }*/
+
+    private List<Cours> chargerCoursParRole(LocalDate debut, LocalDate fin) {
+        // Si un filtre groupe/promotion est actif → charger tous les cours
+        // pour que filtrerCoursAffiches() puisse les filtrer correctement
+        if (selectedPromotion != null || selectedGroupe != null) {
+            return coursDAO.findByDateRange(debut, fin);
+        }
+
+        // Sinon, vue par défaut → filtrer par rôle
+        Utilisateur user = SessionUtilisateur.get();
+        if (user == null) return coursDAO.findByDateRange(debut, fin);
+
+        return switch (user.getRole()) {
+            case ETUDIANT               -> coursDAO.findByEtudiant(user.getId(), debut, fin);
+            case ENSEIGNANT             -> coursDAO.findByEnseignant(user.getId(), debut, fin);
+            case ENSEIGNANT_RESPONSABLE -> coursDAO.findByEnseignant(user.getId(), debut, fin);
+            case INTERVENANT            -> coursDAO.findByEnseignant(user.getId(), debut, fin);
+            default                     -> coursDAO.findByDateRange(debut, fin);
+        };
+    }
+
+
+
+    private List<Cours> filtrerCoursAffiches() {
+        List<Cours> coursFiltres = coursAffiches;
+
+        if (selectedPromotion != null) {
+            coursFiltres = coursFiltres.stream()
+                    .filter(c -> c.getGroupes() != null
+                            && c.getGroupes().stream().anyMatch(g -> g.getNiveau() == selectedPromotion))
+                    .toList();
+        }
+
+        if (selectedGroupe != null) {
+            coursFiltres = coursFiltres.stream()
+                    .filter(c -> c.getGroupes() != null
+                            && c.getGroupes().stream().anyMatch(g -> selectedGroupe.equals(g.getCode())))
+                    .toList();
+        }
+
+        return coursFiltres;
+    }
 }

@@ -28,6 +28,16 @@
                     <Button fx:id="btnDay" onAction="#onDayView" prefHeight="40.0" prefWidth="150.0" text="Vue Jour" />
                 </HBox>
 
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Promotion" />
+                    <ComboBox fx:id="promotionFilter" onAction="#onPromotionChanged" prefWidth="180"/>
+
+                    <Label text="Groupe" />
+                    <ComboBox fx:id="groupeFilter" onAction="#onGroupeChanged" prefWidth="200"/>
+
+                    <Button text="Reset" onAction="#onResetFilters"/>
+                </HBox>
+
                 <HBox fx:id="planningContainer" alignment="TOP_CENTER" fillHeight="true" />
             </children>
         </VBox>
