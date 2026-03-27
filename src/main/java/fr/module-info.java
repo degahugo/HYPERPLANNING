@@ -14,6 +14,9 @@ module fr.univ.hyperplanning {
     // Logging
     requires org.slf4j;
 
+    // DataFaker
+    requires net.datafaker;
+
     // Ouvre les packages controllers au module javafx.fxml (pour @FXML)
     opens fr.univ.hyperplanning.app.controllers to javafx.fxml;
     opens fr.univ.hyperplanning.app.controllers.Authentification to javafx.fxml;

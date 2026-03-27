@@ -38,9 +38,22 @@ public class ConflictService {
 
                     if (isOverlapping(c1, c2)) {
 
+<<<<<<< HEAD
                         // Préparation des détails pour la Tâche 3
                         String nomSalle = (c1.getSalle() != null) ? c1.getSalle().getNumero() : "N/A";
                         String libelleGroupe = c1.getGroupes().isEmpty() ? "N/A" : c1.getGroupes().iterator().next().getLibelle();
+=======
+                        // 2. Chevauchement horaire (Date identique ou qui se croise)
+                        if (!c1.getDateDebut().isAfter(c2.getDateFin()) && !c1.getDateFin().isBefore(c2.getDateDebut())) {
+
+                            // On récupère le libellé du groupe s'il existe
+                            String infoGroupe = "Sans groupe";
+                            if (c1.getGroupes() != null && !c1.getGroupes().isEmpty()) {
+                                // On récupère le premier groupe de la liste
+                                Groupe g = c1.getGroupes().iterator().next();
+                                infoGroupe = g.getLibelle();
+                            }
+>>>>>>> work
 
                         // --- A. CONFLIT DE SALLE ---
                         if (c1.getSalle() != null && c1.getSalle().equals(c2.getSalle())) {
