@@ -6,6 +6,7 @@ import fr.univ.hyperplanning.infra.config.JpaUtil;
 import fr.univ.hyperplanning.model.pedagogie.Groupe;
 import fr.univ.hyperplanning.model.pedagogie.SyllabusSemestre;
 import fr.univ.hyperplanning.model.utilisateurs.Enseignant;
+import fr.univ.hyperplanning.model.utilisateurs.Intervenant;
 import fr.univ.hyperplanning.model.utilisateurs.Etudiant;
 import fr.univ.hyperplanning.model.utilisateurs.Utilisateur;
 import fr.univ.hyperplanning.app.controllers.Authentification.NavigationUtil;
@@ -66,6 +67,11 @@ public class MainController {
             } else if (role.equals("ENSEIGNANT")) {
                 Enseignant ens = em.find(Enseignant.class, user.getId());
                 if (userInfoLabel != null) userInfoLabel.setText(ens != null ? ens.getSpecialite() : "Enseignant");
+            } else if (role.equals("INTERVENANT")) {
+                Intervenant inter = em.find(Intervenant.class, user.getId());
+                if (userInfoLabel != null) {
+                    userInfoLabel.setText(inter != null ? "Intervenant - " + inter.getEntreprise() : "Intervenant");
+                }
             } else {
                 if (userInfoLabel != null) userInfoLabel.setText("Administration");
             }
@@ -77,6 +83,7 @@ public class MainController {
         ajouterBoutonMenu("⊞  Tableau de bord", "DASHBOARD", true);
         ajouterBoutonMenu("📅  Emploi du temps", "PLANNING", false);
 
+        // L'intervenant a les mêmes menus que l'enseignant
         if (role.equals("ETUDIANT")) {
             ajouterBoutonMenu("📖  Devoirs", "DEVOIRS", false);
             ajouterBoutonMenu("⫶三  Examens", "EXAMENS", false);
@@ -134,7 +141,10 @@ public class MainController {
     private void chargerVueParRole() {
         String role = SessionUtilisateur.get().getRole().name();
         if (role.equals("ETUDIANT")) loadView("/fxml/dashboard_etudiant.fxml");
-        else if (role.equals("ENSEIGNANT")) loadView("/fxml/dashboard_enseignant.fxml");
+        else if (role.equals("ENSEIGNANT") || role.equals("INTERVENANT")) {
+            // L'intervenant utilise le même dashboard que l'enseignant
+            loadView("/fxml/dashboard_enseignant.fxml");
+        }
         else loadView("/fxml/dashboard_admin.fxml");
     }
 }

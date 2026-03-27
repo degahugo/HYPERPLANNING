@@ -8,7 +8,7 @@ import java.time.LocalDate;
 public class DashboardAdminController {
 
     @FXML private Label totalCoursLabel;
-    @FXML private Label coursSemaineLabel; // L'ID qui causait l'erreur
+    @FXML private Label coursSemaineLabel;
 
     private final CoursDAO coursDAO = new CoursDAO();
 
@@ -16,7 +16,7 @@ public class DashboardAdminController {
     public void initialize() {
         try {
             int total = coursDAO.findAll().size();
-            int semaine = coursDAO.findByMonth(LocalDate.now()).size();
+            int semaine = coursDAO.findByWeek(LocalDate.now()).size();
 
             if (totalCoursLabel != null) totalCoursLabel.setText(String.valueOf(total));
             if (coursSemaineLabel != null) coursSemaineLabel.setText(String.valueOf(semaine));
@@ -25,6 +25,7 @@ public class DashboardAdminController {
             e.printStackTrace();
         }
     }
+
 
     @FXML
     private void ouvrirRechercheSalles() {

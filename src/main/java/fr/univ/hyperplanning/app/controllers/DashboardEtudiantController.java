@@ -1,7 +1,9 @@
 package fr.univ.hyperplanning.app.controllers;
 
+import fr.univ.hyperplanning.app.SessionUtilisateur;
 import fr.univ.hyperplanning.dao.CoursDAO;
 import fr.univ.hyperplanning.model.pedagogie.Cours;
+import fr.univ.hyperplanning.model.utilisateurs.Utilisateur;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -24,16 +26,20 @@ public class DashboardEtudiantController {
 
     @FXML
     public void initialize() {
-        if (totalCoursLabel == null) {
-            System.err.println("Alerte : totalCoursLabel est NULL. Vérifiez le fx:id dans le FXML.");
-            return;
-        }
+        Utilisateur user = SessionUtilisateur.get();
+        if (user == null || totalCoursLabel == null) return;
 
         LocalDate now = LocalDate.now();
-        List<Cours> tous = coursDAO.findAll();
-        List<Cours> mois = coursDAO.findByMonth(now);
-        List<Cours> jour = coursDAO.findByDay(now);
+        // Dates pour le semestre (ajuste selon tes besoins)
+        LocalDate debutSemestre = LocalDate.of(2026, 1, 1);
+        LocalDate finSemestre = LocalDate.of(2026, 7, 1);
 
+        // ON FILTRE ENFIN !
+        List<Cours> tous = coursDAO.findByEtudiant(user.getId(), debutSemestre, finSemestre);
+        List<Cours> mois = coursDAO.findByEtudiant(user.getId(), now.withDayOfMonth(1), now.withDayOfMonth(now.lengthOfMonth()));
+        List<Cours> jour = coursDAO.findByEtudiant(user.getId(), now, now);
+
+        // Marc verra 4, Alice verra 5
         totalCoursLabel.setText(String.valueOf(tous.size()));
         coursMoisLabel.setText(String.valueOf(mois.size()));
         coursJourLabel.setText(String.valueOf(jour.size()));

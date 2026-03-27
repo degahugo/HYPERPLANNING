@@ -33,7 +33,7 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Thread bulkThread = new Thread(() -> {
+       /* Thread bulkThread = new Thread(() -> {
             try {
                 DataInit.bulk(500);
             } catch (Exception e) {
@@ -42,7 +42,7 @@ public class MainApp extends Application {
             }
         }, "bulk-thread");
         bulkThread.setDaemon(true);
-        bulkThread.start();
+        bulkThread.start();*/
 
         FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("/fxml/accueil.fxml"));
         Parent root = loader.load(); //  plus d'erreur Object -> Parent
