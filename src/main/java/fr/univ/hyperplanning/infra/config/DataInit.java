@@ -350,10 +350,12 @@ public class DataInit {
             }
 
             // 6. Intervenants
+            List<Intervenant> intervenants = new ArrayList<>(); // ← liste manquante
             for (int i = 1; i <= Math.max(3, scale / 20); i++) {
                 Intervenant inter = ModelFactory.intervenant(FAKER, i, today);
                 em.persist(inter);
                 em.persist(ModelFactory.donneePersonnelle(FAKER, inter));
+                intervenants.add(inter); // ← jamais stocké avant
                 if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
             }
 
@@ -418,6 +420,12 @@ public class DataInit {
 
                 Enseignant ens = em.merge(pick(enseignants));
                 ens.getCoursEnseignes().add(c);
+
+                //Assigner un intervant sur certains cours
+                if (!intervenants.isEmpty() && RNG.nextInt(10) < 3) {
+                    Intervenant inv = em.merge(pick(intervenants));
+                    inv.getCoursInterventions().add(c);
+                }
 
                 em.persist(c);
                 coursList.add(c);

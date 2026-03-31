@@ -85,6 +85,11 @@ public class MainController {
             ajouterBoutonMenu("🏫  Salles", "SALLES", false);
         }
 
+        // Ajout du bouton profil pour tous les Utilisateurs sauf les Admins
+        if (!role.equals("ADMINISTRATION") && !role.equals("ADMIN")) {
+            ajouterBoutonMenu("Mon profil", "PROFIL", false);
+        }
+
         ajouterBoutonMenu("🚪  Déconnexion", "LOGOUT", false);
     }
 
@@ -107,6 +112,7 @@ public class MainController {
             case "PLANNING" -> loadView("/fxml/planning.fxml");
             case "CONFLITS" -> loadView("/fxml/ConflictView.fxml");
             case "SALLES" -> loadViewSalles();
+            case "PROFIL"    -> loadView("/fxml/profil.fxml");
             case "LOGOUT" -> seDeconnecter();
         }
     }
@@ -135,6 +141,7 @@ public class MainController {
         String role = SessionUtilisateur.get().getRole().name();
         if (role.equals("ETUDIANT")) loadView("/fxml/dashboard_etudiant.fxml");
         else if (role.equals("ENSEIGNANT")) loadView("/fxml/dashboard_enseignant.fxml");
+        else if (role.equals("INTERVENANT")) loadView("/fxml/dashboard_intervenant.fxml");
         else loadView("/fxml/dashboard_admin.fxml");
     }
 }

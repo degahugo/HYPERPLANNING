@@ -11,19 +11,6 @@ import java.util.List;
 
 public class CoursDAO {
 
-    /*public List<Cours> findAll() {
-
-        EntityManager em = JpaUtil.em();
-
-        List<Cours> cours = em.createQuery(
-                "SELECT c FROM Cours c",
-                Cours.class
-        ).getResultList();
-
-        em.close();
-        return cours;
-    }*/
-
     public List<Cours> findAll() {
         EntityManager em = JpaUtil.em();
         List<Cours> cours = em.createQuery(
@@ -33,26 +20,6 @@ public class CoursDAO {
         em.close();
         return cours;
     }
-
-    /*public List<Cours> findByDateRange(LocalDate start, LocalDate end) {
-
-        EntityManager em = JpaUtil.em();
-
-        LocalDateTime startDate = start.atStartOfDay();
-        LocalDateTime endDate = end.atTime(23, 59, 59);
-
-        List<Cours> cours = em.createQuery(
-                        "SELECT c FROM Cours c " +
-                                "WHERE c.dateDebut BETWEEN :start AND :end",
-                        Cours.class
-                )
-                .setParameter("start", startDate)
-                .setParameter("end", endDate)
-                .getResultList();
-
-        em.close();
-        return cours;
-    }*/
 
     public List<Cours> findByDateRange(LocalDate start, LocalDate end) {
         EntityManager em = JpaUtil.em();
@@ -70,44 +37,19 @@ public class CoursDAO {
     }
 
     public List<Cours> findByDay(LocalDate date) {
-
         EntityManager em = JpaUtil.em();
-
-        LocalDateTime start = date.atStartOfDay();
-        LocalDateTime end = date.atTime(23, 59, 59);
-
-        List<Cours> cours = em.createQuery(
-                        "SELECT c FROM Cours c " +
-                                "SELECT DISTINCT c FROM Cours c LEFT JOIN FETCH c.groupes " +
-                                "WHERE c.dateDebut BETWEEN :start AND :end",
-                        Cours.class
-                )
-                .setParameter("start", start)
-                .setParameter("end", end)
-                .getResultList();
-
-        em.close();
-        return cours;
+        try {
+            return em.createQuery("""
+            SELECT DISTINCT c FROM Cours c
+            LEFT JOIN FETCH c.groupes
+            WHERE c.dateDebut BETWEEN :start AND :end
+            """, Cours.class)
+                    .setParameter("start", date.atStartOfDay())
+                    .setParameter("end",   date.atTime(23, 59, 59))
+                    .getResultList();
+        } finally { em.close(); }
     }
 
-
-    /*public List<Cours> findByDay(LocalDate date) {
-
-        EntityManager em = JpaUtil.em();
-
-        LocalDateTime start = date.atStartOfDay();
-        LocalDateTime end = date.atTime(23, 59, 59);
-
-        List<Cours> cours = em.createQuery(
-                        "SELECT DISTINCT c FROM Cours c LEFT JOIN FETCH c.groupes " +
-                                "WHERE c.dateDebut BETWEEN :start AND :end",
-                        Cours.class)
-                .setParameter("start", start)
-                .setParameter("end", end)
-                .getResultList();
-        em.close();
-        return cours;
-    }*/
 
     public List<Cours> findByWeek(LocalDate date) {
 
@@ -189,21 +131,20 @@ public class CoursDAO {
     }
 
     // Cours d'un enseignant (via enseignant_cours)
-
     public List<Cours> findByEnseignant(Long enseignantId, LocalDate start, LocalDate end) {
         EntityManager em = JpaUtil.em();
         try {
             return em.createQuery("""
-            SELECT DISTINCT c FROM Cours c
+            SELECT DISTINCT c FROM Enseignant ens
+            JOIN ens.coursEnseignes c
             LEFT JOIN FETCH c.groupes
-            JOIN Enseignant ens ON c MEMBER OF ens.coursEnseignes
             WHERE ens.id = :enseignantId
               AND c.dateDebut BETWEEN :start AND :end
             ORDER BY c.dateDebut
             """, Cours.class)
                     .setParameter("enseignantId", enseignantId)
                     .setParameter("start", start.atStartOfDay())
-                    .setParameter("end", end.atTime(23, 59, 59))
+                    .setParameter("end",   end.atTime(23, 59, 59))
                     .getResultList();
         } finally { em.close(); }
     }
@@ -212,12 +153,44 @@ public class CoursDAO {
         EntityManager em = JpaUtil.em();
         try {
             return em.createQuery("""
-            SELECT DISTINCT c FROM Cours c
+            SELECT DISTINCT c FROM Enseignant ens
+            JOIN ens.coursEnseignes c
             LEFT JOIN FETCH c.groupes
-            JOIN Enseignant ens ON c MEMBER OF ens.coursEnseignes
             WHERE ens.id = :enseignantId
             """, Cours.class)
                     .setParameter("enseignantId", enseignantId)
+                    .getResultList();
+        } finally { em.close(); }
+    }
+
+    public List<Cours> findByIntervenant(Long intervenantId, LocalDate start, LocalDate end) {
+        EntityManager em = JpaUtil.em();
+        try {
+            return em.createQuery("""
+            SELECT DISTINCT c FROM Intervenant inv
+            JOIN inv.coursInterventions c
+            LEFT JOIN FETCH c.groupes
+            WHERE inv.id = :intervenantId
+              AND c.dateDebut BETWEEN :start AND :end
+            ORDER BY c.dateDebut
+            """, Cours.class)
+                    .setParameter("intervenantId", intervenantId)
+                    .setParameter("start", start.atStartOfDay())
+                    .setParameter("end",   end.atTime(23, 59, 59))
+                    .getResultList();
+        } finally { em.close(); }
+    }
+
+    public List<Cours> findAllByIntervenant(Long intervenantId) {
+        EntityManager em = JpaUtil.em();
+        try {
+            return em.createQuery("""
+            SELECT DISTINCT c FROM Intervenant inv
+            JOIN inv.coursInterventions c
+            LEFT JOIN FETCH c.groupes
+            WHERE inv.id = :intervenantId
+            """, Cours.class)
+                    .setParameter("intervenantId", intervenantId)
                     .getResultList();
         } finally { em.close(); }
     }

@@ -439,7 +439,7 @@ public class PlanningController {
             case ETUDIANT               -> coursDAO.findByEtudiant(user.getId(), debut, fin);
             case ENSEIGNANT             -> coursDAO.findByEnseignant(user.getId(), debut, fin);
             case ENSEIGNANT_RESPONSABLE -> coursDAO.findByEnseignant(user.getId(), debut, fin);
-            case INTERVENANT            -> coursDAO.findByEnseignant(user.getId(), debut, fin);
+            case INTERVENANT            -> coursDAO.findByIntervenant(user.getId(), debut, fin);
             default                     -> coursDAO.findByDateRange(debut, fin);
         };
     }
