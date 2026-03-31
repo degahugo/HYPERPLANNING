@@ -50,13 +50,15 @@ public class DataInit {
             tx.begin();
 
             // 1. Salles
-            Salle salle1 = findOrCreateSalle(em, "S101", "Bat A");
+            Salle salle = findOrCreateSalle(em, "S101", "Bat A");
             Salle salle2 = findOrCreateSalle(em, "S102", "Bat B");
 
             // 2. Syllabus & Modules
             SyllabusSemestre syllabus = findOrCreateSyllabus(em, "2025-2026", 1, NiveauGroupe.L2);
             ModuleCours mAlgo = findOrCreateModule(em, "INFO201", "Algorithmique", 30, 2.0f, 1, syllabus);
-            ModuleCours mBDD = findOrCreateModule(em, "INFO203", "Base de données", 30, 2.0f, 1, syllabus);
+            ModuleCours mBDD = findOrCreateModule(em, "INFO202", "Base de données", 30, 2.0f, 1, syllabus);
+            ModuleCours mProjet = findOrCreateModule(em, "INFO203", "Méthodologie de projet", 30, 2.0f, 1, syllabus);
+
 
             // 3. Groupe
             Groupe g = new Groupe();
@@ -69,8 +71,11 @@ public class DataInit {
             em.persist(g);
 
             Date today = Date.valueOf(LocalDate.now());
-            Enseignant ens = findOrCreateEnseignant(em, "ens1@univ.fr", today);
-
+            Administration admin = findOrCreateAdmin(em, "admin@univ.fr", today);
+            Enseignant ens   = findOrCreateEnseignant(em, "ens1@univ.fr", today);
+            Enseignant ens2 = findOrCreateEnseignant(em, "ens2@univ.fr", today);
+            Intervenant inter = findOrCreateIntervenant(em, "int1@univ.fr", today);
+            Etudiant etu   = findOrCreateEtudiant(em, "etu1@univ.fr", today);
             // 4. CRÉATION DU CONFLIT (Même date, Même salle)
             LocalDate demain = LocalDate.now().plusDays(1);
 
@@ -78,29 +83,31 @@ public class DataInit {
             Cours c1 = new Cours();
             c1.setIntitule("Algorithmique - TD");
             c1.setTypeCours(TypeCours.TD);
-            c1.setDateDebut(Date.valueOf(demain));
-            c1.setDateFin(Date.valueOf(demain));
+            c1.setDateDebut(demain.atTime(9,0));
+            c1.setDateFin(demain.atTime(11,0));
             c1.setDuree(120);
-            c1.setSalle(salle1); // Salle S101
+            c1.setSalle(salle); // Salle S101
             c1.setModule(mAlgo);
             c1.getGroupes().add(g);
+            c1.setAnnotation("Travaux Dirigés");
             ens.getCoursEnseignes().add(c1);
             em.persist(c1);
 
-<<<<<<< HEAD
+
             // Cours 2 -> CONFLIT
             Cours c2 = new Cours();
             c2.setIntitule("Base de données - CM");
             c2.setTypeCours(TypeCours.CM);
-            c2.setDateDebut(Date.valueOf(demain));
-            c2.setDateFin(Date.valueOf(demain));
+            c2.setDateDebut(demain.atTime(9,0));
+            c2.setDateFin(demain.atTime(11,0));
             c2.setDuree(90);
-            c2.setSalle(salle1); // Même salle S101 !
+            c2.setSalle(salle); // Même salle S101 !
             c2.setModule(mBDD);
+            c2.setAnnotation("Cours magistral");
             c2.getGroupes().add(g);
             ens.getCoursEnseignes().add(c2);
             em.persist(c2);
-=======
+
             // Relations groupe <-> étudiant
             if (!etu.getGroupes().contains(g)) {
                 etu.getGroupes().add(g);
@@ -249,7 +256,7 @@ public class DataInit {
             em.persist(dm);
 
             ens.getDemandes().add(dm);
->>>>>>> work
+
 
             tx.commit();
             System.out.println("[DataInit] Seed terminé avec conflit généré.");
@@ -262,9 +269,7 @@ public class DataInit {
         }
     }
 
-<<<<<<< HEAD
-    // --- Méthodes utilitaires pour éviter le rouge ---
-=======
+
     /*
     bulk() : insertion dans les tables pour plus de réalisme via la librairie Faker
     appelé depuis un thread daemon dans start() de MainApp start() ne doit appelé uniquement que le FXML
@@ -479,7 +484,6 @@ public class DataInit {
 
     //find : evite les doublons à chaque execution
 
->>>>>>> work
 
     private static Salle findOrCreateSalle(EntityManager em, String numero, String batiment) {
         try {
@@ -497,15 +501,24 @@ public class DataInit {
         }
     }
 
-    private static SyllabusSemestre findOrCreateSyllabus(EntityManager em, String annee, int sem, NiveauGroupe niv) {
+    private static SyllabusSemestre findOrCreateSyllabus(EntityManager em, String annee,
+                                                         int semestre, NiveauGroupe niveau) {
         try {
-            return em.createQuery("SELECT s FROM SyllabusSemestre s WHERE s.anneeUniversitaire = :a AND s.semestre = :s AND s.niveau = :n", SyllabusSemestre.class)
-                    .setParameter("a", annee).setParameter("s", sem).setParameter("n", niv).getSingleResult();
+            return em.createQuery(
+                            "SELECT s FROM SyllabusSemestre s " +
+                                    "WHERE s.anneeUniversitaire = :a AND s.semestre = :s AND s.niveau = :n",
+                            SyllabusSemestre.class)
+                    .setParameter("a", annee)
+                    .setParameter("s", semestre)
+                    .setParameter("n", niveau)
+                    .getSingleResult();
         } catch (NoResultException e) {
             SyllabusSemestre s = new SyllabusSemestre();
             s.setAnneeUniversitaire(annee);
-            s.setSemestre(sem);
-            s.setNiveau(niv);
+            s.setSemestre(semestre);
+            s.setNiveau(niveau);
+            s.setDateDebut(Date.valueOf(LocalDate.of(2025, 9, 1)));
+            s.setDateFin(Date.valueOf(LocalDate.of(2026, 1, 31)));
             em.persist(s);
             return s;
         }
@@ -528,21 +541,106 @@ public class DataInit {
         }
     }
 
-    private static Enseignant findOrCreateEnseignant(EntityManager em, String email, Date d) {
+    private static Administration findOrCreateAdmin(EntityManager em, String email, Date today) {
         try {
-            return em.createQuery("SELECT e FROM Enseignant e WHERE e.email = :e", Enseignant.class)
+            return em.createQuery(
+                            "SELECT a FROM Administration a WHERE a.email = :e", Administration.class)
+                    .setParameter("e", email).getSingleResult();
+        } catch (NoResultException e) {
+            Administration a = new Administration();
+            a.setNom("Admin");
+            a.setPrenom("System");
+            a.setEmail(email);
+            a.setMotDePasseHash(AuthService.hasher("admin1234"));
+
+            a.setRole(RoleUtilisateur.ADMINISTRATION);
+            a.setActif(true);
+            a.setDateCreation(today);
+            a.setDerniereConnexion(today);
+            a.setService("Direction");
+            a.setNiveauAcces(3);
+            em.persist(a);
+            return a;
+        }
+    }
+
+    private static Enseignant findOrCreateEnseignant(EntityManager em, String email, Date today) {
+        try {
+            return em.createQuery(
+                            "SELECT e FROM Enseignant e WHERE e.email = :e", Enseignant.class)
                     .setParameter("e", email).getSingleResult();
         } catch (NoResultException e) {
             Enseignant ens = new Enseignant();
             ens.setNom("Dupont");
             ens.setPrenom("Jean");
             ens.setEmail(email);
-            ens.setMotDePasseHash("hash_ici"); // Simplifié pour éviter le rouge sur AuthService
+            ens.setMotDePasseHash(AuthService.hasher("ens1234"));
             ens.setRole(RoleUtilisateur.ENSEIGNANT);
             ens.setActif(true);
-            ens.setDateCreation(d);
+            ens.setDateCreation(today);
+            ens.setDerniereConnexion(today);
+            ens.setNumeroEmploye("EMP001");
+            ens.setSpecialite("Informatique");
+            ens.setEstResponsable(false);
             em.persist(ens);
             return ens;
         }
     }
+
+    private static Intervenant findOrCreateIntervenant(EntityManager em, String email, Date today) {
+        try {
+            return em.createQuery(
+                            "SELECT i FROM Intervenant i WHERE i.email = :e", Intervenant.class)
+                    .setParameter("e", email).getSingleResult();
+        } catch (NoResultException e) {
+            Intervenant i = new Intervenant();
+            i.setNom("Martin");
+            i.setPrenom("Sara");
+            i.setEmail(email);
+            i.setMotDePasseHash(AuthService.hasher("int1234"));
+            i.setRole(RoleUtilisateur.INTERVENANT);
+            i.setActif(true);
+            i.setDateCreation(today);
+            i.setDerniereConnexion(today);
+            i.setEntreprise("TechCorp");
+            i.setContrat("Vacataire");
+            em.persist(i);
+            return i;
+        }
+    }
+
+    private static Etudiant findOrCreateEtudiant(EntityManager em, String email, Date today) {
+        try {
+            return em.createQuery(
+                            "SELECT e FROM Etudiant e WHERE e.email = :e", Etudiant.class)
+                    .setParameter("e", email).getSingleResult();
+        } catch (NoResultException e) {
+            Etudiant etu = new Etudiant();
+            etu.setNom("Durand");
+            etu.setPrenom("Alice");
+            etu.setEmail(email);
+            etu.setMotDePasseHash(AuthService.hasher("etu1234"));
+            etu.setRole(RoleUtilisateur.ETUDIANT);
+            etu.setActif(true);
+            etu.setDateCreation(today);
+            etu.setDerniereConnexion(today);
+            etu.setNumeroEtudiant("ETU20250001");
+            etu.setAnneeEntree(2025);
+            em.persist(etu);
+            return etu;
+        }
+    }
+
+    private static DonneePersonnelle buildDP(Utilisateur u) {
+        DonneePersonnelle dp = new DonneePersonnelle();
+        dp.setAdresse("1 rue de l'Université, 75000 Paris");
+        dp.setTelephone("0000000000");
+        dp.setDateNaissance(Date.valueOf(LocalDate.of(1990, 1, 1)));
+        dp.setLieuNaissance("Paris");
+        dp.setPhotoUrl("https://placeholder.com/photo.jpg");
+        dp.setUtilisateur(u);
+        u.setDonneePersonnelle(dp);
+        return dp;
+    }
+
 }

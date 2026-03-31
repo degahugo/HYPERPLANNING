@@ -8,6 +8,11 @@ import java.util.List;
 public class SalleDAO {
     private final EntityManager em;
 
+    public SalleDAO() {
+        // Utilisation du chemin exact vers ton JpaUtil et sa méthode em()
+        this.em = fr.univ.hyperplanning.infra.config.JpaUtil.em();
+    }
+
     public SalleDAO(EntityManager em) {
         this.em = em;
     }
@@ -23,9 +28,9 @@ public class SalleDAO {
                 "WHERE c.dateDebut < :fin AND c.dateFin > :debut)";
 
         return em.createQuery(hql, Salle.class)
-                // On convertit LocalDateTime en Timestamp (qui est compatible avec Date)
-                .setParameter("debut", java.sql.Timestamp.valueOf(debut))
-                .setParameter("fin", java.sql.Timestamp.valueOf(fin))
+                // On passe directement les objets LocalDateTime
+                .setParameter("debut", debut)
+                .setParameter("fin", fin)
                 .getResultList();
     }
 }

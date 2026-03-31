@@ -2,69 +2,108 @@ package fr.univ.hyperplanning.app.controllers;
 
 import fr.univ.hyperplanning.model.ConflictInfo;
 import fr.univ.hyperplanning.service.ConflictService;
+import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
+import java.util.List;
+import javafx.scene.control.Alert;
 
 public class ConflictController {
+
+    public static Long selectedCoursIdForResolution;
+
     @FXML
     private TableView<ConflictInfo> conflictTable;
+
     @FXML
     private TableColumn<ConflictInfo, Long> colId;
+
     @FXML
-    private TableColumn<ConflictInfo, String> colType; // AJOUT : Pour voir si c'est une salle ou un groupe
+    private TableColumn<ConflictInfo, String> colType;
+
     @FXML
     private TableColumn<ConflictInfo, String> colDescription;
 
     private final ConflictService conflictService = new ConflictService();
 
+    /**
+     * Cette méthode fait le pont entre le FXML et les données de ConflictInfo.
+     * On utilise des Lambdas pour garantir que JavaFX trouve bien les Getters.
+     */
     @FXML
     public void initialize() {
-        // Liaison aux attributs de ConflictInfo
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colType.setCellValueFactory(new PropertyValueFactory<>("type")); // AJOUT
-        colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
+        // Liaison de la colonne ID (Convertit le long primitif en Long objet pour JavaFX)
+        colId.setCellValueFactory(cellData ->
+                new SimpleLongProperty(cellData.getValue().getId()).asObject());
 
-        // OPTIONNEL : Lancer la détection dès l'ouverture pour que l'utilisateur
-        // n'ait pas à cliquer sur un bouton (Résultat attendu : consulter la liste)
+        // Liaison de la colonne Type
+        colType.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getType()));
+
+        // Liaison de la colonne Description
+        colDescription.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDescription()));
+
+        // On lance la détection immédiatement à l'affichage de la page
         handleDetectConflicts();
     }
 
+    /**
+     * Déclenche la recherche de conflits via le service et remplit le tableau.
+     */
     @FXML
     public void handleDetectConflicts() {
-        System.out.println("Détection automatique en cours...");
-        // On utilise getAllConflicts (la méthode qu'on a enrichie à la tâche 1)
-        ObservableList<ConflictInfo> conflicts = FXCollections.observableArrayList(conflictService.getAllConflicts());
+        System.out.println("--- Début de la détection ---");
+
+        // Sécurité : Vérifier si le FXML a bien injecté le tableau
+        if (conflictTable == null) {
+            System.err.println("❌ ERREUR : conflictTable est null. Vérifiez l'fx:id dans le FXML.");
+            return;
+        }
+
+        List<ConflictInfo> results = conflictService.getAllConflicts();
+        System.out.println("DEBUG : Nombre de conflits trouvés : " + results.size());
+
+        ObservableList<ConflictInfo> conflicts = FXCollections.observableArrayList(results);
         conflictTable.setItems(conflicts);
+        conflictTable.refresh();
     }
 
-    // --- NOUVELLE MÉTHODE POUR L'UC6.3 ---
+    /**
+     * Logique de résolution (Tâche 5 & 6)
+     */
     @FXML
     private void handleResolveConflict() {
         // 1. On récupère le conflit sélectionné dans le tableau
         ConflictInfo selected = conflictTable.getSelectionModel().getSelectedItem();
 
         if (selected != null) {
-            // --- APPEL DE LA TÂCHE 5 ---
-            // On imagine qu'on a récupéré l'ID de la nouvelle salle (ex: 10L)
-            boolean isModified = conflictService.resolveConflict(selected.getId(), 10L, null, null);
+            // 2. On stocke l'ID du cours dans la variable statique pour l'autre page
+            selectedCoursIdForResolution = selected.getId();
 
-            if (isModified) {
-                // --- DÉBUT DE LA TÂCHE 6 ---
+            System.out.println("🔄 Redirection vers UC4 pour résoudre le cours ID : " + selectedCoursIdForResolution);
 
-                // Détail technique : Relancer le service de détection
-                // On appelle la méthode qui va interroger à nouveau la base de données
-                handleDetectConflicts();
+            try {
+                // 3. Chargement de la vue UC4 (Salles Disponibles)
+                // Vérifie bien le chemin vers ton fichier FXML
+                javafx.scene.Parent root = javafx.fxml.FXMLLoader.load(getClass().getResource("/fxml/SallesDispoView.fxml"));
 
-                // Résultat attendu :
-                // Si la nouvelle salle n'est plus en conflit, handleDetectConflicts()
-                // va mettre à jour la liste observable et le conflit DISPARAÎTRA du tableau.
+                // 4. On change le contenu de la fenêtre
+                conflictTable.getScene().setRoot(root);
 
-                System.out.println("Vérification terminée : Le conflit a été recalculé.");
+            } catch (java.io.IOException e) {
+                e.printStackTrace();
+                System.out.println("❌ Erreur : Impossible de charger la page des salles disponibles.");
             }
+        } else {
+            // Si l'utilisateur n'a pas cliqué sur une ligne du tableau
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setContentText("Veuillez sélectionner un conflit dans le tableau avant de cliquer sur Résoudre.");
+            alert.show();
         }
     }
 }

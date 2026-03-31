@@ -48,4 +48,12 @@
         </placeholder>
     </TableView>
 
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button fx:id="btnValiderResolution"
+                text="✅ Assigner la salle au cours en conflit"
+                onAction="#handleConfirmResolution"
+                visible="false"
+                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;"/>
+    </HBox>
+
 </VBox>

@@ -1,5 +1,6 @@
 module fr.univ.hyperplanning {
 
+
     // JavaFX
     requires javafx.controls;
     requires javafx.fxml;

@@ -2,12 +2,14 @@ package fr.univ.hyperplanning.app.controllers;
 
 import fr.univ.hyperplanning.dao.SalleDAO;
 import fr.univ.hyperplanning.model.pedagogie.Salle;
+import fr.univ.hyperplanning.service.ConflictService; // Import nécessaire
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class SallesDispoController {
@@ -16,20 +18,26 @@ public class SallesDispoController {
     @FXML private TextField heureDebut;
     @FXML private TextField heureFin;
     @FXML private TableView<Salle> tableSalles;
+    @FXML private Button btnValiderResolution; // Injecté depuis le FXML
 
-    // Colonnes alignées sur ton entité Salle
     @FXML private TableColumn<Salle, String> colNumero;
     @FXML private TableColumn<Salle, String> colBatiment;
     @FXML private TableColumn<Salle, Integer> colCapacite;
 
-    private SalleDAO salleDAO;
+    private SalleDAO salleDAO = new SalleDAO(); // Initialisé pour le test
+    private final ConflictService conflictService = new ConflictService();
 
     @FXML
     public void initialize() {
-        // CORRECTION : On utilise "numero" car "nom" n'existe pas dans ton entité Salle
         colNumero.setCellValueFactory(new PropertyValueFactory<>("numero"));
         colBatiment.setCellValueFactory(new PropertyValueFactory<>("batiment"));
         colCapacite.setCellValueFactory(new PropertyValueFactory<>("capacite"));
+
+        // Vérifier si on est en mode "Résolution de conflit"
+        if (ConflictController.selectedCoursIdForResolution != null) {
+            btnValiderResolution.setVisible(true);
+            System.out.println("Mode résolution actif pour le cours ID: " + ConflictController.selectedCoursIdForResolution);
+        }
     }
 
     public void setSalleDAO(SalleDAO salleDAO) {
@@ -39,7 +47,6 @@ public class SallesDispoController {
     @FXML
     private void handleRecherche() {
         try {
-            // 1. On nettoie les saisies (enlève les espaces au début et à la fin)
             String hDebutRaw = heureDebut.getText().trim();
             String hFinRaw = heureFin.getText().trim();
 
@@ -48,17 +55,13 @@ public class SallesDispoController {
                 return;
             }
 
-            // 2. On utilise un formateur qui accepte 8:00 ou 08:00
-            java.time.format.DateTimeFormatter souple = java.time.format.DateTimeFormatter.ofPattern("H:mm");
-
-            // 3. Conversion sécurisée
+            DateTimeFormatter souple = DateTimeFormatter.ofPattern("H:mm");
             LocalTime timeDebut = LocalTime.parse(hDebutRaw, souple);
             LocalTime timeFin = LocalTime.parse(hFinRaw, souple);
 
             LocalDateTime debut = LocalDateTime.of(datePicker.getValue(), timeDebut);
             LocalDateTime fin = LocalDateTime.of(datePicker.getValue(), timeFin);
 
-            // 4. Lancement de la recherche
             if (salleDAO != null) {
                 List<Salle> disponibles = salleDAO.findSallesDisponibles(debut, fin);
                 tableSalles.setItems(FXCollections.observableArrayList(disponibles));
@@ -68,10 +71,60 @@ public class SallesDispoController {
                 }
             }
         } catch (java.time.format.DateTimeParseException e) {
-            showAlert("Erreur de format", "L'heure doit être au format HH:mm (ex: 08:30 ou 8:30)");
+            showAlert("Erreur de format", "L'heure doit être au format HH:mm (ex: 08:30)");
         } catch (Exception e) {
             e.printStackTrace();
             showAlert("Erreur", "Une erreur inattendue est survenue.");
+        }
+    }
+
+    /**
+     * Méthode appelée par le bouton vert "Assigner la salle"
+     * Résout l'erreur rouge dans le FXML
+     */
+    @FXML
+    private void handleConfirmResolution() {
+        Salle salleChoisie = tableSalles.getSelectionModel().getSelectedItem();
+        Long coursId = ConflictController.selectedCoursIdForResolution;
+
+        if (salleChoisie == null) {
+            showAlert("Sélection requise", "Veuillez choisir une salle dans le tableau.");
+            return;
+        }
+
+        try {
+            // Récupération des horaires pour mettre à jour le cours
+            DateTimeFormatter souple = DateTimeFormatter.ofPattern("H:mm");
+            LocalDateTime debut = LocalDateTime.of(datePicker.getValue(), LocalTime.parse(heureDebut.getText().trim(), souple));
+            LocalDateTime fin = LocalDateTime.of(datePicker.getValue(), LocalTime.parse(heureFin.getText().trim(), souple));
+
+            // Appel au service de résolution
+            boolean succes = conflictService.resolveConflict(coursId, salleChoisie.getId(), debut, fin);
+
+            if (succes) {
+                // Nettoyage de la variable statique
+                ConflictController.selectedCoursIdForResolution = null;
+
+                Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                successAlert.setTitle("Succès");
+                successAlert.setHeaderText("Conflit Résolu !");
+                successAlert.setContentText("Le cours a été déplacé en salle " + salleChoisie.getNumero());
+                successAlert.showAndWait();
+
+                // Retour à la vue précédente
+                returnToConflictView();
+            }
+        } catch (Exception e) {
+            showAlert("Erreur", "Erreur lors de la validation : " + e.getMessage());
+        }
+    }
+
+    private void returnToConflictView() {
+        try {
+            javafx.scene.Parent root = javafx.fxml.FXMLLoader.load(getClass().getResource("/fr/univ/hyperplanning/app/views/conflict_view.fxml"));
+            tableSalles.getScene().setRoot(root);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

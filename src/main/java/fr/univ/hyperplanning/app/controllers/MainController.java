@@ -18,20 +18,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-<<<<<<< HEAD
-
 import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-
-//Ajout bouton pour se deconnecter
-import fr.univ.hyperplanning.app.controllers.Authentification.NavigationUtil;
-import fr.univ.hyperplanning.infra.config.SessionManager;
-import javafx.scene.control.Button;
-
-=======
 import lombok.Getter;
 import java.io.IOException;
->>>>>>> work
 
 public class MainController {
 
@@ -59,9 +48,14 @@ public class MainController {
     }
 
     @FXML
-    private void seDeconnecter() {
+    private void seDeconnecter(ActionEvent event) {
         SessionManager.fermer();
         NavigationUtil.naviguerVers("/fxml/connexion.fxml", menuBox);
+    }
+
+    // Surcharge pour l'appel sans ActionEvent (depuis le menu)
+    private void seDeconnecter() {
+        seDeconnecter(null);
     }
 
     private void configurerProfilBas(Utilisateur user) {
@@ -92,6 +86,9 @@ public class MainController {
         if (role.equals("ETUDIANT")) {
             ajouterBoutonMenu("📖  Devoirs", "DEVOIRS", false);
             ajouterBoutonMenu("⫶三  Examens", "EXAMENS", false);
+        } else if (role.equals("ENSEIGNANT")) {
+            ajouterBoutonMenu("🏠  Accueil", "DASHBOARD", false);
+            ajouterBoutonMenu("📨  Mes demandes", "DEMANDES", false);
         } else if (role.equals("ADMINISTRATION") || role.equals("ADMIN")) {
             ajouterBoutonMenu("⚠️  Conflits", "CONFLITS", false);
             ajouterBoutonMenu("🏫  Salles", "SALLES", false);
@@ -119,6 +116,7 @@ public class MainController {
             case "PLANNING" -> loadView("/fxml/planning.fxml");
             case "CONFLITS" -> loadView("/fxml/ConflictView.fxml");
             case "SALLES" -> loadViewSalles();
+            case "DEMANDES" -> loadView("/fxml/demandes.fxml");
             case "LOGOUT" -> seDeconnecter();
         }
     }
@@ -133,93 +131,29 @@ public class MainController {
         } catch (IOException e) { e.printStackTrace(); }
     }
 
-<<<<<<< HEAD
-
     @FXML
     private void ouvrirRechercheSalles(ActionEvent event) {
-        System.out.println("Bouton recherche cliqué !");
-        // Ajoute ici le code pour ouvrir la vue des salles
+        loadViewSalles();
     }
 
-    //
-    // MENU DYNAMIQUE
-
-    private void initMenu() {
-
-        menuBox.getChildren().clear();
-
-
-        Utilisateur user = SessionUtilisateur.get();
-        if (user == null) return;
-
-        String role = user.getRole().name();
-
-
-        // COMMUN
-        Button btnPlanning = new Button("📅 Emploi du temps");
-        btnPlanning.setOnAction(e -> loadView("/fxml/planning.fxml"));
-        menuBox.getChildren().add(btnPlanning);
-
-        // ETUDIANT
-        if (role.equals("ETUDIANT")) {
-
-            Button btnCours = new Button("📚 Cours");
-            btnCours.setOnAction(e -> loadView("/fxml/cours.fxml"));
-
-            Button btnExamens = new Button("📝 Examens");
-            btnExamens.setOnAction(e -> loadView("/fxml/examens.fxml"));
-
-            menuBox.getChildren().addAll(btnCours, btnExamens);
-        }
-
-        // ENSEIGNANT
-        else if (role.equals("ENSEIGNANT")) {
-
-            Button btnAccueil = new Button("🏠 Accueil");
-            btnAccueil.setOnAction(e -> loadView("/fxml/accueil.fxml"));
-
-            Button btnDemandes = new Button("📨 Mes demandes");
-            btnDemandes.setOnAction(e -> loadView("/fxml/demandes.fxml"));
-
-            menuBox.getChildren().addAll(btnAccueil, btnDemandes);
-        }
-
-        //  ADMIN
-        else if (role.equals("ADMINISTRATION")) {
-
-            Button btnGestionCours = new Button("⚙️ Gérer cours");
-            btnGestionCours.setOnAction(e -> loadView("/fxml/gestion_cours.fxml"));
-
-            Button btnConflits = new Button("⚠️ Gérer conflits");
-            btnConflits.setOnAction(e -> loadView("/fxml/ConflictView.fxml"));
-
-            Button btnDemandes = new Button("📨 Gérer demandes");
-            btnDemandes.setOnAction(e -> loadView("/fxml/demandes.fxml"));
-
-            Button btnSalles = new Button("🏫 Salles disponibles");
-            btnSalles.setOnAction(e -> loadView("/fxml/SallesDispoView.fxml"));
-
-            menuBox.getChildren().addAll(
-                    btnGestionCours,
-                    btnConflits,
-                    btnDemandes,
-                    btnSalles
-            );
-        }
-=======
     private void loadViewSalles() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/SallesDispoView.fxml"));
             Parent view = loader.load();
-            SallesDispoController ctrl = loader.getController();
-            ctrl.setSalleDAO(new SalleDAO(JpaUtil.em()));
+            // On s'assure que le contrôleur reçoit bien son DAO
+            Object controller = loader.getController();
+            if (controller instanceof SallesDispoController) {
+                ((SallesDispoController) controller).setSalleDAO(new SalleDAO(JpaUtil.em()));
+            }
             contentArea.getChildren().setAll(view);
         } catch (IOException e) { e.printStackTrace(); }
->>>>>>> work
     }
 
     private void chargerVueParRole() {
-        String role = SessionUtilisateur.get().getRole().name();
+        Utilisateur user = SessionUtilisateur.get();
+        if (user == null) return;
+        String role = user.getRole().name();
+
         if (role.equals("ETUDIANT")) loadView("/fxml/dashboard_etudiant.fxml");
         else if (role.equals("ENSEIGNANT")) loadView("/fxml/dashboard_enseignant.fxml");
         else loadView("/fxml/dashboard_admin.fxml");

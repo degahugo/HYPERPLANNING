@@ -7,7 +7,7 @@ import fr.univ.hyperplanning.model.pedagogie.Salle;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-
+import java.time.LocalDateTime;
 import java.sql.Date; // Utilisation du type SQL pour matcher l'entité Cours
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +28,23 @@ public class ConflictService {
         List<ConflictInfo> conflicts = new ArrayList<>();
 
         try {
-            // TÂCHE 4 : Récupération depuis la base
-            List<Cours> tousLesCours = em.createQuery("SELECT c FROM Cours c", Cours.class).getResultList();
+            // On ne garde qu'une seule déclaration propre avec le type complet pour éviter les erreurs d'import
+            List<fr.univ.hyperplanning.model.pedagogie.Cours> tousLesCours = em.createQuery("SELECT c FROM Cours c", fr.univ.hyperplanning.model.pedagogie.Cours.class).getResultList();
+
+            // --- DEBUG VERSION CLASSIQUE ---
+            System.out.println("======= DEBUG CONFLITS =======");
+            if (tousLesCours == null || tousLesCours.isEmpty()) {
+                System.out.println("[ALERTE] La liste est VIDE. Le DataInit n'a rien enregistré !");
+            } else {
+                System.out.println("[OK] Nombre de cours trouvés : " + tousLesCours.size());
+                for (fr.univ.hyperplanning.model.pedagogie.Cours c : tousLesCours) {
+                    String salleNom = (c.getSalle() != null) ? c.getSalle().getNumero() : "SANS SALLE";
+                    System.out.println(" > ID: " + c.getId() + " | " + c.getIntitule() + " | Salle: " + salleNom);
+                }
+            }
+            System.out.println("==============================");
+
+
 
             for (int i = 0; i < tousLesCours.size(); i++) {
                 for (int j = i + 1; j < tousLesCours.size(); j++) {
@@ -38,22 +53,9 @@ public class ConflictService {
 
                     if (isOverlapping(c1, c2)) {
 
-<<<<<<< HEAD
                         // Préparation des détails pour la Tâche 3
                         String nomSalle = (c1.getSalle() != null) ? c1.getSalle().getNumero() : "N/A";
                         String libelleGroupe = c1.getGroupes().isEmpty() ? "N/A" : c1.getGroupes().iterator().next().getLibelle();
-=======
-                        // 2. Chevauchement horaire (Date identique ou qui se croise)
-                        if (!c1.getDateDebut().isAfter(c2.getDateFin()) && !c1.getDateFin().isBefore(c2.getDateDebut())) {
-
-                            // On récupère le libellé du groupe s'il existe
-                            String infoGroupe = "Sans groupe";
-                            if (c1.getGroupes() != null && !c1.getGroupes().isEmpty()) {
-                                // On récupère le premier groupe de la liste
-                                Groupe g = c1.getGroupes().iterator().next();
-                                infoGroupe = g.getLibelle();
-                            }
->>>>>>> work
 
                         // --- A. CONFLIT DE SALLE ---
                         if (c1.getSalle() != null && c1.getSalle().equals(c2.getSalle())) {
@@ -109,25 +111,36 @@ public class ConflictService {
     /**
      * RÉPOND À LA TÂCHE 5 : Résolution du conflit (Regroupé)
      */
-    public boolean resolveConflict(Long coursId, Long nouvelleSalleId, Date nvDebut, Date nvFin) {
+    public boolean resolveConflict(Long coursId, Long nouvelleSalleId, LocalDateTime nvDebut, LocalDateTime nvFin){
         try {
             em.getTransaction().begin();
 
+            // 1. On récupère le cours à modifier
             Cours cours = em.find(Cours.class, coursId);
 
             if (cours != null) {
-                // Modification de la Salle
+                // 2. Si une nouvelle salle est fournie
                 if (nouvelleSalleId != null) {
-                    Salle salle = em.find(Salle.class, nouvelleSalleId);
-                    if (salle != null) {
-                        cours.setSalle(salle);
-                    }
-                }
+                    Salle nouvelleSalle = em.find(Salle.class, nouvelleSalleId);
+                    if (nouvelleSalle != null) {
+                        // On change la salle
+                        cours.setSalle(nouvelleSalle);
 
-                // Modification de l'Horaire
-                if (nvDebut != null && nvFin != null) {
-                    cours.setDateDebut(nvDebut);
-                    cours.setDateFin(nvFin);
+                        // IMPORTANT : On force les horaires du cours pour qu'ils
+                        // correspondent au créneau de disponibilité trouvé dans cette salle
+                        if (nvDebut != null && nvFin != null) {
+                            cours.setDateDebut(nvDebut);
+                            cours.setDateFin(nvFin);
+                            System.out.println("[DEBUG] Salle modifiée : " + nouvelleSalle.getNumero() +
+                                    " avec report des horaires : " + nvDebut + " à " + nvFin);
+                        }
+                    }
+                } else {
+                    // Si on change seulement l'horaire sans changer la salle
+                    if (nvDebut != null && nvFin != null) {
+                        cours.setDateDebut(nvDebut);
+                        cours.setDateFin(nvFin);
+                    }
                 }
 
                 em.merge(cours);
@@ -149,7 +162,15 @@ public class ConflictService {
      * Détail technique : Logique de comparaison temporelle
      */
     private boolean isOverlapping(Cours c1, Cours c2) {
-        return !c1.getDateDebut().after(c2.getDateFin()) && !c1.getDateFin().before(c2.getDateDebut());
+        // Debug pour voir ce que le service compare réellement
+        // System.out.println("Compare " + c1.getIntitule() + " [" + c1.getDateDebut() + "] avec " + c2.getIntitule());
+
+        if (c1.getDateDebut() == null || c1.getDateFin() == null ||
+                c2.getDateDebut() == null || c2.getDateFin() == null) return false;
+
+        // Un conflit existe si le début de l'un est avant la fin de l'autre (et inversement)
+        return c1.getDateDebut().isBefore(c2.getDateFin()) &&
+                c2.getDateDebut().isBefore(c1.getDateFin());
     }
 
     /**
