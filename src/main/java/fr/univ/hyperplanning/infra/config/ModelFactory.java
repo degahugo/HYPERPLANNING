@@ -11,6 +11,7 @@ import fr.univ.hyperplanning.model.utilisateurs.*;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.DayOfWeek;
 import java.util.UUID;
 
 
@@ -165,14 +166,40 @@ public final class ModelFactory {
     // ── Cours ──────────────────────────────────────────────────────────────
 
     public static Cours cours(Faker f, ModuleCours module, Salle salle, TypeCours type) {
-        LocalDate date = LocalDate.of(2025, 9, 1)
-                .plusDays(f.number().numberBetween(0, 180));
+        // Cours du Lundi au Vendredi  :
+        LocalDate date;
+        do{
+            date=LocalDate.of(2025, 9, 1).plusDays(f.number().numberBetween(0, 220));
+        } while(date.getDayOfWeek()== DayOfWeek.SATURDAY || date.getDayOfWeek()== DayOfWeek.SUNDAY);
+
+        //Durée en fonction du type de cours (par défaut pour remplir l'emploi du temps)
+        int duree = switch (type) {
+            case CM -> 90;
+            case TD -> 120;
+            case TP -> 120;
+            case CC -> 90;
+            default -> 90;
+        };
+
+        // Une pause entre 12h-13h est définit par défaut
+        // On définit les crénaux (par défaut) disponible au cours de la journée pour des cours
+        // de 90 minutes ou 120 minutes avec un debut et une fin
+        int[][] creneaux = (duree == 90)
+                ? new int[][]{{8, 0}, {9, 30}, {10, 30}, {13, 0}, {14, 30}, {16, 0}}
+                : new int[][]{{8, 0}, {10, 0}, {13, 0}, {15, 0}};
+
+        int[] creneau = creneaux[f.number().numberBetween(0, creneaux.length)];
+
+        LocalDateTime debut = date.atTime(creneau[0], creneau[1]);
+        LocalDateTime fin   = debut.plusMinutes(duree);
+
+
         Cours c = new Cours();
         c.setIntitule(module.getNom() + " – " + type.name());
         c.setTypeCours(type);
-        c.setDateDebut(date.atTime(8, 0));
-        c.setDateFin(date.atTime(type == TypeCours.CM ? 9 : 10, 30));
-        c.setDuree(type == TypeCours.CM ? 90 : 120);
+        c.setDateDebut(debut);
+        c.setDateFin(fin);
+        c.setDuree(duree);
         c.setEstCC(type == TypeCours.CC);
         c.setEstAnnule(false);
         c.setAnnotation(f.lorem().sentence());

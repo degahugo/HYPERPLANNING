@@ -30,7 +30,7 @@
 
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="Promotion" />
-                    <ComboBox fx:id="promotionFilter" onAction="#onPromotionChanged" prefWidth="180"/>
+                    <ComboBox fx:id="promotionFilter" onAction="#onPromotionChanged" prefWidth="220"/>
 
                     <Label text="Groupe" />
                     <ComboBox fx:id="groupeFilter" onAction="#onGroupeChanged" prefWidth="200"/>
