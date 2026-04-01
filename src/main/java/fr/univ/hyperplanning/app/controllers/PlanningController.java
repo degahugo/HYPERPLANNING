@@ -5,6 +5,8 @@ import fr.univ.hyperplanning.model.utilisateurs.Utilisateur;
 import fr.univ.hyperplanning.model.enums.NiveauGroupe;
 import fr.univ.hyperplanning.dao.CoursDAO;
 import fr.univ.hyperplanning.model.pedagogie.Cours;
+import fr.univ.hyperplanning.dao.SalleDAO;
+import fr.univ.hyperplanning.model.pedagogie.Salle;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 public class PlanningController {
 
     private final CoursDAO coursDAO = new CoursDAO();
+    private final SalleDAO salleDAO = new SalleDAO();
 
     @FXML private Label weekLabel;
     @FXML private HBox planningContainer;
@@ -38,12 +41,18 @@ public class PlanningController {
     @FXML
     private ComboBox<String> groupeFilter;
 
+    @FXML
+    private ComboBox<String> salleFilter;
+
     private NiveauGroupe selectedPromotion = null;
     private String selectedGroupe = null;
     private List<Cours> coursAffiches = List.of();
 
     private LocalDate currentDate;
     private boolean isWeekView = true;
+
+    // variable pour la salle séléctionné
+    private Long selectedSalleId = null;
 
     @FXML
     public void initialize() {
@@ -352,6 +361,14 @@ public class PlanningController {
             groupeFilter.getItems().addAll(coursDAO.findAllGroupCodes());
             groupeFilter.setValue("Tous les groupes");
         }
+
+        // Inititaliser le filtre des salles
+        if(salleFilter != null){
+            salleFilter.getItems().clear();
+            salleFilter.getItems().add("Toutes les salles");
+            salleFilter.getItems().addAll(salleDAO.findAllNumeros());
+            salleFilter.setValue("Toutes les salles");
+        }
     }
 
     @FXML
@@ -393,9 +410,28 @@ public class PlanningController {
     }
 
     @FXML
+    private void onSalleChanged(){
+        String valeur = salleFilter.getValue();
+
+        if(valeur== null || valeur.equals("Toutes les salles")){
+            selectedSalleId = null;
+        } else {
+            try {
+                Salle salle = salleDAO.findByNumero(valeur);
+                selectedSalleId = salle.getId();
+            } catch (Exception e){
+                selectedSalleId = null;
+            }
+        }
+
+        chargerDonnees();
+    }
+
+    @FXML
     private void onResetFilters() {
         selectedPromotion = null;
         selectedGroupe = null;
+        selectedSalleId = null;
 
         if (promotionFilter != null) {
             promotionFilter.setValue("Toutes les promotions");
@@ -406,6 +442,11 @@ public class PlanningController {
             groupeFilter.getItems().add("Tous les groupes");
             groupeFilter.getItems().addAll(coursDAO.findAllGroupCodes());
             groupeFilter.setValue("Tous les groupes");
+        }
+
+        // Réinitialiser le filtre salle
+        if(salleFilter != null){
+            salleFilter.setValue("Toutes les salles");
         }
 
         chargerDonnees();
@@ -427,7 +468,7 @@ public class PlanningController {
     private List<Cours> chargerCoursParRole(LocalDate debut, LocalDate fin) {
         // Si un filtre groupe/promotion est actif → charger tous les cours
         // pour que filtrerCoursAffiches() puisse les filtrer correctement
-        if (selectedPromotion != null || selectedGroupe != null) {
+        if (selectedPromotion != null || selectedGroupe != null || selectedSalleId != null) {
             return coursDAO.findByDateRange(debut, fin);
         }
 
@@ -448,6 +489,13 @@ public class PlanningController {
 
     private List<Cours> filtrerCoursAffiches() {
         List<Cours> coursFiltres = coursAffiches;
+
+        if (selectedSalleId != null){
+            coursFiltres = coursFiltres.stream()
+                    .filter(c -> c.getSalle() != null
+                            && selectedSalleId.equals(c.getSalle().getId()))
+                            .toList();
+        }
 
         if (selectedPromotion != null) {
             coursFiltres = coursFiltres.stream()

@@ -132,7 +132,8 @@ public class MainController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/SallesDispoView.fxml"));
             Parent view = loader.load();
             SallesDispoController ctrl = loader.getController();
-            ctrl.setSalleDAO(new SalleDAO(JpaUtil.em()));
+            //ctrl.setSalleDAO(new SalleDAO(JpaUtil.em()));
+            ctrl.setSalleDAO(new SalleDAO());
             contentArea.getChildren().setAll(view);
         } catch (IOException e) { e.printStackTrace(); }
     }

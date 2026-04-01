@@ -35,6 +35,9 @@
                     <Label text="Groupe" />
                     <ComboBox fx:id="groupeFilter" onAction="#onGroupeChanged" prefWidth="200"/>
 
+                    <Label text="Salle" />
+                    <ComboBox fx:id="salleFilter" onAction="#onSalleChanged" prefWidth="200"/>
+
                     <Button text="Reset" onAction="#onResetFilters"/>
                 </HBox>
 

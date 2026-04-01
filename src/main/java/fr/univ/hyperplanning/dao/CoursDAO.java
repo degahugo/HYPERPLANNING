@@ -195,4 +195,24 @@ public class CoursDAO {
         } finally { em.close(); }
     }
 
+    // Récuperer les cours d'une salle pour une période donnée
+    public List<Cours> findBySalle(Long salleId, LocalDate debut, LocalDate fin) {
+        EntityManager em = JpaUtil.em();
+        try {
+            return em.createQuery("""
+            SELECT DISTINCT c FROM Cours c
+            LEFT JOIN FETCH c.groupes
+            WHERE c.salle.id = :salleId
+              AND c.dateDebut BETWEEN :debut AND :fin
+            ORDER BY c.dateDebut
+            """, Cours.class)
+                    .setParameter("salleId", salleId)
+                    .setParameter("debut", debut.atStartOfDay())
+                    .setParameter("fin", fin.atTime(23, 59, 59))
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
 }
