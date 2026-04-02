@@ -145,7 +145,7 @@ public class PlanningController {
         chargerDonnees();
     }
 
-    // --- LOGIQUE DE RÉCUPÉRATION ET CALCUL ---
+    // LOGIQUE DE RÉCUPÉRATION ET CALCUL
 
     private void chargerDonnees() {
         LocalDate debut = currentDate.with(DayOfWeek.MONDAY);
@@ -354,7 +354,7 @@ public class PlanningController {
         return h;
     }
 
-    // --- STYLES ET HELPERS ---
+
 
     private String getHexColor(Cours c) {
         String type = c.getTypeCours().name();

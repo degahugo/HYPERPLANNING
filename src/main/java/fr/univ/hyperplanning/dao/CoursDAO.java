@@ -11,7 +11,7 @@ import java.util.List;
 
 public class CoursDAO {
 
-    // --- RECHERCHES GÉNÉRALES ---
+
 
     public List<Cours> findAll() {
         EntityManager em = JpaUtil.em();
@@ -48,7 +48,7 @@ public class CoursDAO {
         }
     }
 
-    // --- RECHERCHES PAR RÔLE (AVEC DATES) ---
+
 
     public List<Cours> findByEtudiant(Long etudiantId, LocalDate start, LocalDate end) {
         EntityManager em = JpaUtil.em();
@@ -104,7 +104,7 @@ public class CoursDAO {
         } finally { em.close(); }
     }
 
-    // --- RECHERCHES GLOBALES PAR RÔLE (SANS DATES - demandées par tes Dashboards) ---
+
 
     public List<Cours> findAllByEtudiant(Long etudiantId) {
         EntityManager em = JpaUtil.em();
@@ -133,7 +133,7 @@ public class CoursDAO {
         } finally { em.close(); }
     }
 
-    // --- RECHERCHES PAR PÉRIODE ---
+    // -
 
     public List<Cours> findByDay(LocalDate date) { return findByDateRange(date, date); }
 
@@ -145,7 +145,7 @@ public class CoursDAO {
         return findByDateRange(date.withDayOfMonth(1), date.withDayOfMonth(date.lengthOfMonth()));
     }
 
-    // --- FILTRES POUR COMBOBOX (Planning Admin) ---
+    //
 
     public List<String> findAllGroupCodes() {
         EntityManager em = JpaUtil.em();

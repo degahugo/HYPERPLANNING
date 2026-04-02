@@ -30,24 +30,21 @@ public class DashboardEtudiantController {
     public void initialize() {
         Utilisateur user = SessionUtilisateur.get();
 
-        // Sécurité : Vérification que l'utilisateur est connecté et que le FXML est chargé
+
         if (user == null || totalCoursLabel == null) {
             System.err.println("Erreur : Session utilisateur ou composants FXML manquants.");
             return;
         }
 
         LocalDate now = LocalDate.now();
-        // Plage du semestre (Dates dynamiques pour 2026 comme dans ton extrait)
         LocalDate debutSemestre = LocalDate.of(2026, 1, 1);
         LocalDate finSemestre = LocalDate.of(2026, 7, 1);
 
-        // RÉCUPÉRATION FILTRÉE (Logique de ton 3ème extrait)
         List<Cours> tous = coursDAO.findByEtudiant(user.getId(), debutSemestre, finSemestre);
         List<Cours> mois = coursDAO.findByEtudiant(user.getId(),
                 now.withDayOfMonth(1), now.withDayOfMonth(now.lengthOfMonth()));
         List<Cours> jour = coursDAO.findByEtudiant(user.getId(), now, now);
 
-        // MISE À JOUR DES COMPTEURS
         totalCoursLabel.setText(String.valueOf(tous.size()));
         coursMoisLabel.setText(String.valueOf(mois.size()));
         coursJourLabel.setText(String.valueOf(jour.size()));
@@ -108,13 +105,11 @@ public class DashboardEtudiantController {
         textPart.getChildren().addAll(title, subtitle);
         header.getChildren().addAll(dot, textPart);
 
-        // PROGRESS BAR (Visuel Figma)
         ProgressBar pb = new ProgressBar(0.7);
         pb.setMaxWidth(Double.MAX_VALUE);
         pb.setPrefHeight(6);
         pb.setStyle("-fx-accent: #111827; -fx-control-inner-background: #F3F4F6;");
 
-        // FOOTER (Multi-profs + Salle + Heure)
         HBox footer = new HBox();
         footer.setAlignment(Pos.BOTTOM_LEFT);
 
