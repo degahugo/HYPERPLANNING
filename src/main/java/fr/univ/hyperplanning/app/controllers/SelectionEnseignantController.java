@@ -1,6 +1,6 @@
 package fr.univ.hyperplanning.app.controllers;
 
-import fr.univ.hyperplanning.dao.EnseignantDAO;
+import fr.univ.hyperplanning.dao.EnseignantDao;
 import fr.univ.hyperplanning.model.utilisateurs.Enseignant;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -21,7 +21,7 @@ public class SelectionEnseignantController {
     @FXML
     private TableColumn<Enseignant, String> colSpecialite;
 
-    private EnseignantDAO enseignantDAO = new EnseignantDAO();
+    private final EnseignantDao enseignantDao = new EnseignantDao();
 
     @FXML
     public void initialize(){
@@ -31,7 +31,7 @@ public class SelectionEnseignantController {
         colSpecialite.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getSpecialite()));
 
         tableEnseignants.setItems(
-                FXCollections.observableArrayList(enseignantDAO.findAll())
+                FXCollections.observableArrayList(enseignantDao.findAll())
         );
     }
 
