@@ -78,4 +78,38 @@ public class CoursDAO {
 
         return findByDateRange(start, end);
     }
+
+    /**
+     @param cours
+     Prends un cours en entrée et l'insert dans la base de données
+     @version 1
+     @author Dylan MARTIN
+     */
+    public void nouveauCours(Cours cours) {
+        EntityManager em = JpaUtil.em();
+        try {
+            em.getTransaction().begin();
+            em.merge(cours);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    /*public void modificationCours(Cours cours, ) {
+        EntityManager em = JpaUtil.em();
+        try {
+            em.getTransaction().begin();
+            Cours c =  em.find(Cours.class, cours.getId());
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }*/
 }

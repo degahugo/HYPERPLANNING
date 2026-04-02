@@ -1,5 +1,6 @@
 package fr.univ.hyperplanning.dao;
 
+import fr.univ.hyperplanning.infra.config.JpaUtil;
 import fr.univ.hyperplanning.model.pedagogie.Salle;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
@@ -27,5 +28,20 @@ public class SalleDAO {
                 .setParameter("debut", java.sql.Timestamp.valueOf(debut))
                 .setParameter("fin", java.sql.Timestamp.valueOf(fin))
                 .getResultList();
+    }
+
+    /**
+     * @return Liste avec toutes les salles
+     */
+    public List<Salle> findAll() {
+        try {
+            return em.createQuery("SELECT s FROM Salle s", Salle.class)
+                    .getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return java.util.Collections.emptyList(); // Liste vide si erreur
+        } finally {
+            em.close();
+        }
     }
 }

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="20" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="fr.univ.hyperplanning.app.controllers.AjouterCoursController"
+      prefWidth="500.0" prefHeight="450.0">
+
+    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+
+    <Label text="Ajouter un nouveau cours" style="-fx-font-size: 18; -fx-font-weight: bold;"/>
+
+    <GridPane hgap="10" vgap="10">
+        <columnConstraints>
+            <ColumnConstraints minWidth="100" prefWidth="120" />
+            <ColumnConstraints hgrow="ALWAYS" />
+        </columnConstraints>
+
+        <Label text="Intitulé :" GridPane.rowIndex="0" />
+        <TextField fx:id="txtIntitule" promptText="Nom du cours" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+        <Label text="Type :" GridPane.rowIndex="1" />
+        <ComboBox fx:id="comboType" maxWidth="Infinity" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+
+        <Label text="Date et heure :" GridPane.rowIndex="2" />
+        <VBox spacing="5" GridPane.rowIndex="2" GridPane.columnIndex="1">
+            <DatePicker fx:id="dateDebutPicker" prefWidth="150"/>
+
+            <HBox spacing="5" GridPane.rowIndex="3" GridPane.columnIndex="1">
+                <TextField fx:id="txtHeureDebut" promptText="HH:mm" prefWidth="80"/>
+                <TextField fx:id="txtHeureFin" promptText="HH:mm" prefWidth="80"/>
+            </HBox>
+        </VBox>
+
+        <Label text="Module :" GridPane.rowIndex="4" />
+        <ComboBox fx:id="comboModule" maxWidth="Infinity" GridPane.rowIndex="4" GridPane.columnIndex="1" />
+
+        <Label text="Salle :" GridPane.rowIndex="5" />
+        <ComboBox fx:id="comboSalle" maxWidth="Infinity" GridPane.rowIndex="5" GridPane.columnIndex="1" />
+    </GridPane>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Annuler" onAction="#onAnnuler" style="-fx-base: #95a5a6;"/>
+        <Button text="Enregistrer" onAction="#onEnregistrer" style="-fx-base: #2ecc71; -fx-text-fill: white;"/>
+    </HBox>
+</VBox>

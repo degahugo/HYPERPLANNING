@@ -25,6 +25,8 @@
             <HBox spacing="20">
                 <Button text="🔍 Vérifier Salles Dispo" onAction="#ouvrirRechercheSalles"
                         style="-fx-background-color: #0F172A; -fx-text-fill: white; -fx-padding: 15 25; -fx-background-radius: 12; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                <Button text="Ajouter un cours" onAction="#ajouterCours"
+                        style="-fx-background-color: #ffffff; -fx-text-fill: #000000; -fx-padding: 15 25; -fx-background-radius: 12; -fx-font-weight: bold; -fx-cursor: hand;"/>
                 <Button text="⚠️ Gérer Conflits" onAction="#ouvrirGestionConflits"
                         style="-fx-background-color: white; -fx-border-color: #EF4444; -fx-text-fill: #EF4444; -fx-padding: 15 25; -fx-background-radius: 12; -fx-font-weight: bold; -fx-cursor: hand;"/>
             </HBox>
