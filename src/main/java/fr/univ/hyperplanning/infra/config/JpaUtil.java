@@ -9,6 +9,7 @@ public final class JpaUtil {
 
     private static EntityManagerFactory emf;
 
+
     private JpaUtil() {}
 
     public static synchronized EntityManager em() {
