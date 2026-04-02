@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<ScrollPane fitToWidth="true"
+            style="-fx-background-color: #F9FAFB; -fx-background: #F9FAFB;"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="fr.univ.hyperplanning.app.controllers.ProfilController">
+    <content>
+        <VBox fx:id="profilContainer" spacing="20" style="-fx-padding: 40;"/>
+    </content>
+</ScrollPane>

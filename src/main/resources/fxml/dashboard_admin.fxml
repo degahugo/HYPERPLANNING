@@ -17,7 +17,7 @@
                     <Label fx:id="totalCoursLabel" text="0" style="-fx-font-size: 24; -fx-font-weight: 800;"/>
                 </VBox>
                 <VBox prefWidth="250" spacing="10" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 16; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 8, 0, 0, 2);">
-                    <Label text="Cours ce mois" style="-fx-text-fill: #6B7280; -fx-font-size: 13;"/>
+                    <Label text="Cours cette semaine" style="-fx-text-fill: #6B7280; -fx-font-size: 13;"/>
                     <Label fx:id="coursSemaineLabel" text="0" style="-fx-font-size: 24; -fx-font-weight: 800;"/>
                 </VBox>
             </HBox>

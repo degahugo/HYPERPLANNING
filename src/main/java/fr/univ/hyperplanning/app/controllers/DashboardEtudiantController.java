@@ -1,7 +1,11 @@
 package fr.univ.hyperplanning.app.controllers;
 
+import fr.univ.hyperplanning.app.SessionUtilisateur;
 import fr.univ.hyperplanning.dao.CoursDAO;
 import fr.univ.hyperplanning.model.pedagogie.Cours;
+import fr.univ.hyperplanning.model.utilisateurs.Enseignant;
+import fr.univ.hyperplanning.model.utilisateurs.Intervenant;
+import fr.univ.hyperplanning.model.utilisateurs.Utilisateur;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -24,43 +28,80 @@ public class DashboardEtudiantController {
 
     @FXML
     public void initialize() {
-        if (totalCoursLabel == null) {
-            System.err.println("Alerte : totalCoursLabel est NULL. Vérifiez le fx:id dans le FXML.");
+        Utilisateur user = SessionUtilisateur.get();
+
+
+        if (user == null || totalCoursLabel == null) {
+            System.err.println("Erreur : Session utilisateur ou composants FXML manquants.");
             return;
         }
 
         LocalDate now = LocalDate.now();
-        List<Cours> tous = coursDAO.findAll();
-        List<Cours> mois = coursDAO.findByMonth(now);
-        List<Cours> jour = coursDAO.findByDay(now);
+        LocalDate debutSemestre = LocalDate.of(2026, 1, 1);
+        LocalDate finSemestre = LocalDate.of(2026, 7, 1);
+
+        List<Cours> tous = coursDAO.findByEtudiant(user.getId(), debutSemestre, finSemestre);
+        List<Cours> mois = coursDAO.findByEtudiant(user.getId(),
+                now.withDayOfMonth(1), now.withDayOfMonth(now.lengthOfMonth()));
+        List<Cours> jour = coursDAO.findByEtudiant(user.getId(), now, now);
 
         totalCoursLabel.setText(String.valueOf(tous.size()));
         coursMoisLabel.setText(String.valueOf(mois.size()));
         coursJourLabel.setText(String.valueOf(jour.size()));
 
+        // AFFICHAGE DES CARTES DU JOUR
         todayLessonsContainer.getChildren().clear();
-        for (Cours c : jour) {
-            todayLessonsContainer.getChildren().add(creerCardCoursFigma(c));
+        if (jour.isEmpty()) {
+            Label vide = new Label("Aucun cours aujourd'hui ✨");
+            vide.setStyle("-fx-text-fill: #9CA3AF; -fx-font-size: 14; -fx-font-style: italic;");
+            todayLessonsContainer.getChildren().add(vide);
+        } else {
+            for (Cours c : jour) {
+                todayLessonsContainer.getChildren().add(creerCardCoursFigma(c));
+            }
         }
+    }
+
+    /**
+     * Gère l'affichage de tous les intervenants sur plusieurs lignes
+     */
+    private String obtenirNomProf(Cours c) {
+        StringBuilder sb = new StringBuilder();
+        if (c.getEnseignantsEnseignes() != null) {
+            for (Enseignant e : c.getEnseignantsEnseignes()) {
+                if (sb.length() > 0) sb.append("\n");
+                sb.append("👤 ").append(e.getNom().toUpperCase()).append(" ").append(e.getPrenom().substring(0, 1)).append(".");
+            }
+        }
+        if (c.getIntervenantsInterventions() != null) {
+            for (Intervenant i : c.getIntervenantsInterventions()) {
+                if (sb.length() > 0) sb.append("\n");
+                sb.append("👤 ").append(i.getNom().toUpperCase()).append(" (Ext.)");
+            }
+        }
+        return sb.length() > 0 ? sb.toString() : "👤 Non assigné";
     }
 
     private VBox creerCardCoursFigma(Cours c) {
         VBox card = new VBox(12);
         card.setPadding(new Insets(20));
-        // STYLE FIGMA : Blanc, ombre portée légère, bordure fine
         card.setStyle("-fx-background-color: white; -fx-background-radius: 16; " +
                 "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4); " +
                 "-fx-border-color: #F3F4F6; -fx-border-radius: 16;");
 
+        // HEADER
         HBox header = new HBox(12);
         header.setAlignment(Pos.CENTER_LEFT);
-        Circle dot = new Circle(4, Color.web("#2563EB")); // Point bleu Figma
+        Circle dot = new Circle(4, Color.web("#2563EB"));
 
         VBox textPart = new VBox(2);
         Label title = new Label(c.getIntitule());
         title.setStyle("-fx-font-size: 15; -fx-font-weight: bold; -fx-text-fill: #111827;");
-        Label subtitle = new Label((c.getModule() != null ? c.getModule().getCode() : "COURS") + " • 6 ECTS");
+
+        String type = (c.getTypeCours() != null) ? c.getTypeCours().name() : "COURS";
+        Label subtitle = new Label((c.getModule() != null ? c.getModule().getCode() : "UE") + " • " + type);
         subtitle.setStyle("-fx-text-fill: #6B7280; -fx-font-size: 12;");
+
         textPart.getChildren().addAll(title, subtitle);
         header.getChildren().addAll(dot, textPart);
 
@@ -70,19 +111,33 @@ public class DashboardEtudiantController {
         pb.setStyle("-fx-accent: #111827; -fx-control-inner-background: #F3F4F6;");
 
         HBox footer = new HBox();
-        footer.setAlignment(Pos.CENTER_LEFT);
-        Label prof = new Label("Dr. Rousseau"); // À dynamiser plus tard
-        prof.setStyle("-fx-text-fill: #6B7280; -fx-font-size: 12;");
-        Region s = new Region(); HBox.setHgrow(s, Priority.ALWAYS);
-        Label time = new Label(c.getDateDebut().toLocalTime().toString());
-        time.setStyle("-fx-text-fill: #2563EB; -fx-font-weight: bold;");
+        footer.setAlignment(Pos.BOTTOM_LEFT);
 
-        footer.getChildren().addAll(prof, s, time);
+        VBox infoBox = new VBox(5);
+        Label profLabel = new Label(obtenirNomProf(c));
+        profLabel.setWrapText(true);
+        profLabel.setStyle("-fx-text-fill: #6B7280; -fx-font-size: 11;");
+
+        Label salleLabel = new Label("📍 Salle " + (c.getSalle() != null ? c.getSalle().getNumero() : "N/A"));
+        salleLabel.setStyle("-fx-text-fill: #111827; -fx-font-size: 11; -fx-font-weight: bold;");
+
+        infoBox.getChildren().addAll(profLabel, salleLabel);
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        Label time = new Label(c.getDateDebut().toLocalTime().toString());
+        time.setStyle("-fx-text-fill: #2563EB; -fx-font-weight: bold; -fx-font-size: 13;");
+
+        footer.getChildren().addAll(infoBox, spacer, time);
         card.getChildren().addAll(header, pb, footer);
+
         return card;
     }
 
     @FXML private void handleVoirTout() {
-        MainController.getInstance().gererNavigation("PLANNING");
+        if (MainController.getInstance() != null) {
+            MainController.getInstance().gererNavigation("PLANNING");
+        }
     }
 }

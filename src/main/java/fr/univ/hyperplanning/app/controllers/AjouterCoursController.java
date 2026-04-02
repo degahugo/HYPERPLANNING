@@ -28,7 +28,7 @@ public class AjouterCoursController {
     @FXML private CheckBox checkCC;
 
     private final CoursDAO coursDAO = new CoursDAO();
-    private final SalleDAO salleDAO = new SalleDAO(JpaUtil.em());
+    private final SalleDAO salleDAO = new SalleDAO();
     private final ModuleDAO moduleDAO = new ModuleDAO();
 
     @FXML

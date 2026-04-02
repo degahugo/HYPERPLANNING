@@ -6,6 +6,7 @@ import fr.univ.hyperplanning.infra.config.JpaUtil;
 import fr.univ.hyperplanning.model.pedagogie.Groupe;
 import fr.univ.hyperplanning.model.pedagogie.SyllabusSemestre;
 import fr.univ.hyperplanning.model.utilisateurs.Enseignant;
+import fr.univ.hyperplanning.model.utilisateurs.Intervenant;
 import fr.univ.hyperplanning.model.utilisateurs.Etudiant;
 import fr.univ.hyperplanning.model.utilisateurs.Utilisateur;
 import fr.univ.hyperplanning.app.controllers.Authentification.NavigationUtil;
@@ -32,7 +33,6 @@ public class MainController {
     @FXML private Label userInfoLabel;
     @FXML private AnchorPane contentArea;
     @FXML private VBox menuBox;
-    @FXML private Button btnDeconnexion;
 
     private final String STYLE_NORMAL = "-fx-background-color: transparent; -fx-text-fill: #4B5563; -fx-font-size: 15; -fx-alignment: CENTER_LEFT; -fx-padding: 0 0 0 20; -fx-cursor: hand;";
     private final String STYLE_ACTIVE = "-fx-background-color: #EFF6FF; -fx-text-fill: #2563EB; -fx-font-weight: bold; -fx-background-radius: 12; -fx-font-size: 15; -fx-alignment: CENTER_LEFT; -fx-padding: 0 0 0 20; -fx-cursor: hand;";
@@ -69,6 +69,9 @@ public class MainController {
             } else if (role.equals("ENSEIGNANT")) {
                 Enseignant ens = em.find(Enseignant.class, user.getId());
                 if (userInfoLabel != null) userInfoLabel.setText(ens != null ? ens.getSpecialite() : "Enseignant");
+            } else if (role.equals("INTERVENANT")) {
+                Intervenant inter = em.find(Intervenant.class, user.getId());
+                if (userInfoLabel != null) userInfoLabel.setText(inter != null ? "Intervenant - " + inter.getEntreprise() : "Intervenant");
             } else {
                 if (userInfoLabel != null) userInfoLabel.setText("Administration");
             }
@@ -83,10 +86,14 @@ public class MainController {
         if (role.equals("ETUDIANT")) {
             ajouterBoutonMenu("📖  Devoirs", "DEVOIRS", false);
             ajouterBoutonMenu("⫶三  Examens", "EXAMENS", false);
-        } else if (role.equals("ADMINISTRATION") || role.equals("ADMIN")) {
+        } else if (role.contains("ADMIN")) {
             ajouterBoutonMenu("⚠️  Conflits", "CONFLITS", false);
             ajouterBoutonMenu("🏫  Salles", "SALLES", false);
             ajouterBoutonMenu("  Ajouter un cours", "AJOUTER_COURS", false, false);
+        }
+
+        if (!role.contains("ADMIN")) {
+            ajouterBoutonMenu("👤  Mon profil", "PROFIL", false);
         }
 
         ajouterBoutonMenu("🚪  Déconnexion", "LOGOUT", false);
@@ -174,15 +181,26 @@ public class MainController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/SallesDispoView.fxml"));
             Parent view = loader.load();
             SallesDispoController ctrl = loader.getController();
-            ctrl.setSalleDAO(new SalleDAO(JpaUtil.em()));
+            ctrl.setSalleDAO(new SalleDAO()); // Utilisation du constructeur vide
             contentArea.getChildren().setAll(view);
         } catch (IOException e) { e.printStackTrace(); }
     }
 
     private void chargerVueParRole() {
-        String role = SessionUtilisateur.get().getRole().name();
-        if (role.equals("ETUDIANT")) loadView("/fxml/dashboard_etudiant.fxml");
-        else if (role.equals("ENSEIGNANT")) loadView("/fxml/dashboard_enseignant.fxml");
-        else loadView("/fxml/dashboard_admin.fxml");
+        Utilisateur user = SessionUtilisateur.get();
+        if (user == null) return;
+
+        String role = user.getRole().name();
+
+        // Navigation directe vers les fichiers correspondants
+        if (role.equals("ETUDIANT")) {
+            loadView("/fxml/dashboard_etudiant.fxml");
+        } else if (role.equals("ENSEIGNANT")) {
+            loadView("/fxml/dashboard_enseignant.fxml");
+        } else if (role.equals("INTERVENANT")) {
+            loadView("/fxml/dashboard_intervenant.fxml");
+        } else {
+            loadView("/fxml/dashboard_admin.fxml");
+        }
     }
 }

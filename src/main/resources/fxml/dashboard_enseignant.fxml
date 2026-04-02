@@ -26,8 +26,14 @@
 
                         <HBox prefWidth="250" spacing="15" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);">
                             <VBox HBox.hgrow="ALWAYS">
-                                <Label text="Demandes en attente" style="-fx-text-fill: #6B7280;" />
-                                <Label fx:id="demandesAttenteLabel" text="0" style="-fx-font-size: 26; -fx-font-weight: 900; -fx-text-fill: #F59E0B;" />
+                                <Label text="Cours ce mois" style="-fx-text-fill: #6B7280;" />
+                                <Label fx:id="coursMoisLabel" text="0" style="-fx-font-size: 26; -fx-font-weight: 900;" />
+                            </VBox>
+                        </HBox>
+                        <HBox prefWidth="250" spacing="15" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);">
+                            <VBox HBox.hgrow="ALWAYS">
+                                <Label text="Aujourd'hui" style="-fx-text-fill: #6B7280;" />
+                                <Label fx:id="coursJourLabel" text="0" style="-fx-font-size: 26; -fx-font-weight: 900;" />
                             </VBox>
                         </HBox>
                     </children>
@@ -40,6 +46,15 @@
                     <Button text="🔍 Salles disponibles" onAction="#ouvrirRechercheSalles"
                             style="-fx-background-color: white; -fx-border-color: #E5E7EB; -fx-padding: 15 25; -fx-background-radius: 10; -fx-font-weight: bold; -fx-cursor: hand;"/>
                 </HBox>
+                <VBox spacing="20" style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 20;">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="Mes cours aujourd'hui" style="-fx-font-size: 18; -fx-font-weight: 800;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="Voir tout →" onAction="#handleVoirToutPlanning"
+                                style="-fx-background-color: transparent; -fx-text-fill: #8B5CF6; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                    </HBox>
+                    <VBox fx:id="todayLessonsContainer" spacing="15"/>
+                </VBox>
             </children>
         </VBox>
     </content>

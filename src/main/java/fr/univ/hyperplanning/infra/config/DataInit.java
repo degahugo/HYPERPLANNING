@@ -17,6 +17,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class DataInit {
 
     private static final Faker   FAKER = new Faker(Locale.FRENCH);
@@ -74,6 +77,18 @@ public class DataInit {
             g.setSyllabus(syllabus);
             em.persist(g);
 
+            // AJOUT SPRINT 4 : Groupe 2 pour tester le filtrage promo
+            Groupe g2 = new Groupe();
+            g2.setCode("L2TD2");
+            g2.setLibelle("L2 TD2");
+            g2.setNiveau(NiveauGroupe.L2);
+            g2.setTypeGroupe(TypeGroupe.TD);
+            g2.setEffectifMax(30);
+            g2.setEffectifActuel(0);
+            g2.setAnneeUniversitaire(2025);
+            g2.setSyllabus(syllabus);
+            em.persist(g2);
+
 
             Date today = Date.valueOf(LocalDate.now());
 
@@ -81,53 +96,91 @@ public class DataInit {
             Enseignant ens   = findOrCreateEnseignant(em, "ens1@univ.fr", today);
             Enseignant ens2 = findOrCreateEnseignant(em, "ens2@univ.fr", today);
             Intervenant inter = findOrCreateIntervenant(em, "int1@univ.fr", today);
+
+            // Étudiant 1
             Etudiant etu   = findOrCreateEtudiant(em, "etu1@univ.fr", today);
+
+            // --- ÉTUDIANT 2 : Création manuelle pour éviter le conflit de matricule ---
+            Etudiant etu2;
+            try {
+                // On vérifie s'il existe déjà pour ne pas créer de doublon d'email
+                etu2 = em.createQuery("SELECT e FROM Etudiant e WHERE e.email = :e", Etudiant.class)
+                        .setParameter("e", "etu2@univ.fr").getSingleResult();
+            } catch (NoResultException e) {
+                // S'il n'existe pas, on le crée de A à Z proprement
+                etu2 = new Etudiant();
+                etu2.setNom("BENOIT");
+                etu2.setPrenom("Marc");
+                etu2.setEmail("etu2@univ.fr");
+                etu2.setMotDePasseHash(AuthService.hasher("etu2345"));
+                etu2.setRole(RoleUtilisateur.ETUDIANT);
+                                                            etu2.setAnneeEntree(2025);
+                                                            etu2.setActif(true);
+                                                            etu2.setDerniereConnexion(today);
+
+                // ICI : Tu mets le bon numéro DIRECTEMENT
+                etu2.setNumeroEtudiant("ETU20250002");
+                etu2.setDateCreation(today);
+
+                em.persist(etu2); // On le persiste une seule fois avec les bonnes infos
+            }
 
             // Données personnelles (une seule fois chacune)
             if (admin.getDonneePersonnelle() == null) em.persist(buildDP(admin));
             if (ens.getDonneePersonnelle()   == null) em.persist(buildDP(ens));
             if (inter.getDonneePersonnelle() == null) em.persist(buildDP(inter));
             if (etu.getDonneePersonnelle()   == null) em.persist(buildDP(etu));
+            if (etu2.getDonneePersonnelle()  == null) em.persist(buildDP(etu2));
 
-            // Relations groupe <-> étudiant
+            // Relations groupe <-> étudiant 1
             if (!etu.getGroupes().contains(g)) {
                 etu.getGroupes().add(g);
                 g.getEtudiants().add(etu);
             }
 
+            // Relations groupe <-> étudiant 2
+            if (!etu2.getGroupes().contains(g2)) {
+                etu2.getGroupes().add(g2);
+                g2.getEtudiants().add(etu2);
+            }
+
 
             LocalDate coursDate = LocalDate.now().plusDays(1);
 
+            // MODIFICATION SPRINT 4 : CM pour la PROMO (G1 + G2)
             Cours cours = new Cours();
-            cours.setIntitule("Algorithmique - TD");
-            cours.setTypeCours(TypeCours.TD);
+            cours.setIntitule("Algorithmique - CM (PROMO)");
+            cours.setTypeCours(TypeCours.CM);
             cours.setDateDebut(coursDate.atTime(8, 0));
             cours.setDateFin(coursDate.atTime(10, 0));
             cours.setDuree(120);
             cours.setEstCC(false);
             cours.setEstAnnule(false);
-            cours.setAnnotation("Séance de TD");
+            cours.setAnnotation("Cours magistral");
             cours.setSalle(salle);
             cours.setModule(mAlgo);
 
             cours.getGroupes().add(g);
+            cours.getGroupes().add(g2); // Liaison aux deux groupes
             g.getCours().add(cours);
+            g2.getCours().add(cours);
             ens.getCoursEnseignes().add(cours);
             inter.getCoursInterventions().add(cours);
 
             em.persist(cours);
 
+            // MODIFICATION SPRINT 4 : TD spécifique au GROUPE 1
             LocalDate coursDate2 = LocalDate.now().plusDays(2);
 
             Cours cours2 = new Cours();
-            cours2.setIntitule("Algorithmique - CM");
-            cours2.setTypeCours(TypeCours.CM);
+            cours2.setIntitule("Algorithmique - TD G1");
+            cours2.setTypeCours(TypeCours.TD);
             cours2.setDateDebut(coursDate2.atTime(9, 0));
-            cours2.setDateFin(coursDate2.atTime(10, 30));
-            cours2.setDuree(90);
+            cours2.setDateFin(coursDate2.atTime(11, 0));
+            cours2.setDuree(120);
             cours2.setEstCC(false);
             cours2.setEstAnnule(false);
-            cours2.setAnnotation("Cours magistral");
+            cours2.setAnnotation("Séance TD Groupe 1");
             cours2.setSalle(salle2);
             cours2.setModule(mAlgo);
 
@@ -138,26 +191,62 @@ public class DataInit {
 
             em.persist(cours2);
 
+            // MODIFICATION SPRINT 4 : TD spécifique au GROUPE 2 (Invisible pour etu1 si filtré)
             LocalDate coursDate3 = LocalDate.now().plusDays(3);
 
             Cours cours3 = new Cours();
-            cours3.setIntitule("Projet - TD");
+            cours3.setIntitule("Algorithmique - TD G2");
             cours3.setTypeCours(TypeCours.TD);
             cours3.setDateDebut(coursDate3.atTime(14, 0));
             cours3.setDateFin(coursDate3.atTime(16, 0));
             cours3.setDuree(120);
             cours3.setEstCC(false);
             cours3.setEstAnnule(false);
-            cours3.setAnnotation("Projet tutoré");
+            cours3.setAnnotation("Séance TD Groupe 2");
             cours3.setSalle(salle2);
-            cours3.setModule(mProjet);
+            cours3.setModule(mAlgo);
 
-            cours3.getGroupes().add(g);
-            g.getCours().add(cours3);
+            cours3.getGroupes().add(g2);
+            g2.getCours().add(cours3);
 
             ens.getCoursEnseignes().add(cours3);
 
             em.persist(cours3);
+
+            // --- NOUVEAU JEU DE DONNÉE : Cours exclusif Enseignant ---
+            // --- COURS EXCLUSIF ENSEIGNANT ---
+            Cours coursExpert = new Cours();
+            coursExpert.setIntitule("Expertise Java - Avancé");
+            coursExpert.setTypeCours(TypeCours.TD);
+            coursExpert.setDateDebut(coursDate.plusDays(3).atTime(10, 0));
+            coursExpert.setDateFin(coursDate.plusDays(3).atTime(12, 0));
+            coursExpert.setDuree(120);            // AJOUTÉ
+            coursExpert.setEstCC(false);          // AJOUTÉ
+            coursExpert.setEstAnnule(false);      // AJOUTÉ
+            coursExpert.setAnnotation("Cours expert"); // AJOUTÉ (L'ERREUR VENAIT DE LÀ)
+            coursExpert.setSalle(salle);
+            coursExpert.setModule(mProjet);
+            coursExpert.getGroupes().add(g);
+            coursExpert.getGroupes().add(g2);
+            ens.getCoursEnseignes().add(coursExpert);
+            em.persist(coursExpert);
+
+// --- NOUVEAU JEU DE DONNÉE : Cours exclusif Intervenant ---
+            Cours coursConf = new Cours();
+            coursConf.setIntitule("Conférence Métier");
+            coursConf.setTypeCours(TypeCours.CM);
+            coursConf.setDateDebut(coursDate.plusDays(4).atTime(14, 0));
+            coursConf.setDateFin(coursDate.plusDays(4).atTime(16, 0));
+            coursConf.setDuree(120);            // AJOUTÉ
+            coursConf.setEstCC(false);          // AJOUTÉ
+            coursConf.setEstAnnule(false);      // AJOUTÉ
+            coursConf.setAnnotation("Conférence externe"); // AJOUTÉ
+            coursConf.setSalle(salle2);
+            coursConf.setModule(mProjet);
+            coursConf.getGroupes().add(g);
+            coursConf.getGroupes().add(g2);
+            inter.getCoursInterventions().add(coursConf);
+            em.persist(coursConf);
 
 
             Absence absence = new Absence();
@@ -221,9 +310,9 @@ public class DataInit {
             cours.getConflits().add(conflit);
             em.persist(conflit);
 
-            // =========================
-            // 11) DemandeModification
-            // =========================
+
+            //DemandeModification
+
             DemandeModification dm = new DemandeModification();
             dm.setDescription("Demande de déplacement du cours TD Algorithmique");
             dm.setMotif("Déplacement exceptionnel");
@@ -310,6 +399,32 @@ public class DataInit {
                 if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
             }
 
+            // 4bis. Associer un sous-ensemble de modules à chaque groupe
+            Map<Long, List<ModuleCours>> modulesParGroupe = new HashMap<>();
+            for (Groupe grp : groupes) {
+                Groupe grpManaged = em.merge(grp);
+
+                List<ModuleCours> modulesCompatibles = modules.stream()
+                        .filter(m -> m.getSyllabus() != null
+                                && grpManaged.getSyllabus() != null
+                                && m.getSyllabus().getId().equals(grpManaged.getSyllabus().getId()))
+                        .toList();
+
+                List<ModuleCours> selection = new ArrayList<>();
+
+                int nbModulesPourGroupe = Math.min(4, modulesCompatibles.size());
+
+                List<ModuleCours> copie = new ArrayList<>(modulesCompatibles);
+
+                for (int i = 0; i < nbModulesPourGroupe; i++) {
+                    ModuleCours choisi = pick(copie);
+                    selection.add(choisi);
+                    copie.remove(choisi);
+                }
+
+                modulesParGroupe.put(grpManaged.getId(), selection);
+            }
+
             // 5. Enseignants
             List<Enseignant> enseignants = new ArrayList<>();
             for (int i = 1; i <= Math.max(5, scale / 10); i++) {
@@ -321,10 +436,12 @@ public class DataInit {
             }
 
             // 6. Intervenants
+            List<Intervenant> intervenants = new ArrayList<>(); // ← liste manquante
             for (int i = 1; i <= Math.max(3, scale / 20); i++) {
                 Intervenant inter = ModelFactory.intervenant(FAKER, i, today);
                 em.persist(inter);
                 em.persist(ModelFactory.donneePersonnelle(FAKER, inter));
+                intervenants.add(inter); // ← jamais stocké avant
                 if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
             }
 
@@ -351,7 +468,7 @@ public class DataInit {
             }
 
             // 9. Cours
-            List<Cours> coursList = new ArrayList<>();
+            /*List<Cours> coursList = new ArrayList<>();
             int nbCours = Math.max(20, scale / 2);
             for (int i = 0; i < nbCours; i++) {
                 ModuleCours mod = em.merge(pick(modules));
@@ -364,6 +481,45 @@ public class DataInit {
                 em.persist(c);
                 coursList.add(c);
                 if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
+            }*/
+
+            // 9. Cours
+            List<Cours> coursList = new ArrayList<>();
+            int nbCours = Math.max(20, scale / 2);
+
+            for (int i = 0; i < nbCours; i++) {
+                Groupe grp = em.merge(pick(groupes));
+
+                List<ModuleCours> modulesDuGroupe = modulesParGroupe.get(grp.getId());
+                if (modulesDuGroupe == null || modulesDuGroupe.isEmpty()) {
+                    continue;
+                }
+
+                ModuleCours mod = em.merge(pick(modulesDuGroupe));
+                Salle sal = em.merge(pick(salles));
+                TypeCours type = pick(TypeCours.values());
+
+                Cours c = ModelFactory.cours(FAKER, mod, sal, type);
+
+                c.getGroupes().add(grp);
+                grp.getCours().add(c);
+
+                Enseignant ens = em.merge(pick(enseignants));
+                ens.getCoursEnseignes().add(c);
+
+                //Assigner un intervant sur certains cours
+                if (!intervenants.isEmpty() && RNG.nextInt(10) < 3) {
+                    Intervenant inv = em.merge(pick(intervenants));
+                    inv.getCoursInterventions().add(c);
+                }
+
+                em.persist(c);
+                coursList.add(c);
+
+                if (++count % BATCH_SIZE == 0) {
+                    em.flush();
+                    em.clear();
+                }
             }
 
             // 10. Absences
@@ -442,9 +598,7 @@ public class DataInit {
                 if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
             }
             */
-            // modifier le printf afin qu'il soit comme ceci : System.out.printf("[DataInit] ✔ Bulk : %d étudiants | %d cours | %d absences | "
-            //                            + "%d notifs | %d historiques | %d conflits | %d demandes insérés%n",
-            //                    scale, nbCours, nbAbsences, nbNotifs, nbHist, nbConflits, nbDemandes);
+
             tx.commit();
             System.out.printf("[DataInit] ✔ Bulk : %d étudiants | %d cours | %d absences insérés%n",
                     scale, nbCours, nbAbsences);
