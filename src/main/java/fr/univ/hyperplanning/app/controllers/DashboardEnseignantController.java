@@ -3,40 +3,75 @@ package fr.univ.hyperplanning.app.controllers;
 import fr.univ.hyperplanning.app.SessionUtilisateur;
 import fr.univ.hyperplanning.dao.CoursDAO;
 import fr.univ.hyperplanning.model.pedagogie.Cours;
-import fr.univ.hyperplanning.model.utilisateurs.Intervenant;
 import fr.univ.hyperplanning.model.utilisateurs.Utilisateur;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-
+import javafx.scene.layout.*;
 import java.time.LocalDate;
 import java.util.List;
 
 public class DashboardEnseignantController {
 
     @FXML private Label totalCoursLabel;
-    @FXML private Label demandesAttenteLabel;
+    @FXML private Label coursMoisLabel;
+    @FXML private Label coursJourLabel;
+    @FXML private VBox  todayLessonsContainer;
 
     private final CoursDAO coursDAO = new CoursDAO();
 
     @FXML
     public void initialize() {
+        LocalDate now = LocalDate.now();
         Utilisateur user = SessionUtilisateur.get();
-        if (user != null) {
-            LocalDate debut = LocalDate.of(2026, 1, 1);
-            LocalDate fin = LocalDate.of(2026, 7, 1);
 
-            List<Cours> mesCours ;
-            if (user instanceof Intervenant) {
-                mesCours = coursDAO.findByIntervenant(user.getId(), debut, fin);
-            } else {
-                mesCours = coursDAO.findByEnseignant(user.getId(), debut, fin);
-            }
+        // Sécurité : si pas d'utilisateur, on s'arrête
+        if (user == null) return;
 
+        // On utilise la logique de la branche 'work' qui est plus complète (Stats Mois/Jour)
+        // Mais on retire la vérification 'instanceof Intervenant' car il a son propre controller
+        List<Cours> tous = coursDAO.findAllByEnseignant(user.getId());
+        List<Cours> mois = coursDAO.findByEnseignant(user.getId(),
+                now.withDayOfMonth(1), now.withDayOfMonth(now.lengthOfMonth()));
+        List<Cours> jour = coursDAO.findByEnseignant(user.getId(), now, now);
 
-            totalCoursLabel.setText(String.valueOf(mesCours.size()));
+        // Mise à jour des textes
+        totalCoursLabel.setText(String.valueOf(tous.size()));
+        if (coursMoisLabel != null) coursMoisLabel.setText(String.valueOf(mois.size()));
+        if (coursJourLabel != null) coursJourLabel.setText(String.valueOf(jour.size()));
+
+        // Affichage des cartes du jour
+        todayLessonsContainer.getChildren().clear();
+        for (Cours c : jour) {
+            todayLessonsContainer.getChildren().add(creerCard(c));
         }
-        demandesAttenteLabel.setText("3");
+    }
 
+    private VBox creerCard(Cours c) {
+        VBox card = new VBox(10);
+        card.setPadding(new Insets(16));
+        card.setStyle("-fx-background-color: white; -fx-background-radius: 12; " +
+                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 8, 0, 0, 2); " +
+                "-fx-border-color: #F3F4F6; -fx-border-radius: 12;");
+
+        Label titre = new Label(c.getIntitule());
+        titre.setStyle("-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #111827;");
+
+        Label salle = new Label("📍  " + (c.getSalle() != null ? c.getSalle().getNumero() : "N/A"));
+        salle.setStyle("-fx-text-fill: #6B7280; -fx-font-size: 12;");
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        Label heure = new Label(c.getDateDebut().toLocalTime() + " – " + c.getDateFin().toLocalTime());
+        heure.setStyle("-fx-text-fill: #8B5CF6; -fx-font-weight: bold; -fx-font-size: 12;");
+
+        HBox footer = new HBox(salle, spacer, heure);
+        footer.setAlignment(Pos.CENTER_LEFT);
+
+        card.getChildren().addAll(titre, footer);
+        return card;
     }
 
     @FXML

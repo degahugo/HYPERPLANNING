@@ -30,7 +30,6 @@ public class MainController {
     @FXML private Label userInfoLabel;
     @FXML private AnchorPane contentArea;
     @FXML private VBox menuBox;
-    @FXML private Button btnDeconnexion;
 
     private final String STYLE_NORMAL = "-fx-background-color: transparent; -fx-text-fill: #4B5563; -fx-font-size: 15; -fx-alignment: CENTER_LEFT; -fx-padding: 0 0 0 20; -fx-cursor: hand;";
     private final String STYLE_ACTIVE = "-fx-background-color: #EFF6FF; -fx-text-fill: #2563EB; -fx-font-weight: bold; -fx-background-radius: 12; -fx-font-size: 15; -fx-alignment: CENTER_LEFT; -fx-padding: 0 0 0 20; -fx-cursor: hand;";
@@ -69,9 +68,7 @@ public class MainController {
                 if (userInfoLabel != null) userInfoLabel.setText(ens != null ? ens.getSpecialite() : "Enseignant");
             } else if (role.equals("INTERVENANT")) {
                 Intervenant inter = em.find(Intervenant.class, user.getId());
-                if (userInfoLabel != null) {
-                    userInfoLabel.setText(inter != null ? "Intervenant - " + inter.getEntreprise() : "Intervenant");
-                }
+                if (userInfoLabel != null) userInfoLabel.setText(inter != null ? "Intervenant - " + inter.getEntreprise() : "Intervenant");
             } else {
                 if (userInfoLabel != null) userInfoLabel.setText("Administration");
             }
@@ -83,13 +80,16 @@ public class MainController {
         ajouterBoutonMenu("⊞  Tableau de bord", "DASHBOARD", true);
         ajouterBoutonMenu("📅  Emploi du temps", "PLANNING", false);
 
-        // L'intervenant a les mêmes menus que l'enseignant
         if (role.equals("ETUDIANT")) {
             ajouterBoutonMenu("📖  Devoirs", "DEVOIRS", false);
             ajouterBoutonMenu("⫶三  Examens", "EXAMENS", false);
-        } else if (role.equals("ADMINISTRATION") || role.equals("ADMIN")) {
+        } else if (role.contains("ADMIN")) {
             ajouterBoutonMenu("⚠️  Conflits", "CONFLITS", false);
             ajouterBoutonMenu("🏫  Salles", "SALLES", false);
+        }
+
+        if (!role.contains("ADMIN")) {
+            ajouterBoutonMenu("👤  Mon profil", "PROFIL", false);
         }
 
         ajouterBoutonMenu("🚪  Déconnexion", "LOGOUT", false);
@@ -111,10 +111,11 @@ public class MainController {
     public void gererNavigation(String action) {
         switch (action) {
             case "DASHBOARD" -> chargerVueParRole();
-            case "PLANNING" -> loadView("/fxml/planning.fxml");
-            case "CONFLITS" -> loadView("/fxml/ConflictView.fxml");
-            case "SALLES" -> loadViewSalles();
-            case "LOGOUT" -> seDeconnecter();
+            case "PLANNING"  -> loadView("/fxml/planning.fxml");
+            case "CONFLITS"  -> loadView("/fxml/ConflictView.fxml");
+            case "SALLES"    -> loadViewSalles();
+            case "PROFIL"    -> loadView("/fxml/profil.fxml");
+            case "LOGOUT"    -> seDeconnecter();
         }
     }
 
@@ -133,18 +134,26 @@ public class MainController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/SallesDispoView.fxml"));
             Parent view = loader.load();
             SallesDispoController ctrl = loader.getController();
-            ctrl.setSalleDAO(new SalleDAO(JpaUtil.em()));
+            ctrl.setSalleDAO(new SalleDAO()); // Utilisation du constructeur vide
             contentArea.getChildren().setAll(view);
         } catch (IOException e) { e.printStackTrace(); }
     }
 
     private void chargerVueParRole() {
-        String role = SessionUtilisateur.get().getRole().name();
-        if (role.equals("ETUDIANT")) loadView("/fxml/dashboard_etudiant.fxml");
-        else if (role.equals("ENSEIGNANT") || role.equals("INTERVENANT")) {
-            // L'intervenant utilise le même dashboard que l'enseignant
+        Utilisateur user = SessionUtilisateur.get();
+        if (user == null) return;
+
+        String role = user.getRole().name();
+
+        // Navigation directe vers les fichiers correspondants
+        if (role.equals("ETUDIANT")) {
+            loadView("/fxml/dashboard_etudiant.fxml");
+        } else if (role.equals("ENSEIGNANT")) {
             loadView("/fxml/dashboard_enseignant.fxml");
+        } else if (role.equals("INTERVENANT")) {
+            loadView("/fxml/dashboard_intervenant.fxml");
+        } else {
+            loadView("/fxml/dashboard_admin.fxml");
         }
-        else loadView("/fxml/dashboard_admin.fxml");
     }
 }

@@ -29,9 +29,15 @@ Objectif : concevoir et développer une application type "Hyperplanning" permett
 - Maven
 - PostgreSQL
 - Docker
+- JPA
+
+## Organisation et Structure de travail 
+
 - Architecture MVC
 - Méthodologie Scrum
-- JPA
+- Git / Github
+- Jira
+- Discord
  
 ---
 
@@ -77,7 +83,7 @@ Le projet suit une architecture :
 
 Méthodologie Scrum  
 Sprints de 1 semaine  
-Livraison finale prévue fin mars 2026.
+Livraison finale prévue debut avril 2026.
 
 # HyperPlanning
 
@@ -119,6 +125,19 @@ hyperplanning/
 ## Demarrage
 
 Prerequis : Docker (Desktop) installé et ouvert.
+
+```bash
+sdk use java 21.0.10-tem
+docker compose down -v
+
+docker compose up -d postgres
+docker compose ps
+
+mvn clean compile
+mvn javafx:run
+```
+
+(Commande pas mise à jour)
 
 ```bash
 ./run.sh

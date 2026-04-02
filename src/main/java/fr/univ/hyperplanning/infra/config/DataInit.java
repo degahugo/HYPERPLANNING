@@ -17,6 +17,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class DataInit {
 
     private static final Faker   FAKER = new Faker(Locale.FRENCH);
@@ -396,6 +399,32 @@ public class DataInit {
                 if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
             }
 
+            // 4bis. Associer un sous-ensemble de modules à chaque groupe
+            Map<Long, List<ModuleCours>> modulesParGroupe = new HashMap<>();
+            for (Groupe grp : groupes) {
+                Groupe grpManaged = em.merge(grp);
+
+                List<ModuleCours> modulesCompatibles = modules.stream()
+                        .filter(m -> m.getSyllabus() != null
+                                && grpManaged.getSyllabus() != null
+                                && m.getSyllabus().getId().equals(grpManaged.getSyllabus().getId()))
+                        .toList();
+
+                List<ModuleCours> selection = new ArrayList<>();
+
+                int nbModulesPourGroupe = Math.min(4, modulesCompatibles.size());
+
+                List<ModuleCours> copie = new ArrayList<>(modulesCompatibles);
+
+                for (int i = 0; i < nbModulesPourGroupe; i++) {
+                    ModuleCours choisi = pick(copie);
+                    selection.add(choisi);
+                    copie.remove(choisi);
+                }
+
+                modulesParGroupe.put(grpManaged.getId(), selection);
+            }
+
             // 5. Enseignants
             List<Enseignant> enseignants = new ArrayList<>();
             for (int i = 1; i <= Math.max(5, scale / 10); i++) {
@@ -407,10 +436,12 @@ public class DataInit {
             }
 
             // 6. Intervenants
+            List<Intervenant> intervenants = new ArrayList<>(); // ← liste manquante
             for (int i = 1; i <= Math.max(3, scale / 20); i++) {
                 Intervenant inter = ModelFactory.intervenant(FAKER, i, today);
                 em.persist(inter);
                 em.persist(ModelFactory.donneePersonnelle(FAKER, inter));
+                intervenants.add(inter); // ← jamais stocké avant
                 if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
             }
 
@@ -437,7 +468,7 @@ public class DataInit {
             }
 
             // 9. Cours
-            List<Cours> coursList = new ArrayList<>();
+            /*List<Cours> coursList = new ArrayList<>();
             int nbCours = Math.max(20, scale / 2);
             for (int i = 0; i < nbCours; i++) {
                 ModuleCours mod = em.merge(pick(modules));
@@ -450,6 +481,45 @@ public class DataInit {
                 em.persist(c);
                 coursList.add(c);
                 if (++count % BATCH_SIZE == 0) { em.flush(); em.clear(); }
+            }*/
+
+            // 9. Cours
+            List<Cours> coursList = new ArrayList<>();
+            int nbCours = Math.max(20, scale / 2);
+
+            for (int i = 0; i < nbCours; i++) {
+                Groupe grp = em.merge(pick(groupes));
+
+                List<ModuleCours> modulesDuGroupe = modulesParGroupe.get(grp.getId());
+                if (modulesDuGroupe == null || modulesDuGroupe.isEmpty()) {
+                    continue;
+                }
+
+                ModuleCours mod = em.merge(pick(modulesDuGroupe));
+                Salle sal = em.merge(pick(salles));
+                TypeCours type = pick(TypeCours.values());
+
+                Cours c = ModelFactory.cours(FAKER, mod, sal, type);
+
+                c.getGroupes().add(grp);
+                grp.getCours().add(c);
+
+                Enseignant ens = em.merge(pick(enseignants));
+                ens.getCoursEnseignes().add(c);
+
+                //Assigner un intervant sur certains cours
+                if (!intervenants.isEmpty() && RNG.nextInt(10) < 3) {
+                    Intervenant inv = em.merge(pick(intervenants));
+                    inv.getCoursInterventions().add(c);
+                }
+
+                em.persist(c);
+                coursList.add(c);
+
+                if (++count % BATCH_SIZE == 0) {
+                    em.flush();
+                    em.clear();
+                }
             }
 
             // 10. Absences
