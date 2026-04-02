@@ -32,8 +32,11 @@ public class Absence {
     @Column(nullable=false)
     private String motif;
 
-    @Column(nullable=true)
-    private String justificatif;
+    // Pour gérer plusieurs fichiers justificatifs
+    @ElementCollection
+    @CollectionTable(name = "absence_pieces_jointes", joinColumns = @JoinColumn(name = "absence_id"))
+    @Column(name = "fichier_path")
+    private java.util.List<String> piecesJointesPaths = new java.util.ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable=false)

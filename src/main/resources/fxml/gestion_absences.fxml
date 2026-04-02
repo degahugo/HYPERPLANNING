@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="20" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univ.hyperplanning.app.controllers.GestionAbsencesController">
+    <padding>
+        <Insets bottom="20" left="20" right="20" top="20" />
+    </padding>
+
+    <Label text="Gestion des Absences" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #111827;"/>
+
+    <TableView fx:id="tableAbsences" VBox.vgrow="ALWAYS" style="-fx-background-radius: 10;">
+        <columns>
+            <TableColumn fx:id="colEtudiant" prefWidth="150" text="Étudiant" />
+            <TableColumn fx:id="colCours" prefWidth="150" text="Cours" />
+            <TableColumn fx:id="colDate" prefWidth="100" text="Date Cours" />
+            <TableColumn fx:id="colMotif" prefWidth="200" text="Motif" />
+            <TableColumn fx:id="colJustificatifs" prefWidth="120" text="Justificatifs" />
+            <TableColumn fx:id="colActions" prefWidth="180" text="Actions" />
+        </columns>
+    </TableView>
+</VBox>

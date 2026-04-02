@@ -86,6 +86,8 @@ public class MainController {
         } else if (role.contains("ADMIN")) {
             ajouterBoutonMenu("⚠️  Conflits", "CONFLITS", false);
             ajouterBoutonMenu("🏫  Salles", "SALLES", false);
+            ajouterBoutonMenu("🚫  Gestion Absences", "GESTION_ABSENCES", false);
+
         }
 
         if (!role.contains("ADMIN")) {
@@ -116,6 +118,7 @@ public class MainController {
             case "SALLES"    -> loadViewSalles();
             case "PROFIL"    -> loadView("/fxml/profil.fxml");
             case "LOGOUT"    -> seDeconnecter();
+            case "GESTION_ABSENCES" -> loadView("/fxml/gestion_absences.fxml");
         }
     }
 

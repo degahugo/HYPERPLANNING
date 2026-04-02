@@ -214,7 +214,7 @@ public final class ModelFactory {
         Absence a = new Absence();
         a.setDateAbsence(Date.valueOf(cours.getDateDebut().toLocalDate()));
         a.setMotif(f.options().option("Maladie", "Raison familiale", "Transport", "Problème personnel"));
-        a.setJustificatif(null);
+        a.setPiecesJointesPaths(new java.util.ArrayList<>());
         a.setStatut(randomEnum(StatutAbsence.class, f));
         a.setDateDeclaration(LocalDateTime.now().minusDays(f.number().numberBetween(0, 10)));
         a.setDateValidation(null);

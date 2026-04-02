@@ -20,7 +20,15 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import fr.univ.hyperplanning.model.gestion.Absence;
+import fr.univ.hyperplanning.model.utilisateurs.Etudiant;
+import fr.univ.hyperplanning.model.enums.StatutAbsence;
 
+
+import fr.univ.hyperplanning.dao.AbsenceDAO;
+
+
+import java.time.LocalDateTime;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
@@ -413,8 +421,83 @@ public class PlanningController {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Détails du cours");
         alert.setHeaderText(c.getIntitule());
-        alert.setContentText("Salle : " + c.getSalle().getNumero() + "\nHoraire : " + c.getDateDebut().toLocalTime() + " - " + c.getDateFin().toLocalTime() + "\n\nResponsables :\n" + obtenirNomProf(c));
-        alert.show();
+
+        String content = "📍 Salle : " + c.getSalle().getNumero() +
+                "\n🕒 " + c.getDateDebut().toLocalTime() + " - " + c.getDateFin().toLocalTime() +
+                "\n\nResponsables :\n" + obtenirNomProf(c);
+        alert.setContentText(content);
+
+        // Ajout des boutons
+        ButtonType btnSignaler = new ButtonType("Signaler une absence");
+        ButtonType btnFermer = new ButtonType("Fermer", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(btnSignaler, btnFermer);
+
+        alert.showAndWait().ifPresent(type -> {
+            if (type == btnSignaler) {
+                ouvrirFormulaireAbsence(c);
+            }
+        });
+    }
+
+    private void ouvrirFormulaireAbsence(Cours c) {
+        Dialog<Absence> dialog = new Dialog<>();
+        dialog.setTitle("Justifier une absence");
+        dialog.setHeaderText("Justification pour : " + c.getIntitule());
+
+        ButtonType envoyerButton = new ButtonType("Envoyer", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(envoyerButton, ButtonType.CANCEL);
+
+        // --- MISE EN PAGE ---
+        VBox content = new VBox(10);
+        content.setPadding(new javafx.geometry.Insets(20));
+
+        TextArea txtMotif = new TextArea();
+        txtMotif.setPromptText("Saisissez votre motif...");
+        txtMotif.setPrefHeight(80);
+
+        ListView<String> listViewFichiers = new ListView<>();
+        listViewFichiers.setPrefHeight(100);
+        java.util.List<java.io.File> fichiersSelectionnes = new java.util.ArrayList<>();
+
+        Button btnAdd = new Button("➕ Ajouter des justificatifs (PDF, Images)");
+        btnAdd.setOnAction(e -> {
+            javafx.stage.FileChooser fc = new javafx.stage.FileChooser();
+            // Permettre la sélection multiple
+            java.util.List<java.io.File> selected = fc.showOpenMultipleDialog(null);
+            if (selected != null) {
+                for (java.io.File f : selected) {
+                    fichiersSelectionnes.add(f);
+                    listViewFichiers.getItems().add(f.getName());
+                }
+            }
+        });
+
+        content.getChildren().addAll(new Label("Motif :"), txtMotif, btnAdd, new Label("Fichiers joints :"), listViewFichiers);
+        dialog.getDialogPane().setContent(content);
+
+        // --- LOGIQUE DE SAUVEGARDE ---
+        dialog.setResultConverter(btn -> {
+            if (btn == envoyerButton) {
+                return Absence.builder()
+                        .etudiantAbsent((Etudiant) SessionUtilisateur.get())
+                        .declareePar(SessionUtilisateur.get())
+                        .cours(c)
+                        .dateAbsence(java.sql.Date.valueOf(c.getDateDebut().toLocalDate()))
+                        .dateDeclaration(LocalDateTime.now())
+                        .motif(txtMotif.getText())
+                        .statut(StatutAbsence.DECLAREE)
+                        .piecesJointesPaths(fichiersSelectionnes.stream()
+                                .map(java.io.File::getAbsolutePath)
+                                .collect(java.util.stream.Collectors.toList()))
+                        .build();
+            }
+            return null;
+        });
+
+        dialog.showAndWait().ifPresent(abs -> {
+            new AbsenceDAO().sauvegarder(abs);
+            new Alert(Alert.AlertType.INFORMATION, "Absence transmise avec succès !").show();
+        });
     }
 
     @FXML private void onPrevWeek() { currentDate = currentDate.minusWeeks(1); chargerDonnees(); }
