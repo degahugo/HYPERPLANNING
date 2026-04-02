@@ -111,9 +111,9 @@ public class DataInit {
                 etu2.setEmail("etu2@univ.fr");
                 etu2.setMotDePasseHash(AuthService.hasher("etu2345"));
                 etu2.setRole(RoleUtilisateur.ETUDIANT);
-                etu2.setAnneeEntree(2025);
-                etu2.setActif(true);
-                etu2.setDerniereConnexion(today);
+                                                            etu2.setAnneeEntree(2025);
+                                                            etu2.setActif(true);
+                                                            etu2.setDerniereConnexion(today);
 
                 // ICI : Tu mets le bon numéro DIRECTEMENT
                 etu2.setNumeroEtudiant("ETU20250002");

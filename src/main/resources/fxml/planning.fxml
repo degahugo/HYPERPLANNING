@@ -20,15 +20,27 @@
 
                 <VBox alignment="CENTER" prefHeight="130.0" style="-fx-background-color: white; -fx-background-radius: 25; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.02), 30, 0, 0, 0); -fx-border-color: #F3F4F6; -fx-border-width: 1.5; -fx-border-radius: 25;">
                     <Label fx:id="weekLabel" style="-fx-font-size: 28; -fx-font-weight: 900;" text="Chargement..." />
-                    <Label text="Semestre 2 - Semaine 10" style="-fx-text-fill: #9CA3AF; -fx-font-weight: bold;" />
+                    <Label text="Planning Universitaire" style="-fx-text-fill: #9CA3AF; -fx-font-weight: bold;" />
                 </VBox>
 
-                <HBox maxWidth="310.0" spacing="5.0" style="-fx-background-color: #F3F4F6; -fx-background-radius: 15; -fx-padding: 5;">
-                    <Button fx:id="btnWeek" onAction="#onWeekView" prefHeight="40.0" prefWidth="150.0" text="Vue Semaine" />
-                    <Button fx:id="btnDay" onAction="#onDayView" prefHeight="40.0" prefWidth="150.0" text="Vue Jour" />
+                <HBox alignment="CENTER_LEFT" spacing="20.0">
+                    <HBox minWidth="310.0" spacing="5.0" style="-fx-background-color: #F3F4F6; -fx-background-radius: 15; -fx-padding: 5;">
+                        <Button fx:id="btnWeek" onAction="#onWeekView" prefHeight="40.0" prefWidth="150.0" text="Vue Semaine" style="-fx-cursor: hand;"/>
+                        <Button fx:id="btnDay" onAction="#onDayView" prefHeight="40.0" prefWidth="150.0" text="Vue Jour" style="-fx-cursor: hand;"/>
+                    </HBox>
+
+                    <HBox fx:id="adminFilterBar" alignment="CENTER_LEFT" spacing="10.0" HBox.hgrow="ALWAYS">
+                        <Separator orientation="VERTICAL" prefHeight="30.0" style="-fx-padding: 0 10;"/>
+                        <ComboBox fx:id="comboPromo" prefHeight="40.0" prefWidth="130.0" promptText="Syllabus" style="-fx-background-radius: 10;"/>
+                        <ComboBox fx:id="comboGroupe" prefHeight="40.0" prefWidth="100.0" promptText="Groupe" style="-fx-background-radius: 10;"/>
+                        <ComboBox fx:id="comboProf" prefHeight="40.0" prefWidth="150.0" promptText="Enseignant" style="-fx-background-radius: 10;"/>
+                        <ComboBox fx:id="comboSalle" prefHeight="40.0" prefWidth="100.0" promptText="Salle" style="-fx-background-radius: 10;"/>
+                        <ComboBox fx:id="comboType" prefHeight="40.0" prefWidth="90.0" promptText="Type" style="-fx-background-radius: 10;"/>
+                        <Button onAction="#resetFiltres" prefHeight="40.0" prefWidth="40.0" text="✕" style="-fx-background-color: #FEE2E2; -fx-text-fill: #DC2626; -fx-background-radius: 10; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                    </HBox>
                 </HBox>
 
-                <HBox fx:id="planningContainer" alignment="TOP_CENTER" fillHeight="true" />
+                <HBox fx:id="planningContainer" alignment="TOP_CENTER" fillHeight="true" VBox.vgrow="ALWAYS" />
             </children>
         </VBox>
     </content>
