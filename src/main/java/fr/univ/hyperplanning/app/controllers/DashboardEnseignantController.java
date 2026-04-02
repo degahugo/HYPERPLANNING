@@ -26,11 +26,9 @@ public class DashboardEnseignantController {
         LocalDate now = LocalDate.now();
         Utilisateur user = SessionUtilisateur.get();
 
-        // Sécurité : si pas d'utilisateur, on s'arrête
         if (user == null) return;
 
-        // On utilise la logique de la branche 'work' qui est plus complète (Stats Mois/Jour)
-        // Mais on retire la vérification 'instanceof Intervenant' car il a son propre controller
+
         List<Cours> tous = coursDAO.findAllByEnseignant(user.getId());
         List<Cours> mois = coursDAO.findByEnseignant(user.getId(),
                 now.withDayOfMonth(1), now.withDayOfMonth(now.lengthOfMonth()));
