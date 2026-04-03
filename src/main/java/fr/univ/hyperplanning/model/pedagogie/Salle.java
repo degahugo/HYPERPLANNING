@@ -41,4 +41,9 @@ public class Salle {
 
     @OneToMany(mappedBy = "sourceSalle")
     private Set<Conflit> conflitsSources = new HashSet<>();
+
+    @Override
+    public String toString() {
+        return this.numero; // Utilise l'attribut 'nom' de ton entité
+    }
 }
