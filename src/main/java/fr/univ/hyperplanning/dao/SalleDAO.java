@@ -38,7 +38,10 @@ public class SalleDAO {
     }
 
 
-    // Récuperer toutes les salles actives
+    /**
+     * Récupère toutes les salles déclarées dans la BD
+     * @return Liste avec les salles en utilisant toString
+     */
     public List<Salle> findAll(){
         EntityManager em = JpaUtil.em();
         try {

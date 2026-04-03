@@ -37,6 +37,9 @@ public class DashboardAdminController {
         MainController.getInstance().gererNavigation("CONFLITS");
     }
 
+    /**
+     * Ouvre le fxml pour ajouter un cours
+     */
     @FXML
     private void ajouterCours() { MainController.getInstance().gererNavigation("AJOUTER_COURS"); }
 }

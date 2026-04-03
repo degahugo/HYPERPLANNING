@@ -31,6 +31,9 @@ public class AjouterCoursController {
     private final SalleDAO salleDAO = new SalleDAO();
     private final ModuleDAO moduleDAO = new ModuleDAO();
 
+    /**
+     * Initialisation des comboType avec les cours, salles et modules
+     */
     @FXML
     public void initialize() {
         // Remplir les types (Enum)
@@ -41,6 +44,11 @@ public class AjouterCoursController {
         comboModule.getItems().setAll(moduleDAO.findAll());
     }
 
+    /**
+     * Vérifie que toutes les données sont renseignées
+     * Créer le cours
+     * Insère le cours en BD
+     */
     @FXML
     private void onEnregistrer() {
         try {
@@ -88,6 +96,9 @@ public class AjouterCoursController {
         }
     }
 
+    /**
+     * Ferme le popup (si si je vous jure)
+     */
     @FXML
     private void onAnnuler() {
         // Récupère le Stage actuel pour le fermer

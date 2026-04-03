@@ -176,8 +176,8 @@ public class CoursDAO {
     }
 
     /**
+     * Prends un cours en entrée et l'insert dans la base de données
      @param cours
-     Prends un cours en entrée et l'insert dans la base de données
      @version 1
      @author Dylan MARTIN
      */

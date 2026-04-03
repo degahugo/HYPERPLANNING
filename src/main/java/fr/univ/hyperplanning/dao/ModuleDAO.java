@@ -10,6 +10,7 @@ public class ModuleDAO {
     /**
      * Récupère la liste de tous les modules enregistrés en base de données.
      * Utile pour remplir la ComboBox dans le formulaire d'ajout de cours.
+     * @return Liste avec tous les modules en utilisant toString
      */
     public List<ModuleCours> findAll() {
         EntityManager em = JpaUtil.em();
