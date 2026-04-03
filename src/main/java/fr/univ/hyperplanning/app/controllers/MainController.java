@@ -156,6 +156,7 @@ public class MainController {
             Parent root = loader.load();
             instancePopup = new Stage();
             instancePopup.setScene(new Scene(root, v, v1));
+            instancePopup.setTitle("Ajouter un cours");
             instancePopup.setMinWidth(v);
             instancePopup.setMinHeight(v1);
             instancePopup.centerOnScreen();

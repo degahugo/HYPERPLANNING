@@ -11,8 +11,6 @@
 
     <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
 
-    <Label text="Ajouter un nouveau cours" style="-fx-font-size: 18; -fx-font-weight: bold;"/>
-
     <GridPane hgap="10" vgap="10">
         <columnConstraints>
             <ColumnConstraints minWidth="100" prefWidth="120" />
