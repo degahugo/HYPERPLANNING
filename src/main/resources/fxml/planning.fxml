@@ -40,7 +40,7 @@
 
                         <ComboBox fx:id="comboType" onAction="#onTypeChanged" prefHeight="40.0" prefWidth="100.0" promptText="Type" style="-fx-background-radius: 10;"/>
 
-                        <Button onAction="#onResetFilters" prefHeight="40.0" prefWidth="80.0" text="Reset" style="-fx-background-color: #FEE2E2; -fx-text-fill: #DC2626; -fx-background-radius: 10; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                        <Button onAction="#onResetFilters" prefHeight="40.0" prefWidth="80.0" text="Réinitialiser les filtres" style="-fx-background-color: #FEE2E2; -fx-text-fill: #DC2626; -fx-background-radius: 10; -fx-font-weight: bold; -fx-cursor: hand;"/>
                     </HBox>
                 </HBox>
 

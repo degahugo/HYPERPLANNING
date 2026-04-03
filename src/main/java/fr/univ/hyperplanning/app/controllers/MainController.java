@@ -90,6 +90,9 @@ public class MainController {
             ajouterBoutonMenu("⚠️  Conflits", "CONFLITS", false);
             ajouterBoutonMenu("🏫  Salles", "SALLES", false);
             ajouterBoutonMenu("  Ajouter un cours", "AJOUTER_COURS", false, false);
+            ajouterBoutonMenu("🚫  Gestion Absences", "GESTION_ABSENCES", false);
+
+
         }
 
         if (!role.contains("ADMIN")) {
@@ -129,6 +132,7 @@ public class MainController {
             case "CONFLITS" -> loadView("/fxml/ConflictView.fxml");
             case "SALLES" -> loadViewSalles();
             case "LOGOUT" -> seDeconnecter();
+            case "GESTION_ABSENCES" -> loadView("/fxml/gestion_absences.fxml");
             case "AJOUTER_COURS" -> ouvrirPopUp("/fxml/ajouterCours.fxml", 600, 500);
         }
     }

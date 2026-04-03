@@ -9,7 +9,10 @@ public class DashboardAdminController {
 
     @FXML private Label totalCoursLabel;
     @FXML private Label coursSemaineLabel;
-
+    @FXML
+    private void ouvrirGestionAbsences() {
+        MainController.getInstance().gererNavigation("ABSENCES");
+    }
     private final CoursDAO coursDAO = new CoursDAO();
 
     @FXML

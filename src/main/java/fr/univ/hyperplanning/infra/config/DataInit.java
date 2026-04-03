@@ -252,7 +252,7 @@ public class DataInit {
             Absence absence = new Absence();
             absence.setDateAbsence(Date.valueOf(coursDate));
             absence.setMotif("Maladie");
-            absence.setJustificatif(null);
+            absence.setPiecesJointesPaths(new java.util.ArrayList<>());
             absence.setStatut(StatutAbsence.DECLAREE);
             absence.setDateDeclaration(LocalDateTime.now());
             absence.setDateValidation(null);
