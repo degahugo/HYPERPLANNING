@@ -92,6 +92,11 @@ public class SallesDispoController {
             return;
         }
 
+        if (coursId == null) {
+            showAlert("Erreur", "Aucun cours n'est sélectionné pour la résolution.");
+            return;
+        }
+
         try {
             // Récupération des horaires pour mettre à jour le cours
             DateTimeFormatter souple = DateTimeFormatter.ofPattern("H:mm");

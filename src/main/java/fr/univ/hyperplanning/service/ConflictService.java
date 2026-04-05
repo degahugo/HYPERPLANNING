@@ -28,10 +28,10 @@ public class ConflictService {
         List<ConflictInfo> conflicts = new ArrayList<>();
 
         try {
-            // On ne garde qu'une seule déclaration propre avec le type complet pour éviter les erreurs d'import
-            List<fr.univ.hyperplanning.model.pedagogie.Cours> tousLesCours = em.createQuery("SELECT c FROM Cours c", fr.univ.hyperplanning.model.pedagogie.Cours.class).getResultList();
+            List<fr.univ.hyperplanning.model.pedagogie.Cours> tousLesCours =
+                    em.createQuery("SELECT c FROM Cours c", fr.univ.hyperplanning.model.pedagogie.Cours.class).getResultList();
 
-            // --- DEBUG VERSION CLASSIQUE ---
+            // --- TES LOGS DE DEBUG (CONSERVÉS) ---
             System.out.println("======= DEBUG CONFLITS =======");
             if (tousLesCours == null || tousLesCours.isEmpty()) {
                 System.out.println("[ALERTE] La liste est VIDE. Le DataInit n'a rien enregistré !");
@@ -44,7 +44,10 @@ public class ConflictService {
             }
             System.out.println("==============================");
 
-
+            // --- DÉBUT DE LA TRANSACTION ---
+            if (!em.getTransaction().isActive()) {
+                em.getTransaction().begin();
+            }
 
             for (int i = 0; i < tousLesCours.size(); i++) {
                 for (int j = i + 1; j < tousLesCours.size(); j++) {
@@ -53,39 +56,48 @@ public class ConflictService {
 
                     if (isOverlapping(c1, c2)) {
 
-                        // Préparation des détails pour la Tâche 3
+                        // On prépare les infos pour l'admin
                         String nomSalle = (c1.getSalle() != null) ? c1.getSalle().getNumero() : "N/A";
                         String libelleGroupe = c1.getGroupes().isEmpty() ? "N/A" : c1.getGroupes().iterator().next().getLibelle();
 
-                        // --- A. CONFLIT DE SALLE ---
+                        // --- VÉRIFICATION CONFLIT DE SALLE ---
                         if (c1.getSalle() != null && c1.getSalle().equals(c2.getSalle())) {
+
+                            // ON MASQUE LES COURS (C'est ici que le conflit de salle agit)
+                            c1.setEnConflit(true);
+                            c2.setEnConflit(true);
+                            em.merge(c1);
+                            em.merge(c2);
+
                             conflicts.add(new ConflictInfo(
-                                    c1.getId(),
-                                    "SALLE",
-                                    c1.getIntitule(),
-                                    c2.getIntitule(),
-                                    nomSalle,
-                                    libelleGroupe,
-                                    "Enseignant X"
+                                    c1.getId(), "SALLE", c1.getIntitule(), c2.getIntitule(),
+                                    nomSalle, libelleGroupe, "Enseignant X"
                             ));
                         }
 
-                        // --- B. CONFLIT DE GROUPE ---
+                        // --- VÉRIFICATION CONFLIT DE GROUPE ---
                         if (hasCommonGroup(c1, c2)) {
+
+                            // ON MASQUE AUSSI (Si un groupe a deux cours en même temps)
+                            c1.setEnConflit(true);
+                            c2.setEnConflit(true);
+                            em.merge(c1);
+                            em.merge(c2);
+
                             conflicts.add(new ConflictInfo(
-                                    c1.getId(),
-                                    "GROUPE",
-                                    c1.getIntitule(),
-                                    c2.getIntitule(),
-                                    nomSalle,
-                                    libelleGroupe,
-                                    "Enseignant X"
+                                    c1.getId(), "GROUPE", c1.getIntitule(), c2.getIntitule(),
+                                    nomSalle, libelleGroupe, "Enseignant X"
                             ));
                         }
                     }
                 }
             }
+
+            // On valide les changements de statut (enConflit = true)
+            em.getTransaction().commit();
+
         } catch (Exception e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
             e.printStackTrace();
         }
         return conflicts;
@@ -143,6 +155,12 @@ public class ConflictService {
                     }
                 }
 
+
+                // --- L'ÉTAPE CRUCIALE ---
+                // Le conflit est résolu, on rend le cours de nouveau VISIBLE
+                cours.setEnConflit(false);
+                System.out.println("[OK] Cours ID " + coursId + " marqué comme résolu et visible.");
+
                 em.merge(cours);
                 em.getTransaction().commit();
                 return true;
@@ -185,3 +203,4 @@ public class ConflictService {
         return false;
     }
 }
+

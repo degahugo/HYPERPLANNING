@@ -1,5 +1,8 @@
 package fr.univ.hyperplanning.model.pedagogie;
 
+
+import fr.univ.hyperplanning.model.utilisateurs.Enseignant;
+import fr.univ.hyperplanning.model.utilisateurs.Intervenant;
 import fr.univ.hyperplanning.model.enums.TypeCours;
 import fr.univ.hyperplanning.model.gestion.Absence;
 import fr.univ.hyperplanning.model.gestion.Conflit;
@@ -79,4 +82,22 @@ public class Cours {
     // “peut avoir des conflits” (cours impactés par le conflit)
     @ManyToMany(mappedBy = "coursImpactes")
     private Set<Conflit> conflits = new HashSet<>();
+
+
+    // Dans la classe Cours
+    private boolean enConflit = false;
+
+    // Ajoute le Getter et le Setter
+    public boolean isEnConflit() { return enConflit; }
+    public void setEnConflit(boolean enConflit) { this.enConflit = enConflit; }
+
+
+
+
+
+    @ManyToMany(mappedBy = "coursEnseignes")
+    private Set<Enseignant> enseignantsEnseignes = new HashSet<>();
+
+    @ManyToMany(mappedBy = "coursInterventions")
+    private Set<Intervenant> intervenantsInterventions = new HashSet<>();
 }

@@ -1,0 +1,36 @@
+
+    public List<Cours> findByEtudiant(Long etudiantId, LocalDate start, LocalDate end) {
+        EntityManager em = JpaUtil.em();
+        try {
+            return em.createQuery(
+                            "SELECT DISTINCT c FROM Cours c " +
+                                    "LEFT JOIN FETCH c.groupes " +
+                                    "LEFT JOIN FETCH c.enseignantsEnseignes " +
+                                    "LEFT JOIN FETCH c.intervenantsInterventions " +
+                                    "JOIN c.groupes g JOIN g.etudiants e " +
+                                    "WHERE e.id = :etudiantId AND c.dateDebut BETWEEN :start AND :end " +
+                                    "ORDER BY c.dateDebut", Cours.class)
+                    .setParameter("etudiantId", etudiantId)
+                    .setParameter("start", start.atStartOfDay())
+                    .setParameter("end", end.atTime(23, 59, 59))
+                    .getResultList();
+        } finally { em.close(); }
+    }
+
+    public List<Cours> findByEnseignant(Long enseignantId, LocalDate start, LocalDate end) {
+        EntityManager em = JpaUtil.em();
+        try {
+            return em.createQuery(
+                            "SELECT DISTINCT c FROM Cours c " +
+                                    "LEFT JOIN FETCH c.groupes " +
+                                    "LEFT JOIN FETCH c.enseignantsEnseignes " +
+                                    "LEFT JOIN FETCH c.intervenantsInterventions " +
+                                    "JOIN c.enseignantsEnseignes ens " +
+                                    "WHERE ens.id = :enseignantId AND c.dateDebut BETWEEN :start AND :end " +
+                                    "ORDER BY c.dateDebut", Cours.class)
+                    .setParameter("enseignantId", enseignantId)
+                    .setParameter("start", start.atStartOfDay())
+                    .setParameter("end", end.atTime(23, 59, 59))
+                    .getResultList();
+        } finally { em.close(); }
+    }

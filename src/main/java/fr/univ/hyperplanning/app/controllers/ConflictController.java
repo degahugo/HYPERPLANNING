@@ -36,6 +36,7 @@ public class ConflictController {
      */
     @FXML
     public void initialize() {
+
         // Liaison de la colonne ID (Convertit le long primitif en Long objet pour JavaFX)
         colId.setCellValueFactory(cellData ->
                 new SimpleLongProperty(cellData.getValue().getId()).asObject());
