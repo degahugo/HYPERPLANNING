@@ -258,7 +258,7 @@ public class DataInit {
             absence.setDateValidation(null);
             absence.setMotifRefus(null);
             absence.setCours(cours);
-            absence.setEtudiantAbsent(etu);
+            absence.setUtilisateurAbsent(etu);
             absence.setDeclareePar(etu);
             absence.setValideePar(null);
             em.persist(absence);

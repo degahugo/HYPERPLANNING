@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="20" style="-fx-background-color: white;"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="fr.univ.hyperplanning.app.controllers.MesAbsencesController">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Mes absences"
+           style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #111827;"/>
+
+    <TableView fx:id="tableAbsences" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colCours" text="Cours" prefWidth="180"/>
+            <TableColumn fx:id="colDate" text="Date" prefWidth="110"/>
+            <TableColumn fx:id="colMotif" text="Motif" prefWidth="260"/>
+            <TableColumn fx:id="colStatut" text="Statut" prefWidth="120"/>
+            <TableColumn fx:id="colDateDeclaration" text="Déclarée le" prefWidth="160"/>
+            <TableColumn fx:id="colDateValidation" text="Traitée le" prefWidth="160"/>
+            <TableColumn fx:id="colMotifRefus" text="Motif refus" prefWidth="220"/>
+        </columns>
+    </TableView>
+</VBox>

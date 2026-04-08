@@ -12,7 +12,9 @@
 
     <TableView fx:id="tableAbsences" VBox.vgrow="ALWAYS" style="-fx-background-radius: 10;">
         <columns>
-            <TableColumn fx:id="colEtudiant" prefWidth="150" text="Étudiant" />
+            <TableColumn fx:id="colNom" text="Nom" prefWidth="120"/>
+            <TableColumn fx:id="colPrenom" text="Prénom" prefWidth="120"/>
+            <TableColumn fx:id="colUtilisateurs" text="Utilisateurs" prefWidth="140"/>
             <TableColumn fx:id="colCours" prefWidth="150" text="Cours" />
             <TableColumn fx:id="colDate" prefWidth="100" text="Date Cours" />
             <TableColumn fx:id="colMotif" prefWidth="200" text="Motif" />

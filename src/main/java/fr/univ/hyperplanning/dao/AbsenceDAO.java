@@ -5,7 +5,6 @@ import fr.univ.hyperplanning.model.enums.StatutAbsence;
 import fr.univ.hyperplanning.model.gestion.Absence;
 import jakarta.persistence.EntityManager;
 import java.util.List;
-import fr.univ.hyperplanning.model.gestion.Absence;
 
 public class AbsenceDAO {
     public void sauvegarder(Absence abs) {
@@ -27,7 +26,7 @@ public class AbsenceDAO {
         try {
             return em.createQuery(
                             "SELECT a FROM Absence a " +
-                                    "JOIN FETCH a.etudiantAbsent " +
+                                    "JOIN FETCH a.utilisateurAbsent " +
                                     "JOIN FETCH a.cours " +
                                     "LEFT JOIN FETCH a.piecesJointesPaths " + // Charge les chemins de fichiers
                                     "WHERE a.statut = :s", Absence.class)
@@ -38,16 +37,104 @@ public class AbsenceDAO {
         }
     }
 
-    public List<Absence> findAbsencesByEtudiant(Long etudiantId) {
+    public List<Absence> findAbsencesByUtilisateur(Long utilisateurId) {
         EntityManager em = JpaUtil.em();
         try {
             return em.createQuery(
                             "SELECT a FROM Absence a " +
                                     "JOIN FETCH a.cours " +
-                                    "WHERE a.etudiantAbsent.id = :id " +
+                                    "WHERE a.utilisateurAbsent.id = :id " +
                                     "ORDER BY a.dateAbsence DESC", Absence.class)
-                    .setParameter("id", etudiantId)
+                    .setParameter("id", utilisateurId)
                     .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<Absence> findAbsencesByEnseignant(Long enseignantId) {
+        EntityManager em = JpaUtil.em();
+        try {
+            return em.createQuery(
+                            "SELECT DISTINCT a FROM Absence a " +
+                                    "JOIN FETCH a.utilisateurAbsent ua " +
+                                    "JOIN FETCH a.cours c " +
+                                    "LEFT JOIN c.enseignantsEnseignes e " +
+                                    "WHERE e.id = :id " +
+                                    "ORDER BY a.dateDeclaration DESC", Absence.class)
+                    .setParameter("id", enseignantId)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<Absence> findAbsencesByIntervenant(Long intervenantId) {
+        EntityManager em = JpaUtil.em();
+        try {
+            return em.createQuery(
+                            "SELECT DISTINCT a FROM Absence a " +
+                                    "JOIN FETCH a.utilisateurAbsent ua " +
+                                    "JOIN FETCH a.cours c " +
+                                    "LEFT JOIN c.intervenantsInterventions i " +
+                                    "WHERE i.id = :id " +
+                                    "ORDER BY a.dateDeclaration DESC", Absence.class)
+                    .setParameter("id", intervenantId)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public long countAbsencesByUtilisateur(Long utilisateurId) {
+        EntityManager em = JpaUtil.em();
+        try {
+            return em.createQuery(
+                            "SELECT COUNT(a) FROM Absence a WHERE a.utilisateurAbsent.id = :id", Long.class)
+                    .setParameter("id", utilisateurId)
+                    .getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
+
+    public long countAbsencesAValider() {
+        EntityManager em = JpaUtil.em();
+        try {
+            return em.createQuery(
+                            "SELECT COUNT(a) FROM Absence a WHERE a.statut = :s", Long.class)
+                    .setParameter("s", StatutAbsence.DECLAREE)
+                    .getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
+
+    public long countAbsencesByEnseignant(Long enseignantId) {
+        EntityManager em = JpaUtil.em();
+        try {
+            return em.createQuery(
+                            "SELECT COUNT(DISTINCT a) FROM Absence a " +
+                                    "JOIN a.cours c " +
+                                    "JOIN c.enseignantsEnseignes e " +
+                                    "WHERE e.id = :id", Long.class)
+                    .setParameter("id", enseignantId)
+                    .getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
+
+    public long countAbsencesByIntervenant(Long intervenantId) {
+        EntityManager em = JpaUtil.em();
+        try {
+            return em.createQuery(
+                            "SELECT COUNT(DISTINCT a) FROM Absence a " +
+                                    "JOIN a.cours c " +
+                                    "JOIN c.intervenantsInterventions i " +
+                                    "WHERE i.id = :id", Long.class)
+                    .setParameter("id", intervenantId)
+                    .getSingleResult();
         } finally {
             em.close();
         }

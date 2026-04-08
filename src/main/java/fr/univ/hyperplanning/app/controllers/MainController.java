@@ -119,6 +119,8 @@ public class MainController {
             case "PROFIL"    -> loadView("/fxml/profil.fxml");
             case "LOGOUT"    -> seDeconnecter();
             case "GESTION_ABSENCES" -> loadView("/fxml/gestion_absences.fxml");
+            case "MES_ABSENCES" -> loadView("/fxml/mes_absences.fxml");
+            case "ABSENCES_COURS" -> loadView("/fxml/absences_cours.fxml");
         }
     }
 

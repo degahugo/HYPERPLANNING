@@ -15,11 +15,12 @@ import javafx.scene.layout.HBox;
 import java.awt.Desktop;
 import java.io.File;
 import java.time.LocalDateTime;
+import fr.univ.hyperplanning.app.SessionUtilisateur;
 
 public class GestionAbsencesController {
 
     @FXML private TableView<Absence> tableAbsences;
-    @FXML private TableColumn<Absence, String> colEtudiant, colCours, colDate, colMotif;
+    @FXML private TableColumn<Absence, String> colUtilisateurs, colNom, colPrenom, colCours, colDate, colMotif;
     @FXML private TableColumn<Absence, Void> colJustificatifs, colActions;
 
     private final AbsenceDAO absenceDAO = new AbsenceDAO();
@@ -31,9 +32,30 @@ public class GestionAbsencesController {
     }
 
     private void configurerColonnes() {
-        colEtudiant.setCellValueFactory(data -> new SimpleStringProperty(
-                data.getValue().getEtudiantAbsent().getNom() + " " + data.getValue().getEtudiantAbsent().getPrenom()));
+        colNom.setCellValueFactory(data ->
+                new SimpleStringProperty(
+                        data.getValue().getUtilisateurAbsent().getNom()
+                )
+        );
 
+        colPrenom.setCellValueFactory(data ->
+                new SimpleStringProperty(
+                        data.getValue().getUtilisateurAbsent().getPrenom()
+                )
+        );
+
+        colUtilisateurs.setCellValueFactory(data -> {
+            var u = data.getValue().getUtilisateurAbsent();
+
+            String role = switch (u.getRole()) {
+                case ETUDIANT -> "Étudiant";
+                case ENSEIGNANT, ENSEIGNANT_RESPONSABLE -> "Enseignant";
+                case INTERVENANT -> "Intervenant";
+                default -> "Utilisateur";
+            };
+
+            return new SimpleStringProperty(role);
+        });
         colCours.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getCours().getIntitule()));
 
         colDate.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getDateAbsence().toString()));
@@ -69,12 +91,46 @@ public class GestionAbsencesController {
                 else {
                     Absence abs = getTableView().getItems().get(getIndex());
                     btnValider.setOnAction(e -> traiter(abs, StatutAbsence.VALIDEE));
-                    btnRefuser.setOnAction(e -> traiter(abs, StatutAbsence.REFUSEE));
-                    setGraphic(container);
+                    btnRefuser.setOnAction(e -> ouvrirDialogueRefus(abs));                    setGraphic(container);
                 }
             }
         });
     }
+
+    private void ouvrirDialogueRefus(Absence abs) {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Refus de l'absence");
+        dialog.setHeaderText("Motif du refus");
+        dialog.setContentText("Veuillez saisir le motif :");
+
+        dialog.showAndWait().ifPresent(motif -> {
+            String motifRefus = motif == null ? "" : motif.trim();
+            if (!motifRefus.isEmpty()) {
+                traiterRefus(abs, motifRefus);
+            }
+        });
+    }
+
+    private void traiterRefus(Absence abs, String motifRefus) {
+        EntityManager em = JpaUtil.em();
+        try {
+            em.getTransaction().begin();
+            Absence managed = em.merge(abs);
+            managed.setStatut(StatutAbsence.REFUSEE);
+            managed.setMotifRefus(motifRefus);
+            managed.setDateValidation(LocalDateTime.now());
+            managed.setValideePar((Administration) SessionUtilisateur.get());
+            em.getTransaction().commit();
+            chargerDonnees();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+    }
+
+
 
     private void ouvrirFichiers(Absence abs) {
         for (String path : abs.getPiecesJointesPaths()) {
@@ -90,14 +146,23 @@ public class GestionAbsencesController {
         EntityManager em = JpaUtil.em();
         try {
             em.getTransaction().begin();
+
             Absence managed = em.merge(abs);
             managed.setStatut(nouveauStatut);
             managed.setDateValidation(LocalDateTime.now());
-            // On récupère l'admin connecté via ta session
-            managed.setValideePar((Administration) fr.univ.hyperplanning.app.SessionUtilisateur.get());
+            managed.setValideePar((Administration) SessionUtilisateur.get());
+
+            // IMPORTANT
+            if (nouveauStatut == StatutAbsence.VALIDEE) {
+                managed.setMotifRefus(null);
+            }
 
             em.getTransaction().commit();
-            chargerDonnees(); // Rafraîchir le tableau
+            chargerDonnees();
+
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            e.printStackTrace();
         } finally {
             em.close();
         }

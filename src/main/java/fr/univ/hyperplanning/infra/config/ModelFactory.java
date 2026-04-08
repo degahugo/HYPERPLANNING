@@ -220,7 +220,7 @@ public final class ModelFactory {
         a.setDateValidation(null);
         a.setMotifRefus(null);
         a.setCours(cours);
-        a.setEtudiantAbsent(etudiant);
+        a.setUtilisateurAbsent(etudiant);
         a.setDeclareePar(etudiant);
         a.setValideePar(null);
         return a;

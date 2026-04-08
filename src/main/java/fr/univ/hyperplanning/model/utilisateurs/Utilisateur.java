@@ -60,6 +60,9 @@ public abstract class Utilisateur {
     @OneToMany(mappedBy = "effectuePar", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Historique> historiques = new HashSet<>();
 
+    @OneToMany(mappedBy = "utilisateurAbsent")
+    private Set<Absence> absences = new HashSet<>();
+
     @OneToMany(mappedBy = "declareePar")
     private java.util.Set<Absence> absencesDeclarees = new java.util.HashSet<>();
 }
