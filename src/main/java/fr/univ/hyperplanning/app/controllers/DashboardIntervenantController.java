@@ -4,6 +4,12 @@ import fr.univ.hyperplanning.app.SessionUtilisateur;
 import fr.univ.hyperplanning.dao.CoursDAO;
 import fr.univ.hyperplanning.model.pedagogie.Cours;
 import fr.univ.hyperplanning.model.utilisateurs.Utilisateur;
+import fr.univ.hyperplanning.dao.AbsenceDAO;
+import fr.univ.hyperplanning.model.gestion.Absence;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -18,6 +24,12 @@ public class DashboardIntervenantController {
     @FXML private Label coursMoisLabel;
     @FXML private Label coursJourLabel;
     @FXML private VBox  todayLessonsContainer;
+    @FXML private VBox cardMesAbsences;
+    @FXML private VBox cardAbsencesCours;
+    @FXML private Label mesAbsencesCountLabel;
+    @FXML private Label absencesCoursCountLabel;
+    private final AbsenceDAO absenceDAO = new AbsenceDAO();
+
 
     private final CoursDAO coursDAO = new CoursDAO();
 
@@ -40,7 +52,43 @@ public class DashboardIntervenantController {
         for (Cours c : jour) {
             todayLessonsContainer.getChildren().add(creerCard(c));
         }
+        initialiserCartesAbsences(user);
     }
+
+    private void initialiserCartesAbsences(Utilisateur user) {
+        if (user == null) return;
+
+        if (mesAbsencesCountLabel != null) {
+            mesAbsencesCountLabel.setText(String.valueOf(
+                    absenceDAO.countAbsencesByUtilisateur(user.getId())
+            ));
+        }
+
+        if (absencesCoursCountLabel != null) {
+            absencesCoursCountLabel.setText(String.valueOf(
+                    absenceDAO.countAbsencesByIntervenant(user.getId())
+            ));
+        }
+
+        if (cardMesAbsences != null) {
+            cardMesAbsences.setOnMouseClicked(e -> {
+                if (MainController.getInstance() != null) {
+                    MainController.getInstance().gererNavigation("MES_ABSENCES");
+                }
+            });
+        }
+
+        if (cardAbsencesCours != null) {
+            cardAbsencesCours.setOnMouseClicked(e -> {
+                if (MainController.getInstance() != null) {
+                    MainController.getInstance().gererNavigation("ABSENCES_COURS");
+                }
+            });
+        }
+    }
+
+
+
 
     private VBox creerCard(Cours c) {
         VBox card = new VBox(10);

@@ -10,14 +10,28 @@
 
     <Label text="Gestion des Absences" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #111827;"/>
 
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Filtrer :" style="-fx-font-weight: bold; -fx-text-fill: #374151;"/>
+        <ComboBox fx:id="comboStatutFiltre" prefWidth="220" onAction="#onFiltreChanged"/>
+    </HBox>
+
     <TableView fx:id="tableAbsences" VBox.vgrow="ALWAYS" style="-fx-background-radius: 10;">
         <columns>
-            <TableColumn fx:id="colEtudiant" prefWidth="150" text="Étudiant" />
+            <TableColumn fx:id="colNom" text="Nom" prefWidth="120"/>
+            <TableColumn fx:id="colPrenom" text="Prénom" prefWidth="120"/>
+            <TableColumn fx:id="colUtilisateurs" text="Utilisateurs" prefWidth="140"/>
             <TableColumn fx:id="colCours" prefWidth="150" text="Cours" />
             <TableColumn fx:id="colDate" prefWidth="100" text="Date Cours" />
             <TableColumn fx:id="colMotif" prefWidth="200" text="Motif" />
             <TableColumn fx:id="colJustificatifs" prefWidth="120" text="Justificatifs" />
             <TableColumn fx:id="colActions" prefWidth="180" text="Actions" />
+            <TableColumn fx:id="colStatut" prefWidth="100" text="Statut" />
+            <TableColumn fx:id="colDateDeclaration" prefWidth="150" text="Déclarée le" />
+            <TableColumn fx:id="colDateValidation" prefWidth="150" text="Traitée le" />
+            <TableColumn fx:id="colTraitePar" prefWidth="140" text="Traité par" />
+            <TableColumn fx:id="colMotifRefus" prefWidth="180" text="Motif refus" />
+
         </columns>
     </TableView>
 </VBox>

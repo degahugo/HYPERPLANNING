@@ -417,6 +417,15 @@ public class PlanningController {
         btnDay.setStyle(!isWeekView ? active : inactive);
     }
 
+    private boolean peutSignalerAbsence(Utilisateur user) {
+        if (user == null) return false;
+
+        return switch (user.getRole()) {
+            case ETUDIANT, ENSEIGNANT, ENSEIGNANT_RESPONSABLE, INTERVENANT -> true;
+            default -> false;
+        };
+    }
+
     private void afficherDetailsCours(Cours c) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Détails du cours");
@@ -427,19 +436,34 @@ public class PlanningController {
                 "\n\nResponsables :\n" + obtenirNomProf(c);
         alert.setContentText(content);
 
-        // Ajout des boutons
-        ButtonType btnSignaler = new ButtonType("Signaler une absence");
+        Utilisateur user = SessionUtilisateur.get();
         ButtonType btnFermer = new ButtonType("Fermer", ButtonBar.ButtonData.CANCEL_CLOSE);
-        alert.getButtonTypes().setAll(btnSignaler, btnFermer);
 
-        alert.showAndWait().ifPresent(type -> {
-            if (type == btnSignaler) {
-                ouvrirFormulaireAbsence(c);
-            }
-        });
+        // Ajout des boutons
+        if (peutSignalerAbsence(user)) {
+            ButtonType btnSignaler = new ButtonType("Signaler une absence");
+            alert.getButtonTypes().setAll(btnSignaler, btnFermer);
+
+            alert.showAndWait().ifPresent(type -> {
+                if (type == btnSignaler) {
+                    ouvrirFormulaireAbsence(c);
+                }
+            });
+        } else {
+            alert.getButtonTypes().setAll(btnFermer);
+            alert.showAndWait();
+        }
     }
 
+
     private void ouvrirFormulaireAbsence(Cours c) {
+
+        Utilisateur user = SessionUtilisateur.get();
+        if (!peutSignalerAbsence(user)) {
+            new Alert(Alert.AlertType.WARNING, "Vous n'êtes pas autorisé à signaler une absence.").show();
+            return;
+        }
+
         Dialog<Absence> dialog = new Dialog<>();
         dialog.setTitle("Justifier une absence");
         dialog.setHeaderText("Justification pour : " + c.getIntitule());
@@ -447,13 +471,23 @@ public class PlanningController {
         ButtonType envoyerButton = new ButtonType("Envoyer", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(envoyerButton, ButtonType.CANCEL);
 
-        // --- MISE EN PAGE ---
+
+
         VBox content = new VBox(10);
         content.setPadding(new javafx.geometry.Insets(20));
 
         TextArea txtMotif = new TextArea();
         txtMotif.setPromptText("Saisissez votre motif...");
         txtMotif.setPrefHeight(80);
+
+        Button envoyerBtn = (Button) dialog.getDialogPane().lookupButton(envoyerButton);
+        envoyerBtn.addEventFilter(javafx.event.ActionEvent.ACTION, event -> {
+            String motif = txtMotif.getText() == null ? "" : txtMotif.getText().trim();
+            if (motif.isEmpty()) {
+                event.consume();
+                new Alert(Alert.AlertType.WARNING, "Veuillez saisir un motif avant d'envoyer la déclaration d'absence.").show();
+            }
+        });
 
         ListView<String> listViewFichiers = new ListView<>();
         listViewFichiers.setPrefHeight(100);
@@ -475,16 +509,20 @@ public class PlanningController {
         content.getChildren().addAll(new Label("Motif :"), txtMotif, btnAdd, new Label("Fichiers joints :"), listViewFichiers);
         dialog.getDialogPane().setContent(content);
 
-        // --- LOGIQUE DE SAUVEGARDE ---
+        // LOGIQUE DE SAUVEGARDE
         dialog.setResultConverter(btn -> {
             if (btn == envoyerButton) {
+                String motif = txtMotif.getText() == null ? "" : txtMotif.getText().trim();
+                if (motif.isEmpty()) {
+                    return null;
+                }
                 return Absence.builder()
-                        .etudiantAbsent((Etudiant) SessionUtilisateur.get())
-                        .declareePar(SessionUtilisateur.get())
+                        .utilisateurAbsent( user)
+                        .declareePar(user)
                         .cours(c)
                         .dateAbsence(java.sql.Date.valueOf(c.getDateDebut().toLocalDate()))
                         .dateDeclaration(LocalDateTime.now())
-                        .motif(txtMotif.getText())
+                        .motif(motif)
                         .statut(StatutAbsence.DECLAREE)
                         .piecesJointesPaths(fichiersSelectionnes.stream()
                                 .map(java.io.File::getAbsolutePath)
@@ -496,7 +534,19 @@ public class PlanningController {
 
         dialog.showAndWait().ifPresent(abs -> {
             new AbsenceDAO().sauvegarder(abs);
-            new Alert(Alert.AlertType.INFORMATION, "Absence transmise avec succès !").show();
+
+            if (user.getRole() == RoleUtilisateur.ENSEIGNANT
+                    || user.getRole() == RoleUtilisateur.ENSEIGNANT_RESPONSABLE
+                    || user.getRole() == RoleUtilisateur.INTERVENANT) {
+
+                new Alert(Alert.AlertType.INFORMATION,
+                        "Absence transmise avec succès.\nVeuillez soumettre une demande de modification du cours.")
+                        .show();
+            } else {
+                new Alert(Alert.AlertType.INFORMATION,
+                        "Absence transmise avec succès !")
+                        .show();
+            }
         });
     }
 

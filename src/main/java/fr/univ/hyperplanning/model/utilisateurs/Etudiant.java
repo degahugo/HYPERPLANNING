@@ -25,8 +25,8 @@ public class Etudiant extends Utilisateur {
     @Column(nullable = false)
     private int anneeEntree;
 
-    @OneToMany(mappedBy = "etudiantAbsent")
-    private java.util.Set<Absence> absences= new java.util.HashSet<>();
+    //@OneToMany(mappedBy = "utilisateursAbsent")
+   // private java.util.Set<Absence> absences= new java.util.HashSet<>();
 
     @ManyToMany
     @JoinTable(

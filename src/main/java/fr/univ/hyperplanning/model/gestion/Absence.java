@@ -3,7 +3,6 @@ package fr.univ.hyperplanning.model.gestion;
 import fr.univ.hyperplanning.model.enums.StatutAbsence;
 import fr.univ.hyperplanning.model.pedagogie.Cours;
 import fr.univ.hyperplanning.model.utilisateurs.Administration;
-import fr.univ.hyperplanning.model.utilisateurs.Etudiant;
 import fr.univ.hyperplanning.model.utilisateurs.Utilisateur;
 import jakarta.persistence.*;
 import lombok.*;
@@ -57,8 +56,8 @@ public class Absence {
     private Cours cours;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "etudiant_absent_id", nullable = false)
-    private Etudiant etudiantAbsent;
+    @JoinColumn(name = "utilisateur_absent_id", nullable = false)
+    private Utilisateur utilisateurAbsent;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "declaree_par_id", nullable = false)

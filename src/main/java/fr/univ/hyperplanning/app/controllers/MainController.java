@@ -128,12 +128,14 @@ public class MainController {
     public void gererNavigation(String action) {
         switch (action) {
             case "DASHBOARD" -> chargerVueParRole();
-            case "PLANNING" -> loadView("/fxml/planning.fxml");
-            case "CONFLITS" -> loadView("/fxml/ConflictView.fxml");
-            case "SALLES" -> loadViewSalles();
-            case "LOGOUT" -> seDeconnecter();
-            case "GESTION_ABSENCES" -> loadView("/fxml/gestion_absences.fxml");
+            case "PLANNING"  -> loadView("/fxml/planning.fxml");
+            case "CONFLITS"  -> loadView("/fxml/ConflictView.fxml");
+            case "SALLES"    -> loadViewSalles();
             case "PROFIL"    -> loadView("/fxml/profil.fxml");
+            case "LOGOUT"    -> seDeconnecter();
+            case "GESTION_ABSENCES" -> loadView("/fxml/gestion_absences.fxml");
+            case "MES_ABSENCES" -> loadView("/fxml/mes_absences.fxml");
+            case "ABSENCES_COURS" -> loadView("/fxml/absences_cours.fxml");
             case "AJOUTER_COURS" -> ouvrirPopUp("/fxml/ajouterCours.fxml", 600, 500);
         }
     }
