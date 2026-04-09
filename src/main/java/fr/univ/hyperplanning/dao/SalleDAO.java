@@ -4,6 +4,7 @@ import fr.univ.hyperplanning.infra.config.JpaUtil;
 import fr.univ.hyperplanning.model.pedagogie.Salle;
 import fr.univ.hyperplanning.infra.config.JpaUtil;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.NoResultException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -73,4 +74,65 @@ public class SalleDAO {
         }
     }
 
+    // Rechercher une salle par son ID
+    public Salle findById(Long id) {
+        EntityManager em = JpaUtil.em();
+        try {
+            return em.find(Salle.class, id);
+        } finally {
+            em.close();
+        }
+    }
+
+    // Créer une salle (CREATE)
+    public void save(Salle salle) {
+        EntityManager em = JpaUtil.em();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            em.persist(salle);
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    // Mettre à jour une salle (UPDATE)
+    public void update(Salle salle) {
+        EntityManager em = JpaUtil.em();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            em.merge(salle);
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    // Supprimer une salle (DELETE)
+    public void delete(Long id) {
+        EntityManager em = JpaUtil.em();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            Salle salle = em.find(Salle.class, id);
+            if (salle != null) {
+                salle.setActif(false);
+                em.merge(salle);
+            }
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
 }

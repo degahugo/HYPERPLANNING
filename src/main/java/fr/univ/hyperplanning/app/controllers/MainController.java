@@ -90,6 +90,8 @@ public class MainController {
             ajouterBoutonMenu("⚠️  Conflits", "CONFLITS", false);
             ajouterBoutonMenu("🏫  Salles", "SALLES", false);
             ajouterBoutonMenu("  Ajouter un cours", "AJOUTER_COURS", false, false);
+            ajouterBoutonMenu("Gestion Salles", "GESTION_SALLES", false);
+            ajouterBoutonMenu("Gestion Groupes", "GESTION_GROUPES", false);
             ajouterBoutonMenu("🚫  Gestion Absences", "GESTION_ABSENCES", false);
 
 
@@ -131,6 +133,8 @@ public class MainController {
             case "PLANNING" -> loadView("/fxml/planning.fxml");
             case "CONFLITS" -> loadView("/fxml/ConflictView.fxml");
             case "SALLES" -> loadViewSalles();
+            case "GESTION_SALLES"   -> loadView("/fxml/gestion_salles.fxml");
+            case "GESTION_GROUPES"  -> loadView("/fxml/gestion_groupes.fxml");
             case "LOGOUT" -> seDeconnecter();
             case "GESTION_ABSENCES" -> loadView("/fxml/gestion_absences.fxml");
             case "PROFIL"    -> loadView("/fxml/profil.fxml");

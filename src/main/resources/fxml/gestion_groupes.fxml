@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="20" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="fr.univ.hyperplanning.app.controllers.GestionGroupesController"
+      style="-fx-background-color: #F9FAFB;">
+
+    <padding><Insets top="30" right="30" bottom="30" left="30"/></padding>
+
+    <!-- Titre -->
+    <VBox spacing="4">
+        <Label text="Gestion des Groupes"
+               style="-fx-font-size: 28; -fx-font-weight: 900; -fx-text-fill: #111827;"/>
+        <Label text="Créer, modifier et supprimer les groupes d'étudiants."
+               style="-fx-font-size: 14; -fx-text-fill: #6B7280;"/>
+    </VBox>
+
+    <!-- Formulaire -->
+    <HBox spacing="10" alignment="CENTER_LEFT"
+          style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 16;
+                 -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 8, 0, 0, 2);">
+
+        <TextField  fx:id="txtCode"       promptText="Code"        prefWidth="100"/>
+        <TextField  fx:id="txtLibelle"    promptText="Libellé"     prefWidth="140"/>
+        <ComboBox   fx:id="comboNiveau"   promptText="Niveau"      prefWidth="100"/>
+        <ComboBox   fx:id="comboTypeGrp"  promptText="Type"        prefWidth="90"/>
+        <TextField  fx:id="txtEffectifMax" promptText="Eff. max"   prefWidth="80"/>
+        <TextField  fx:id="txtAnnee"      promptText="Année univ." prefWidth="90"/>
+        <ComboBox   fx:id="comboSyllabus" promptText="Syllabus"    prefWidth="180"/>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <Button fx:id="btnSave" text="➕ Ajouter" onAction="#onSave"
+                style="-fx-background-color: #2563EB; -fx-text-fill: white;
+                       -fx-background-radius: 10; -fx-font-weight: bold; -fx-cursor: hand;
+                       -fx-padding: 8 20;"/>
+        <Button fx:id="btnCancel" text="Annuler" onAction="#onCancel" visible="false" managed="false"
+                style="-fx-background-color: #E5E7EB; -fx-text-fill: #374151;
+                       -fx-background-radius: 10; -fx-font-weight: bold; -fx-cursor: hand;
+                       -fx-padding: 8 20;"/>
+    </HBox>
+
+    <!-- Tableau -->
+    <TableView fx:id="tableGroupes" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colCode"      text="Code"       prefWidth="100"/>
+            <TableColumn fx:id="colLibelle"   text="Libellé"    prefWidth="150"/>
+            <TableColumn fx:id="colNiveau"    text="Niveau"     prefWidth="80"/>
+            <TableColumn fx:id="colTypeGrp"   text="Type"       prefWidth="80"/>
+            <TableColumn fx:id="colEffMax"    text="Eff. Max"   prefWidth="80"/>
+            <TableColumn fx:id="colEffActuel" text="Eff. Actuel" prefWidth="80"/>
+            <TableColumn fx:id="colAnnee"     text="Année"      prefWidth="80"/>
+            <TableColumn fx:id="colSyllabus"  text="Syllabus"   prefWidth="140"/>
+            <TableColumn fx:id="colActions"   text="Actions"    prefWidth="200"/>
+        </columns>
+        <placeholder>
+            <Label text="Aucun groupe enregistré."/>
+        </placeholder>
+    </TableView>
+</VBox>
