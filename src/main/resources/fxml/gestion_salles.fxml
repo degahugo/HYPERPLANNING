@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="20" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="fr.univ.hyperplanning.app.controllers.GestionSallesController"
+      style="-fx-background-color: #F9FAFB;">
+
+    <padding><Insets top="30" right="30" bottom="30" left="30"/></padding>
+
+    <!-- Titre -->
+    <VBox spacing="4">
+        <Label text="Gestion des Salles"
+               style="-fx-font-size: 28; -fx-font-weight: 900; -fx-text-fill: #111827;"/>
+        <Label text="Créer, modifier et supprimer les salles de l'établissement."
+               style="-fx-font-size: 14; -fx-text-fill: #6B7280;"/>
+    </VBox>
+
+    <!-- Formulaire d'ajout / modification -->
+    <HBox spacing="10" alignment="CENTER_LEFT"
+          style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 16;
+                 -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 8, 0, 0, 2);">
+
+        <TextField fx:id="txtNumero" promptText="Numéro" prefWidth="120"/>
+        <TextField fx:id="txtBatiment" promptText="Bâtiment" prefWidth="120"/>
+        <TextField fx:id="txtCapacite" promptText="Capacité" prefWidth="90"/>
+        <ComboBox  fx:id="comboTypeSalle" promptText="Type" prefWidth="160"/>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <Button fx:id="btnSave" text="➕ Ajouter" onAction="#onSave"
+                style="-fx-background-color: #2563EB; -fx-text-fill: white;
+                       -fx-background-radius: 10; -fx-font-weight: bold; -fx-cursor: hand;
+                       -fx-padding: 8 20;"/>
+        <Button fx:id="btnCancel" text="Annuler" onAction="#onCancel" visible="false" managed="false"
+                style="-fx-background-color: #E5E7EB; -fx-text-fill: #374151;
+                       -fx-background-radius: 10; -fx-font-weight: bold; -fx-cursor: hand;
+                       -fx-padding: 8 20;"/>
+    </HBox>
+
+    <!-- Tableau -->
+    <TableView fx:id="tableSalles" VBox.vgrow="ALWAYS"
+               style="-fx-background-radius: 16;">
+        <columns>
+            <TableColumn fx:id="colNumero"   text="Numéro"   prefWidth="130"/>
+            <TableColumn fx:id="colBatiment" text="Bâtiment"  prefWidth="140"/>
+            <TableColumn fx:id="colCapacite" text="Capacité"  prefWidth="100"/>
+            <TableColumn fx:id="colType"     text="Type"      prefWidth="160"/>
+            <TableColumn fx:id="colActions"  text="Actions"   prefWidth="200"/>
+        </columns>
+        <placeholder>
+            <Label text="Aucune salle enregistrée."/>
+        </placeholder>
+    </TableView>
+</VBox>
