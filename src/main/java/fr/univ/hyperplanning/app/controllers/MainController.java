@@ -141,9 +141,7 @@ public class MainController {
             case "GESTION_GROUPES" -> loadView("/fxml/gestion_groupes.fxml");
             case "PROFIL"    -> loadView("/fxml/profil.fxml");
             case "AJOUTER_COURS" -> ouvrirPopUp("/fxml/ajouterCours.fxml", 600, 500);
-            case "MES_ABSENCES" -> loadView("/fxml/mes_absences.fxml");
-            case "ABSENCES_COURS" -> loadView("/fxml/absences_cours.fxml");
-        }
+            }
     }
 
     /**
