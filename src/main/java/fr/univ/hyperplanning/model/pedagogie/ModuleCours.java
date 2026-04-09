@@ -41,4 +41,8 @@ public class ModuleCours {
     @JoinColumn(name = "enseignant_id") // Clé étrangère vers la table des enseignants
     private Enseignant responsable;
 
+    @Override
+    public String toString() {
+        return this.nom; // Utilise l'attribut 'nom' de ton entité
+    }
 }

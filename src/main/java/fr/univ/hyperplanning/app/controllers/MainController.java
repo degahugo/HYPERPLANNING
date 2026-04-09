@@ -15,10 +15,13 @@ import jakarta.persistence.EntityManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import lombok.Getter;
 import java.io.IOException;
 
@@ -86,7 +89,9 @@ public class MainController {
         } else if (role.contains("ADMIN")) {
             ajouterBoutonMenu("⚠️  Conflits", "CONFLITS", false);
             ajouterBoutonMenu("🏫  Salles", "SALLES", false);
+            ajouterBoutonMenu("  Ajouter un cours", "AJOUTER_COURS", false, false);
             ajouterBoutonMenu("🚫  Gestion Absences", "GESTION_ABSENCES", false);
+
 
         }
 
@@ -97,18 +102,28 @@ public class MainController {
         ajouterBoutonMenu("🚪  Déconnexion", "LOGOUT", false);
     }
 
+    // Surcharge de la méthode pour prendre en compte la nouvelle entrée
     private void ajouterBoutonMenu(String texte, String action, boolean isActive) {
+        // Elle appelle la version complète en forçant le true
+        ajouterBoutonMenu(texte, action, isActive, true);
+    }
+
+    private void ajouterBoutonMenu(String texte, String action, boolean isActive, boolean isPersistent) {
         Button btn = new Button(texte);
         btn.setMaxWidth(Double.MAX_VALUE);
         btn.setPrefHeight(50);
         btn.setStyle(isActive ? STYLE_ACTIVE : STYLE_NORMAL);
         btn.setOnAction(e -> {
-            menuBox.getChildren().forEach(n -> n.setStyle(STYLE_NORMAL));
-            btn.setStyle(STYLE_ACTIVE);
+            if(isPersistent) { // On change l'état des boutons
+                menuBox.getChildren().forEach(n -> n.setStyle(STYLE_NORMAL));
+                btn.setStyle(STYLE_ACTIVE);
+            }
             gererNavigation(action);
         });
         menuBox.getChildren().add(btn);
     }
+
+    private Stage instancePopup = null;
 
     public void gererNavigation(String action) {
         switch (action) {
@@ -121,6 +136,41 @@ public class MainController {
             case "GESTION_ABSENCES" -> loadView("/fxml/gestion_absences.fxml");
             case "MES_ABSENCES" -> loadView("/fxml/mes_absences.fxml");
             case "ABSENCES_COURS" -> loadView("/fxml/absences_cours.fxml");
+            case "AJOUTER_COURS" -> ouvrirPopUp("/fxml/ajouterCours.fxml", 600, 500);
+        }
+    }
+
+    /**
+     * Méthode pour ouvrir un popup
+     * @Param path
+     * Chemin de la page FXML
+     * @Param v
+     * Largeur du popup
+     * @Param v1
+     * Hauteur du popup
+     *
+     * On force l'utilisation de setMinWitdh et setMinHeight car sinon à cause de certains FXML
+     * comme les combo type le popup s'ouvre en tout petit.
+     */
+    private void ouvrirPopUp(String path, int v, int v1) {
+        // Si la fenêtre est déjà ouverte et visible, on la met juste au premier plan
+        if (instancePopup != null && instancePopup.isShowing()) {
+            instancePopup.toFront();
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
+            Parent root = loader.load();
+            instancePopup = new Stage();
+            instancePopup.setScene(new Scene(root, v, v1));
+            instancePopup.setTitle("Ajouter un cours");
+            instancePopup.setMinWidth(v);
+            instancePopup.setMinHeight(v1);
+            instancePopup.centerOnScreen();
+            instancePopup.initModality(Modality.NONE);
+            instancePopup.show();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

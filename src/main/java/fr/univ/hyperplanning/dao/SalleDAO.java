@@ -1,5 +1,6 @@
 package fr.univ.hyperplanning.dao;
 
+import fr.univ.hyperplanning.infra.config.JpaUtil;
 import fr.univ.hyperplanning.model.pedagogie.Salle;
 import fr.univ.hyperplanning.infra.config.JpaUtil;
 import jakarta.persistence.EntityManager;
@@ -37,7 +38,10 @@ public class SalleDAO {
     }
 
 
-    // Récuperer toutes les salles actives
+    /**
+     * Récupère toutes les salles déclarées dans la BD
+     * @return Liste avec les salles en utilisant toString
+     */
     public List<Salle> findAll(){
         EntityManager em = JpaUtil.em();
         try {
