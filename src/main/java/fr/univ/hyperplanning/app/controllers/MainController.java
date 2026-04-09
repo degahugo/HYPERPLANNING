@@ -135,6 +135,8 @@ public class MainController {
             case "SALLES" -> loadViewSalles();
             case "LOGOUT" -> seDeconnecter();
             case "GESTION_ABSENCES" -> loadView("/fxml/gestion_absences.fxml");
+            case "GESTION_SALLES" -> loadView("/fxml/gestion_salles.fxml");
+            case "GESTION_GROUPES" -> loadView("/fxml/gestion_groupes.fxml");
             case "PROFIL"    -> loadView("/fxml/profil.fxml");
             case "AJOUTER_COURS" -> ouvrirPopUp("/fxml/ajouterCours.fxml", 600, 500);
         }
