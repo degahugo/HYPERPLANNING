@@ -1,5 +1,7 @@
 package fr.univ.hyperplanning.app.controllers;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import fr.univ.hyperplanning.app.SessionUtilisateur;
 import fr.univ.hyperplanning.dao.AbsenceDAO;
 import fr.univ.hyperplanning.model.gestion.Absence;
@@ -52,12 +54,12 @@ public class MesAbsencesController {
 
         colDateDeclaration.setCellValueFactory(data ->
                 new SimpleStringProperty(
-                        data.getValue().getDateDeclaration() != null ? data.getValue().getDateDeclaration().toString() : ""
+                        formaterDateHeure(data.getValue().getDateDeclaration())
                 ));
 
         colDateValidation.setCellValueFactory(data ->
                 new SimpleStringProperty(
-                        data.getValue().getDateValidation() != null ? data.getValue().getDateValidation().toString() : ""
+                        formaterDateHeure(data.getValue().getDateValidation())
                 ));
 
         colMotifRefus.setCellValueFactory(data ->
@@ -73,5 +75,10 @@ public class MesAbsencesController {
         tableAbsences.setItems(
                 FXCollections.observableArrayList(absenceDAO.findAbsencesByUtilisateur(user.getId()))
         );
+    }
+
+    private String formaterDateHeure(LocalDateTime dateTime) {
+        if (dateTime == null) return "";
+        return dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
     }
 }

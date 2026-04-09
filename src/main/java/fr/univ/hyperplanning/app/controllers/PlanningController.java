@@ -472,12 +472,22 @@ public class PlanningController {
         dialog.getDialogPane().getButtonTypes().addAll(envoyerButton, ButtonType.CANCEL);
 
 
+
         VBox content = new VBox(10);
         content.setPadding(new javafx.geometry.Insets(20));
 
         TextArea txtMotif = new TextArea();
         txtMotif.setPromptText("Saisissez votre motif...");
         txtMotif.setPrefHeight(80);
+
+        Button envoyerBtn = (Button) dialog.getDialogPane().lookupButton(envoyerButton);
+        envoyerBtn.addEventFilter(javafx.event.ActionEvent.ACTION, event -> {
+            String motif = txtMotif.getText() == null ? "" : txtMotif.getText().trim();
+            if (motif.isEmpty()) {
+                event.consume();
+                new Alert(Alert.AlertType.WARNING, "Veuillez saisir un motif avant d'envoyer la déclaration d'absence.").show();
+            }
+        });
 
         ListView<String> listViewFichiers = new ListView<>();
         listViewFichiers.setPrefHeight(100);

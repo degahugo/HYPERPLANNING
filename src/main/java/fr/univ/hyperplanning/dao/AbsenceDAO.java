@@ -25,11 +25,13 @@ public class AbsenceDAO {
         EntityManager em = JpaUtil.em();
         try {
             return em.createQuery(
-                            "SELECT a FROM Absence a " +
+                            "SELECT DISTINCT a FROM Absence a " +
                                     "JOIN FETCH a.utilisateurAbsent " +
                                     "JOIN FETCH a.cours " +
-                                    "LEFT JOIN FETCH a.piecesJointesPaths " + // Charge les chemins de fichiers
-                                    "WHERE a.statut = :s", Absence.class)
+                                    "LEFT JOIN FETCH a.valideePar " +
+                                    "LEFT JOIN FETCH a.piecesJointesPaths " +
+                                    "WHERE a.statut = :s " +
+                                    "ORDER BY a.dateDeclaration DESC", Absence.class)
                     .setParameter("s", StatutAbsence.DECLAREE)
                     .getResultList();
         } finally {
@@ -85,6 +87,42 @@ public class AbsenceDAO {
             em.close();
         }
     }
+
+    public List<Absence> findAllAbsences() {
+        EntityManager em = JpaUtil.em();
+        try {
+            return em.createQuery(
+                            "SELECT DISTINCT a FROM Absence a " +
+                                    "JOIN FETCH a.utilisateurAbsent " +
+                                    "JOIN FETCH a.cours " +
+                                    "LEFT JOIN FETCH a.valideePar " +
+                                    "LEFT JOIN FETCH a.piecesJointesPaths " +
+                                    "ORDER BY a.dateDeclaration DESC", Absence.class)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<Absence> findAbsencesByStatut(StatutAbsence statut) {
+        EntityManager em = JpaUtil.em();
+        try {
+            return em.createQuery(
+                            "SELECT DISTINCT a FROM Absence a " +
+                                    "JOIN FETCH a.utilisateurAbsent " +
+                                    "JOIN FETCH a.cours " +
+                                    "LEFT JOIN FETCH a.valideePar " +
+                                    "LEFT JOIN FETCH a.piecesJointesPaths " +
+                                    "WHERE a.statut = :statut " +
+                                    "ORDER BY a.dateDeclaration DESC", Absence.class)
+                    .setParameter("statut", statut)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+
 
     public long countAbsencesByUtilisateur(Long utilisateurId) {
         EntityManager em = JpaUtil.em();
