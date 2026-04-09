@@ -177,6 +177,14 @@ public class ConflictService {
     }
 
     /**
+     * Résolution spécifique pour les groupes : on change l'heure sans toucher à la salle.
+     */
+    public boolean rescheduleCours(Long coursId, LocalDateTime nouveauDebut, LocalDateTime nouveauFin) {
+        // On passe 'null' pour la salle car on ne veut modifier que le temps
+        return resolveConflict(coursId, null, nouveauDebut, nouveauFin);
+    }
+
+    /**
      * Détail technique : Logique de comparaison temporelle
      */
     private boolean isOverlapping(Cours c1, Cours c2) {

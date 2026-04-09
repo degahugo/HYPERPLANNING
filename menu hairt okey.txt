@@ -1,0 +1,73 @@
+package tp.ui;
+
+import com.jme3.app.SimpleApplication;
+import com.jme3.font.BitmapFont;
+import com.jme3.font.BitmapText;
+import com.jme3.input.KeyInput;
+import com.jme3.input.controls.ActionListener;
+import com.jme3.input.controls.KeyTrigger;
+import com.jme3.math.Vector3f;
+
+
+public class Menu {
+
+    private SimpleApplication app;
+    private boolean gameStarted = false;
+    private boolean isMultiplayer = false;
+    private BitmapText instructions;
+
+    // Le constructeur : on récupère l'application principale pour accéder au guiNode, etc.
+    public Menu(SimpleApplication app) {
+        this.app = app;
+    }
+
+    public void initialiserMenu() {
+        // 1. On charge la police proprement sans passer par les contrôles
+        BitmapFont guiFont = app.getAssetManager().loadFont("Interface/Fonts/Default.fnt");
+
+        // 2. On crée le texte (une seule fois suffit !)
+        instructions = new BitmapText(guiFont, false);
+        instructions.setSize(30);
+        instructions.setText("CHOISISSEZ LE MODE :\n1 - SOLO\n2 - DUO");
+
+        // 3. On calcule le centre de l'écran
+        float width = app.getContext().getSettings().getWidth();
+        float height = app.getContext().getSettings().getHeight();
+
+       // On centre en soustrayant la moitié de la largeur estimée du texte
+        instructions.setLocalTranslation(width / 2 - 100, height / 2 + 50, 0);
+
+        // 4. On l'attache au GUI pour qu'il soit visible
+        app.getGuiNode().attachChild(instructions);
+
+        // 5. On active l'écoute des touches
+        initKeys();
+    }
+
+    private void initKeys() {
+        app.getInputManager().addMapping("ChoixSolo", new KeyTrigger(KeyInput.KEY_1));
+        app.getInputManager().addMapping("ChoixDuo", new KeyTrigger(KeyInput.KEY_2));
+        app.getInputManager().addListener(actionListener, "ChoixSolo", "ChoixDuo");
+    }
+
+    private final ActionListener actionListener = new ActionListener() {
+        @Override
+        public void onAction(String name, boolean keyPressed, float tpf) {
+            if (!gameStarted && !keyPressed) {
+                if (name.equals("ChoixSolo")) {
+                    isMultiplayer = false;
+                    lancerLeJeu();
+                } else if (name.equals("ChoixDuo")) {
+                    isMultiplayer = true;
+                    lancerLeJeu();
+                }
+            }
+        }
+    };
+
+    private void lancerLeJeu() {
+        gameStarted = true;
+        app.getGuiNode().detachAllChildren();
+        System.out.println("Jeu lancé ! Mode Multiplayer : " + isMultiplayer);
+    }
+}

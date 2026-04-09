@@ -83,27 +83,36 @@ public class ConflictController {
         ConflictInfo selected = conflictTable.getSelectionModel().getSelectedItem();
 
         if (selected != null) {
-            // 2. On stocke l'ID du cours dans la variable statique pour l'autre page
+            // 2. On stocke l'ID du cours pour que la page suivante sache quoi modifier
             selectedCoursIdForResolution = selected.getId();
 
-            System.out.println("🔄 Redirection vers UC4 pour résoudre le cours ID : " + selectedCoursIdForResolution);
-
             try {
-                // 3. Chargement de la vue UC4 (Salles Disponibles)
-                // Vérifie bien le chemin vers ton fichier FXML
-                javafx.scene.Parent root = javafx.fxml.FXMLLoader.load(getClass().getResource("/fxml/SallesDispoView.fxml"));
+                String fxmlPath;
 
-                // 4. On change le contenu de la fenêtre
+                // 3. LE CHOIX DU CHEMIN (Ton bloc de code)
+                // Si c'est un problème de groupe, on va changer l'heure
+                if ("GROUPE".equals(selected.getType())) {
+                    System.out.println("🔄 Conflit de Groupe : Direction Modification Horaire");
+                    fxmlPath = "/fxml/ModifHoraireView.fxml";
+                }
+                // Sinon (si c'est SALLE ou autre), on va chercher une salle vide
+                else {
+                    System.out.println("🔄 Conflit de Salle : Direction Salles Disponibles");
+                    fxmlPath = "/fxml/SallesDispoView.fxml";
+                }
+
+                // 4. Chargement et affichage de la nouvelle vue
+                javafx.scene.Parent root = javafx.fxml.FXMLLoader.load(getClass().getResource(fxmlPath));
                 conflictTable.getScene().setRoot(root);
 
             } catch (java.io.IOException e) {
                 e.printStackTrace();
-                System.out.println("❌ Erreur : Impossible de charger la page des salles disponibles.");
+                System.err.println("❌ Erreur : Impossible de charger le fichier FXML : " + e.getMessage());
             }
         } else {
-            // Si l'utilisateur n'a pas cliqué sur une ligne du tableau
+            // Si rien n'est sélectionné
             Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setContentText("Veuillez sélectionner un conflit dans le tableau avant de cliquer sur Résoudre.");
+            alert.setContentText("Veuillez sélectionner un conflit dans le tableau.");
             alert.show();
         }
     }

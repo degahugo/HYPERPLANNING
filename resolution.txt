@@ -1,0 +1,28 @@
+        // 1. On récupère le conflit sélectionné dans le tableau
+        ConflictInfo selected = conflictTable.getSelectionModel().getSelectedItem();
+
+        if (selected != null) {
+            // 2. On stocke l'ID du cours dans la variable statique pour l'autre page
+            selectedCoursIdForResolution = selected.getId();
+
+            System.out.println("🔄 Redirection vers UC4 pour résoudre le cours ID : " + selectedCoursIdForResolution);
+
+            try {
+                // 3. Chargement de la vue UC4 (Salles Disponibles)
+                // Vérifie bien le chemin vers ton fichier FXML
+                javafx.scene.Parent root = javafx.fxml.FXMLLoader.load(getClass().getResource("/fxml/SallesDispoView.fxml"));
+
+                // 4. On change le contenu de la fenêtre
+                conflictTable.getScene().setRoot(root);
+
+            } catch (java.io.IOException e) {
+                e.printStackTrace();
+                System.out.println("❌ Erreur : Impossible de charger la page des salles disponibles.");
+            }
+        } else {
+            // Si l'utilisateur n'a pas cliqué sur une ligne du tableau
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setContentText("Veuillez sélectionner un conflit dans le tableau avant de cliquer sur Résoudre.");
+            alert.show();
+        }
+    }
