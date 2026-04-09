@@ -438,21 +438,35 @@ public class PlanningController {
 
         Utilisateur user = SessionUtilisateur.get();
         ButtonType btnFermer = new ButtonType("Fermer", ButtonBar.ButtonData.CANCEL_CLOSE);
+        java.util.List<ButtonType> boutons = new java.util.ArrayList<>();
 
-        // Ajout des boutons
-        if (peutSignalerAbsence(user)) {
-            ButtonType btnSignaler = new ButtonType("Signaler une absence");
-            alert.getButtonTypes().setAll(btnSignaler, btnFermer);
+        // Uniquement si admin
+        ButtonType btnModifier = new ButtonType("Modifier");
+        ButtonType btnSupprimer = new ButtonType("Supprimer");
+        ButtonType btnSignaler = new ButtonType("Signaler une absence");
 
-            alert.showAndWait().ifPresent(type -> {
-                if (type == btnSignaler) {
-                    ouvrirFormulaireAbsence(c);
-                }
-            });
-        } else {
-            alert.getButtonTypes().setAll(btnFermer);
-            alert.showAndWait();
+        System.out.println("Utilisateur connecté : " + user.getNom());
+        System.out.println("Rôle détecté : " + user.getRole());
+
+        if (user != null && user.getRole() == RoleUtilisateur.ADMINISTRATION) {
+            boutons.add(btnModifier);
+            boutons.add(btnSupprimer);
         }
+        if (peutSignalerAbsence(user)){
+            boutons.add(btnSignaler);
+        }
+        boutons.add(btnFermer);
+        alert.getButtonTypes().setAll(boutons);
+
+        alert.showAndWait().ifPresent(type -> {
+            if (type == btnSignaler) {
+                ouvrirFormulaireAbsence(c);
+            } else if (type == btnModifier) {
+                // Modification de cours
+            } else if (type == btnSupprimer) {
+                confirmerSuppression(c);
+            }
+        });
     }
 
 
@@ -546,6 +560,26 @@ public class PlanningController {
                 new Alert(Alert.AlertType.INFORMATION,
                         "Absence transmise avec succès !")
                         .show();
+            }
+        });
+    }
+
+    /**
+     * Demande confirmation avant de supprimer un cours
+     * @param c Le cours qui sera supprimé
+     */
+    private void confirmerSuppression(Cours c) {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirmation");
+        confirm.setHeaderText("Supprimer le cours : " + c.getIntitule());
+        confirm.setContentText("Êtes-vous sûr de vouloir supprimer ce cours de la base de données ?");
+
+        // Très important d'attendre le résultat ici aussi
+        confirm.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                System.out.println("Lancement de la suppression DAO pour l'ID : " + c.getId());
+                coursDAO.supprimerCours(c);
+                chargerDonnees(); // Rafraîchit l'affichage
             }
         });
     }

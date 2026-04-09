@@ -208,4 +208,65 @@ public class CoursDAO {
             em.close();
         }
     }*/
+
+    /**
+     * Supprimer un cours dans la base de donnée
+     * @param cours Cours qui sera supprimé
+     */
+    /*public void supprimerCours(Cours cours) {
+        EntityManager em = JpaUtil.em();
+        try {
+            em.getTransaction().begin();
+
+            Cours toDelete = em.find(Cours.class, cours.getId());
+
+            if (toDelete != null) {
+                // Vider manuellement les relations many-to-many pour éviter les violations de contraintes
+                toDelete.getGroupes().clear();
+                toDelete.getEnseignantsEnseignes().clear();
+                toDelete.getIntervenantsInterventions().clear();
+
+                // Forcer la synchronisation des liens avant le remove
+                em.flush();
+
+                em.remove(toDelete);
+                System.out.println("Cours supprimé avec succès en base.");
+            }
+
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            System.err.println("Erreur lors de la suppression du cours : " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+    }*/
+    public void supprimerCours(Cours cours) {
+        EntityManager em = JpaUtil.em();
+        try {
+            em.getTransaction().begin();
+
+            // 1. On nettoie les absences liées au cours en SQL pur (pas de mapping, pas de bug)
+            em.createNativeQuery("DELETE FROM absences WHERE cours_id = ?")
+                    .setParameter(1, cours.getId())
+                    .executeUpdate();
+
+            // 2. On nettoie les tables de jointure (ManyToMany) pour éviter les blocages
+            em.createNativeQuery("DELETE FROM cours_groupe WHERE cours_id = ?").setParameter(1, cours.getId()).executeUpdate();
+            em.createNativeQuery("DELETE FROM enseignant_cours WHERE cours_id = ?").setParameter(1, cours.getId()).executeUpdate();
+            em.createNativeQuery("DELETE FROM intervenant_cours WHERE cours_id = ?").setParameter(1, cours.getId()).executeUpdate();
+
+            // 3. Enfin, on dégage le cours
+            em.createNativeQuery("DELETE FROM cours WHERE id = ?").setParameter(1, cours.getId()).executeUpdate();
+
+            em.getTransaction().commit();
+            System.out.println("Cours dégagé avec succès.");
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+    }
 }
