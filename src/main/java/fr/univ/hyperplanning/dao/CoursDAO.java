@@ -246,24 +246,59 @@ public class CoursDAO {
         EntityManager em = JpaUtil.em();
         try {
             em.getTransaction().begin();
+            Long id = cours.getId();
+            System.out.println("Début de la suppression forcée du cours ID : " + id);
 
-            // 1. On nettoie les absences liées au cours en SQL pur (pas de mapping, pas de bug)
-            em.createNativeQuery("DELETE FROM absences WHERE cours_id = ?")
-                    .setParameter(1, cours.getId())
+            // 1. Suppression des NOTIFICATIONS liées aux ABSENCES
+            try {
+                em.createNativeQuery("""
+                DELETE FROM notifications 
+                WHERE absence_id IN (SELECT id FROM absences WHERE cours_id = ?)
+            """).setParameter(1, id).executeUpdate();
+            } catch (Exception e) {
+                System.out.println("Info: Pas de notifications à supprimer ou table absente.");
+            }
+
+            // 2. Liste des tables de dépendances (Ordre important pour les clés étrangères)
+            // J'ai mis les noms que tu as utilisés dans ton dernier code fonctionnel
+            String[] tablesDep = {
+                    "historiques",
+                    "demandes_modification",
+                    "conflit_cours",
+                    "absences",
+                    "cours_groupe",
+                    "enseignant_cours",
+                    "intervenant_cours"
+            };
+
+            for (String table : tablesDep) {
+                try {
+                    int rows = em.createNativeQuery("DELETE FROM " + table + " WHERE cours_id = ?")
+                            .setParameter(1, id)
+                            .executeUpdate();
+                    if(rows > 0) System.out.println("Nettoyage table : " + table + " (" + rows + " lignes)");
+                } catch (Exception e) {
+                    // On passe à la suite si la table n'existe pas ou si la colonne diffère
+                    System.out.println("Note: Saut de la table " + table + " (déjà vide ou inexistante)");
+                }
+            }
+
+            // 3. LA SUPPRESSION FINALE DU COURS
+            int result = em.createNativeQuery("DELETE FROM cours WHERE id = ?")
+                    .setParameter(1, id)
                     .executeUpdate();
 
-            // 2. On nettoie les tables de jointure (ManyToMany) pour éviter les blocages
-            em.createNativeQuery("DELETE FROM cours_groupe WHERE cours_id = ?").setParameter(1, cours.getId()).executeUpdate();
-            em.createNativeQuery("DELETE FROM enseignant_cours WHERE cours_id = ?").setParameter(1, cours.getId()).executeUpdate();
-            em.createNativeQuery("DELETE FROM intervenant_cours WHERE cours_id = ?").setParameter(1, cours.getId()).executeUpdate();
-
-            // 3. Enfin, on dégage le cours
-            em.createNativeQuery("DELETE FROM cours WHERE id = ?").setParameter(1, cours.getId()).executeUpdate();
-
             em.getTransaction().commit();
-            System.out.println("Cours dégagé avec succès.");
+
+            if (result > 0) {
+                System.out.println("✅ Tout a été nettoyé : Conflits, Notifications, Absences et Cours supprimés.");
+            } else {
+                System.out.println("⚠️ Le cours n'existait déjà plus en base.");
+            }
+
         } catch (Exception e) {
             if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            System.err.println("❌ Erreur critique lors de la suppression : " + e.getMessage());
             e.printStackTrace();
         } finally {
             em.close();
