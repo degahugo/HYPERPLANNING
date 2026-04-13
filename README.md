@@ -147,6 +147,12 @@ mvn javafx:run
 ```bash 
 java -jar hyperplanning-1.0-SNAPSHOT.jar
 ```
+Dans le cas ou le .jar n'est pas présent : 
+````bash
+mvn package -DskipTests
+````
+cette commande permet de créer le .jar hyperplanning-1.0-SNAPSHOT.jar qui est le fat jar de l'application*
+
 
 Lors du démarrage après l'affichage de la fenètre graphique pour charger les données construites automatiquement par la base de données une attente d'environ 60 secondes (jusqu'à la fin de la construction des données) est essentiel pour tester l'application avec son jeu de donnée.
 
