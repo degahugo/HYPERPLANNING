@@ -83,3 +83,5 @@ Thumbs.db
 
 # Fichiers système
 .DS_Store
+
+echo "*Zone.Identifier" >> .gitignore
