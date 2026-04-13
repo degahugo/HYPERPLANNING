@@ -31,7 +31,7 @@
             </HBox>
 
             <HBox>
-                <Button text="📅 Voir mon planning" onAction="#handleVoirToutPlanning"
+                <Button text="Voir mon planning" onAction="#handleVoirToutPlanning"
                         style="-fx-background-color: #0F172A; -fx-text-fill: white; -fx-padding: 15 25; -fx-background-radius: 10; -fx-font-weight: bold; -fx-cursor: hand;"/>
             </HBox>
 

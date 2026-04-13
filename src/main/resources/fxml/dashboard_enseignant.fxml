@@ -40,10 +40,10 @@
                 </HBox>
 
                 <HBox spacing="20">
-                    <Button text="📅 Voir mon planning" onAction="#handleVoirToutPlanning"
+                    <Button text="Voir mon planning" onAction="#handleVoirToutPlanning"
                             style="-fx-background-color: #0F172A; -fx-text-fill: white; -fx-padding: 15 25; -fx-background-radius: 10; -fx-font-weight: bold; -fx-cursor: hand;"/>
 
-                    <Button text="🔍 Salles disponibles" onAction="#ouvrirRechercheSalles"
+                    <Button text="Salles disponibles" onAction="#ouvrirRechercheSalles"
                             style="-fx-background-color: white; -fx-border-color: #E5E7EB; -fx-padding: 15 25; -fx-background-radius: 10; -fx-font-weight: bold; -fx-cursor: hand;"/>
                 </HBox>
                 <VBox spacing="20" style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 20;">

@@ -178,7 +178,7 @@ public class GestionAbsencesController {
 
                 Absence abs = getTableView().getItems().get(getIndex());
                 int nb = abs.getPiecesJointesPaths() == null ? 0 : abs.getPiecesJointesPaths().size();
-                btnVoir.setText("📁 Voir (" + nb + ")");
+                btnVoir.setText("Voir (" + nb + ")");
                 btnVoir.setDisable(nb == 0);
                 btnVoir.setOnAction(e -> ouvrirFichiers(abs));
                 setGraphic(btnVoir);

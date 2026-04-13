@@ -248,6 +248,22 @@ public class DataInit {
             inter.getCoursInterventions().add(coursConf);
             em.persist(coursConf);
 
+// --- COURS DE TEST CONFLIT : même salle, même créneau ---
+            Cours coursConflitA = new Cours();
+            coursConflitA.setIntitule("BDD - Conflit Test A");
+            coursConflitA.setTypeCours(TypeCours.TD);
+            coursConflitA.setDateDebut(LocalDate.now().plusDays(1).atTime(8, 0));  // même que cours
+            coursConflitA.setDateFin(LocalDate.now().plusDays(1).atTime(10, 0));   // même que cours
+            coursConflitA.setDuree(120);
+            coursConflitA.setEstCC(false);
+            coursConflitA.setEstAnnule(false);
+            coursConflitA.setAnnotation("Test conflit");
+            coursConflitA.setSalle(salle);     // MÊME salle que cours (S101) → conflit de salle
+            coursConflitA.setModule(mBDD);
+            coursConflitA.getGroupes().add(g);
+            em.persist(coursConflitA);
+
+
 
             Absence absence = new Absence();
             absence.setDateAbsence(Date.valueOf(coursDate));

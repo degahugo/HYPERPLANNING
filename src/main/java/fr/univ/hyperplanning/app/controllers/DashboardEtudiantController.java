@@ -61,7 +61,7 @@ public class DashboardEtudiantController {
         // AFFICHAGE DES CARTES DU JOUR
         todayLessonsContainer.getChildren().clear();
         if (jour.isEmpty()) {
-            Label vide = new Label("Aucun cours aujourd'hui ✨");
+            Label vide = new Label("Aucun cours aujourd'hui ");
             vide.setStyle("-fx-text-fill: #9CA3AF; -fx-font-size: 14; -fx-font-style: italic;");
             todayLessonsContainer.getChildren().add(vide);
         } else {

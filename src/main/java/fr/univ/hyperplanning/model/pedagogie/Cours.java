@@ -48,6 +48,8 @@ public class Cours {
     @Column(nullable=false)
     private String annotation;
 
+    @Column(nullable = false)
+    private boolean enConflit;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "module_id", nullable = false)

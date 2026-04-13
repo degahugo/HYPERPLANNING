@@ -29,7 +29,7 @@
 
         <Region HBox.hgrow="ALWAYS"/>
 
-        <Button fx:id="btnSave" text="➕ Ajouter" onAction="#onSave"
+        <Button fx:id="btnSave" text="Ajouter" onAction="#onSave"
                 style="-fx-background-color: #2563EB; -fx-text-fill: white;
                        -fx-background-radius: 10; -fx-font-weight: bold; -fx-cursor: hand;
                        -fx-padding: 8 20;"/>

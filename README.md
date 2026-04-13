@@ -124,7 +124,9 @@ hyperplanning/
 
 ## Demarrage
 
-Prerequis : Docker (Desktop) installé et ouvert.
+Au départ l'application devait se lancer simplement avec la commande ./run.sh, puis finalement nous avons décidé d'abandonner cette approche.
+
+Prerequis : Docker (Desktop) installé et ouvert ainsi qu'un environnement javafx fonctionnel.
 
 ```bash
 sdk use java 21.0.10-tem
@@ -137,7 +139,9 @@ mvn clean compile
 mvn javafx:run
 ```
 
-(Commande pas mise à jour)
+Lors du démarrage après l'affichage de la fenètre graphique pour charger les données construites automatiquement par la base de données une attente d'environ 60 secondes (jusqu'à la fin de la construction des données) est essentiel pour tester l'application avec son jeu de donnée.
+
+(Commande abandonné)
 
 ```bash
 ./run.sh

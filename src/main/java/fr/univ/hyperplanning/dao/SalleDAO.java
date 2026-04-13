@@ -30,8 +30,8 @@ public class SalleDAO {
 
             return em.createQuery(hql, Salle.class)
                     // On convertit LocalDateTime en Timestamp (qui est compatible avec Date)
-                    .setParameter("debut", java.sql.Timestamp.valueOf(debut))
-                    .setParameter("fin", java.sql.Timestamp.valueOf(fin))
+                    .setParameter("debut", debut) //java.sql.Timestamp.valueOf(debut)
+                    .setParameter("fin", fin) //java.sql.Timestamp.valueOf(fin)
                     .getResultList();
         } finally{
             em.close();

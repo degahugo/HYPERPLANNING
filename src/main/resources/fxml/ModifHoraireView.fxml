@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="TOP_CENTER" prefHeight="600.0" prefWidth="800.0" spacing="30.0" style="-fx-background-color: #f8f9fa;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univ.hyperplanning.app.controllers.ModifHoraireController">
+    <padding>
+        <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
+    </padding>
+    <children>
+        <VBox alignment="CENTER" spacing="10.0">
+            <children>
+                <Label text="Gestion des Conflits : Résolution Groupe" textFill="#2c3e50">
+                    <font>
+                        <Font name="System Bold" size="26.0" />
+                    </font>
+                </Label>
+                <Label text="Veuillez définir un nouvel horaire pour déplacer le cours et libérer le groupe." textFill="#7f8c8d">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+            </children>
+        </VBox>
+
+        <VBox maxWidth="450.0" spacing="25.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5); scaleX: 1; scaleY: 1;">
+            <padding>
+                <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+            </padding>
+            <children>
+                <VBox spacing="8.0">
+                    <children>
+                        <Label text="Nouvelle Date" textFill="#34495e">
+                            <font>
+                                <Font name="System Bold" size="13.0" />
+                            </font>
+                        </Label>
+                        <DatePicker fx:id="datePicker" maxWidth="1.7976931348623157E308" prefHeight="40.0" promptText="Sélectionnez le jour" style="-fx-background-radius: 5;" />
+                    </children>
+                </VBox>
+
+                <VBox spacing="8.0">
+                    <children>
+                        <Label text="Heure de Début (HH:mm)" textFill="#34495e">
+                            <font>
+                                <Font name="System Bold" size="13.0" />
+                            </font>
+                        </Label>
+                        <TextField fx:id="heureDebutField" prefHeight="40.0" promptText="Ex: 08:30" style="-fx-background-radius: 5; -fx-border-color: #dcdde1; -fx-border-radius: 5;" />
+                    </children>
+                </VBox>
+
+                <VBox spacing="8.0">
+                    <children>
+                        <Label text="Heure de Fin (HH:mm)" textFill="#34495e">
+                            <font>
+                                <Font name="System Bold" size="13.0" />
+                            </font>
+                        </Label>
+                        <TextField fx:id="heureFinField" prefHeight="40.0" promptText="Ex: 10:30" style="-fx-background-radius: 5; -fx-border-color: #dcdde1; -fx-border-radius: 5;" />
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+
+        <HBox alignment="CENTER" spacing="20.0">
+            <children>
+                <Button mnemonicParsing="false" onAction="#handleAnnuler" prefHeight="45.0" prefWidth="150.0" style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand;" text="Annuler">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                </Button>
+                <Button mnemonicParsing="false" onAction="#handleValider" prefHeight="45.0" prefWidth="200.0" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand;" text="Valider la modification">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                </Button>
+            </children>
+        </HBox>
+    </children>
+</VBox>
