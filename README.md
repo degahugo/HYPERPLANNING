@@ -124,7 +124,6 @@ hyperplanning/
 
 ## Demarrage
 
-Au départ l'application devait se lancer simplement avec la commande ./run.sh, puis finalement nous avons décidé d'abandonner cette approche.
 
 Prerequis : Docker (Desktop) installé et ouvert ainsi qu'un environnement javafx fonctionnel.
 
@@ -139,9 +138,19 @@ mvn clean compile
 mvn javafx:run
 ```
 
+- PostgreSQL 15+ avec :
+    - Base : hyperplanning
+    - User : sa
+    - Password : secret
+
+## Lancement
+```bash 
+java -jar hyperplanning-1.0-SNAPSHOT.jar
+```
+
 Lors du démarrage après l'affichage de la fenètre graphique pour charger les données construites automatiquement par la base de données une attente d'environ 60 secondes (jusqu'à la fin de la construction des données) est essentiel pour tester l'application avec son jeu de donnée.
 
-(Commande abandonné)
+## Alternative (recommandée) : Docker
 
 ```bash
 ./run.sh
