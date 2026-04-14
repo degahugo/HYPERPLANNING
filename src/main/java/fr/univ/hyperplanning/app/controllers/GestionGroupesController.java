@@ -164,8 +164,8 @@ public class GestionGroupesController {
 
     private void ajouterColonneActions() {
         colActions.setCellFactory(param -> new TableCell<>() {
-            private final Button btnEdit = new Button("✏️ Modifier");
-            private final Button btnDel  = new Button("🗑️ Supprimer");
+            private final Button btnEdit = new Button("Modifier");
+            private final Button btnDel  = new Button(" Supprimer");
             private final HBox box = new HBox(8, btnEdit, btnDel);
 
             {
@@ -208,7 +208,7 @@ public class GestionGroupesController {
         txtEffectifMax.setText(String.valueOf(g.getEffectifMax()));
         txtAnnee.setText(String.valueOf(g.getAnneeUniversitaire()));
         comboSyllabus.setValue(g.getSyllabus());
-        btnSave.setText("💾 Enregistrer");
+        btnSave.setText("Enregistrer");
         btnCancel.setVisible(true);
         btnCancel.setManaged(true);
     }
@@ -222,7 +222,7 @@ public class GestionGroupesController {
         txtEffectifMax.clear();
         txtAnnee.clear();
         comboSyllabus.setValue(null);
-        btnSave.setText("➕ Ajouter");
+        btnSave.setText("Ajouter");
         btnCancel.setVisible(false);
         btnCancel.setManaged(false);
     }
@@ -230,7 +230,7 @@ public class GestionGroupesController {
     private void confirmerSuppression(Groupe g) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
                 "Supprimer le groupe « " + g.getLibelle() + " » ?\n"
-                        + "⚠️ Les étudiants et cours liés ne seront pas supprimés.",
+                        + "Les étudiants et cours liés ne seront pas supprimés.",
                 ButtonType.YES, ButtonType.NO);
         alert.setHeaderText(null);
         alert.showAndWait().ifPresent(btn -> {

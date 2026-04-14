@@ -99,16 +99,16 @@ public class DashboardEtudiantController {
         if (c.getEnseignantsEnseignes() != null) {
             for (Enseignant e : c.getEnseignantsEnseignes()) {
                 if (sb.length() > 0) sb.append("\n");
-                sb.append("👤 ").append(e.getNom().toUpperCase()).append(" ").append(e.getPrenom().substring(0, 1)).append(".");
+                sb.append("").append(e.getNom().toUpperCase()).append(" ").append(e.getPrenom().substring(0, 1)).append(".");
             }
         }
         if (c.getIntervenantsInterventions() != null) {
             for (Intervenant i : c.getIntervenantsInterventions()) {
                 if (sb.length() > 0) sb.append("\n");
-                sb.append("👤 ").append(i.getNom().toUpperCase()).append(" (Ext.)");
+                sb.append("").append(i.getNom().toUpperCase()).append(" (Ext.)");
             }
         }
-        return sb.length() > 0 ? sb.toString() : "👤 Non assigné";
+        return sb.length() > 0 ? sb.toString() : "Non assigné";
     }
 
     private VBox creerCardCoursFigma(Cours c) {
@@ -147,7 +147,7 @@ public class DashboardEtudiantController {
         profLabel.setWrapText(true);
         profLabel.setStyle("-fx-text-fill: #6B7280; -fx-font-size: 11;");
 
-        Label salleLabel = new Label("📍 Salle " + (c.getSalle() != null ? c.getSalle().getNumero() : "N/A"));
+        Label salleLabel = new Label(" Salle " + (c.getSalle() != null ? c.getSalle().getNumero() : "N/A"));
         salleLabel.setStyle("-fx-text-fill: #111827; -fx-font-size: 11; -fx-font-weight: bold;");
 
         infoBox.getChildren().addAll(profLabel, salleLabel);

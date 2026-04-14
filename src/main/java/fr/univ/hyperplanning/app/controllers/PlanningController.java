@@ -202,16 +202,16 @@ public class PlanningController {
         if (c.getEnseignantsEnseignes() != null) {
             for (Enseignant e : c.getEnseignantsEnseignes()) {
                 if (sb.length() > 0) sb.append("\n");
-                sb.append("👤 ").append(e.getNom().toUpperCase()).append(" ").append(e.getPrenom().substring(0, 1)).append(".");
+                sb.append("").append(e.getNom().toUpperCase()).append(" ").append(e.getPrenom().substring(0, 1)).append(".");
             }
         }
         if (c.getIntervenantsInterventions() != null) {
             for (Intervenant i : c.getIntervenantsInterventions()) {
                 if (sb.length() > 0) sb.append("\n");
-                sb.append("👤 ").append(i.getNom().toUpperCase()).append(" (Ext.)");
+                sb.append("").append(i.getNom().toUpperCase()).append(" (Ext.)");
             }
         }
-        return sb.length() > 0 ? sb.toString() : "👤 Non assigné";
+        return sb.length() > 0 ? sb.toString() : " Non assigné";
     }
 
     // --- VUES (SEMAINE ET JOUR) ---
@@ -309,7 +309,7 @@ public class PlanningController {
         Label code = new Label(c.getIntitule().toUpperCase());
         code.setStyle("-fx-text-fill: white; -fx-font-weight: 800; -fx-font-size: 10;");
 
-        Label salle = new Label("📍 " + c.getSalle().getNumero());
+        Label salle = new Label("" + c.getSalle().getNumero());
         salle.setStyle("-fx-text-fill: white; -fx-font-size: 9; -fx-font-weight: bold;");
 
         Label prof = new Label(obtenirNomProf(c));
@@ -344,8 +344,8 @@ public class PlanningController {
         profs.setStyle("-fx-text-fill: #4B5563; -fx-font-size: 13;");
 
         infoBox.getChildren().addAll(
-                creerInfoLigne("🕒", c.getDateDebut().toLocalTime() + " - " + c.getDateFin().toLocalTime()),
-                creerInfoLigne("📍", c.getSalle().getNumero()),
+                creerInfoLigne("", c.getDateDebut().toLocalTime() + " - " + c.getDateFin().toLocalTime()),
+                creerInfoLigne("", c.getSalle().getNumero()),
                 profs
         );
 
@@ -431,8 +431,8 @@ public class PlanningController {
         alert.setTitle("Détails du cours");
         alert.setHeaderText(c.getIntitule());
 
-        String content = "📍 Salle : " + c.getSalle().getNumero() +
-                "\n🕒 " + c.getDateDebut().toLocalTime() + " - " + c.getDateFin().toLocalTime() +
+        String content = "Salle : " + c.getSalle().getNumero() +
+                "\n" + c.getDateDebut().toLocalTime() + " - " + c.getDateFin().toLocalTime() +
                 "\n\nResponsables :\n" + obtenirNomProf(c);
         alert.setContentText(content);
 
@@ -507,7 +507,7 @@ public class PlanningController {
         listViewFichiers.setPrefHeight(100);
         java.util.List<java.io.File> fichiersSelectionnes = new java.util.ArrayList<>();
 
-        Button btnAdd = new Button("➕ Ajouter des justificatifs (PDF, Images)");
+        Button btnAdd = new Button(" Ajouter des justificatifs (PDF, Images)");
         btnAdd.setOnAction(e -> {
             javafx.stage.FileChooser fc = new javafx.stage.FileChooser();
             // Permettre la sélection multiple

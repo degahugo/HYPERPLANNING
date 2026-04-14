@@ -291,14 +291,14 @@ public class CoursDAO {
             em.getTransaction().commit();
 
             if (result > 0) {
-                System.out.println("✅ Tout a été nettoyé : Conflits, Notifications, Absences et Cours supprimés.");
+                System.out.println(" Tout a été nettoyé : Conflits, Notifications, Absences et Cours supprimés.");
             } else {
-                System.out.println("⚠️ Le cours n'existait déjà plus en base.");
+                System.out.println(" Le cours n'existait déjà plus en base.");
             }
 
         } catch (Exception e) {
             if (em.getTransaction().isActive()) em.getTransaction().rollback();
-            System.err.println("❌ Erreur critique lors de la suppression : " + e.getMessage());
+            System.err.println(" Erreur critique lors de la suppression : " + e.getMessage());
             e.printStackTrace();
         } finally {
             em.close();

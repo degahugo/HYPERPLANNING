@@ -20,7 +20,7 @@
             <Region VBox.vgrow="ALWAYS"/>
 
             <HBox spacing="10" style="-fx-background-color: white; -fx-padding: 10;">
-                <Label text="👤" style="-fx-font-size: 18;"/>
+                <Label text="" style="-fx-font-size: 18;"/>
                 <VBox>
                     <Label fx:id="userNameLabel"/>
                     <Label fx:id="userInfoLabel" style="-fx-text-fill: gray;"/>

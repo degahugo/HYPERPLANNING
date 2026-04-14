@@ -188,8 +188,8 @@ public class GestionAbsencesController {
 
     private void configurerColonneActions() {
         colActions.setCellFactory(param -> new TableCell<>() {
-            private final Button btnValider = new Button("✅");
-            private final Button btnRefuser = new Button("❌");
+            private final Button btnValider = new Button("Valider");
+            private final Button btnRefuser = new Button("Supprimer");
             private final HBox container = new HBox(10, btnValider, btnRefuser);
 
             @Override

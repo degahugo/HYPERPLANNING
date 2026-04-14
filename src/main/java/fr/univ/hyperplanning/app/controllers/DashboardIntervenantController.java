@@ -100,7 +100,7 @@ public class DashboardIntervenantController {
         Label titre = new Label(c.getIntitule());
         titre.setStyle("-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #111827;");
 
-        Label salle = new Label("📍  " + c.getSalle().getNumero());
+        Label salle = new Label("" + c.getSalle().getNumero());
         salle.setStyle("-fx-text-fill: #6B7280; -fx-font-size: 12;");
 
         Region spacer = new Region();

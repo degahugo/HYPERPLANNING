@@ -80,28 +80,28 @@ public class MainController {
 
     private void initMenu(String role) {
         menuBox.getChildren().clear();
-        ajouterBoutonMenu("⊞  Tableau de bord", "DASHBOARD", true);
-        ajouterBoutonMenu("📅  Emploi du temps", "PLANNING", false);
+        ajouterBoutonMenu("  Tableau de bord", "DASHBOARD", true);
+        ajouterBoutonMenu("  Emploi du temps", "PLANNING", false);
 
         if (role.equals("ETUDIANT")) {
-            ajouterBoutonMenu("📖  Devoirs", "DEVOIRS", false);
-            ajouterBoutonMenu("⫶三  Examens", "EXAMENS", false);
+            ajouterBoutonMenu("  Devoirs", "DEVOIRS", false);
+            ajouterBoutonMenu("  Examens", "EXAMENS", false);
         } else if (role.contains("ADMIN")) {
-            ajouterBoutonMenu("⚠️  Conflits", "CONFLITS", false);
-            ajouterBoutonMenu("🏫  Salles", "SALLES", false);
+            ajouterBoutonMenu("  Conflits", "CONFLITS", false);
+            ajouterBoutonMenu("  Salles", "SALLES", false);
             ajouterBoutonMenu("  Ajouter un cours", "AJOUTER_COURS", false, false);
             ajouterBoutonMenu("Gestion Salles", "GESTION_SALLES", false);
             ajouterBoutonMenu("Gestion Groupes", "GESTION_GROUPES", false);
-            ajouterBoutonMenu("🚫  Gestion Absences", "GESTION_ABSENCES", false);
+            ajouterBoutonMenu("  Gestion Absences", "GESTION_ABSENCES", false);
 
 
         }
 
         if (!role.contains("ADMIN")) {
-            ajouterBoutonMenu("👤  Mon profil", "PROFIL", false);
+            ajouterBoutonMenu(" Mon profil", "PROFIL", false);
         }
 
-        ajouterBoutonMenu("🚪  Déconnexion", "LOGOUT", false);
+        ajouterBoutonMenu("  Déconnexion", "LOGOUT", false);
     }
 
     // Surcharge de la méthode pour prendre en compte la nouvelle entrée
