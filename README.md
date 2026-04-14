@@ -73,7 +73,7 @@ Le projet suit une architecture :
 
 ##  Organisation Git
 
-- main → version stable
+- main / work → version stable (Dans le cas actuel, la branche work est la branche contenant la dernière version du code)
 - feature/... → développement
 
 
@@ -81,7 +81,7 @@ Le projet suit une architecture :
 
 ## Gestion de projet
 
-Méthodologie Scrum  
+Méthodologie Agile  
 Sprints de 1 semaine  
 Livraison finale prévue debut avril 2026.
 
@@ -122,10 +122,12 @@ hyperplanning/
 ```
 
 
-## Demarrage
+## Demarrage 
 
 
 Prerequis : Docker (Desktop) installé et ouvert ainsi qu'un environnement javafx fonctionnel.
+
+## Démarrage à partir des lignes de commandes (recommandé)
 
 ```bash
 sdk use java 21.0.10-tem
@@ -143,7 +145,14 @@ mvn javafx:run
     - User : sa
     - Password : secret
 
-## Lancement
+## Alternative (lancement à partir du script de démarrage) 
+
+```bash
+./run.sh
+```
+
+
+## Lancement à partir du jar (pas fonctionnel)
 ```bash 
 java -jar hyperplanning-1.0-SNAPSHOT.jar
 ```
@@ -156,15 +165,20 @@ cette commande permet de créer le .jar hyperplanning-1.0-SNAPSHOT.jar qui est l
 
 Lors du démarrage après l'affichage de la fenètre graphique pour charger les données construites automatiquement par la base de données une attente d'environ 60 secondes (jusqu'à la fin de la construction des données) est essentiel pour tester l'application avec son jeu de donnée.
 
-## Alternative (recommandée) : Docker
 
-```bash
-./run.sh
-```
+
+
 
 La base de donnees demarre automatiquement, les donnees de test
 sont inserees au premier lancement, et l'application s'ouvre.
 
+
+## Liste des différents type d'utilisateurs présent dans la base de données : 
+
+— Administrateur : nom d’utilisateur : AdminSystem1, mot de passe : admin1234  
+— Enseignant : nom d’utilisateur : DupontJean2, mot de passe : ens1234  
+— Intervenant : nom d’utilisateur : MartinSara4, mot de passe : int1234  
+— Etudiant : nom d’utilisateur : DurandAlice5, mot de passe : etu1234  
 
 ## Commandes utiles
 
