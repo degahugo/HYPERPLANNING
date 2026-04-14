@@ -197,6 +197,11 @@ Voir les logs en direct (dans un 2eme terminal pendant que run.sh tourne) :
 ./logs.sh
 ```
 
+Lancer les tests : 
+```bash
+mvn test
+```
+
 Voir le contenu de la base de donnees :
 ```bash
 docker exec -it $(docker compose ps -q postgres) psql -U sa -d hyperplanning
